@@ -1,0 +1,24 @@
+FROM node:18.20-alpine3.19 as build
+
+ARG NEXT_APP_SERVICES_HOST=/api
+
+WORKDIR /app
+
+RUN npm install -g pnpm@9.4.0
+
+COPY ./.npmrc /app/.npmrc
+COPY ./pnpm-lock.yaml /app/pnpm-lock.yaml
+COPY ./pnpm-workspace.yaml /app/pnpm-workspace.yaml
+
+COPY ./src/frontend/package.json /app/src/frontend/package.json
+
+RUN pnpm install
+
+COPY ./src/frontend /app/src/frontend
+
+WORKDIR /app/src/frontend
+
+EXPOSE 3000
+#USER node
+
+CMD ["pnpm", "dev"]

@@ -1,4 +1,12 @@
 {
+    "scripts": {
+        "dev": "docker-compose -f docker-compose.development.yml up --build",
+        "uninstall": "rm -rf node_modules src/**/node_modules src/**/**/node_modules",
+        "reinstall": "pnpm run uninstall && pnpm install",
+        "docker:images:clean": "for /F %i in ('docker images -a -q') do docker rmi -f %i",
+        "docker:containers:clean": "docker container prune",
+        "docker:clean": "docker system prune && docker container prune && yarn docker:images:clean"
+    },
     "engines": {
         "node": ">=25",
         "pnpm": ">=10"
