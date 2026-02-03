@@ -1,0 +1,91 @@
+services:
+  frontend:
+    image: upg-frontend
+    build:
+      context: ./
+      dockerfile: src/frontend/main-ui/Dockerfile.development
+      args:
+        - REACT_APP_SERVICES_HOST=/api
+    volumes:
+      - ./src/frontend/main-ui/:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - frontend
+
+  server:
+    image: upg-server
+    build:
+      context: ./
+      dockerfile: src/backend/server/Dockerfile.development
+    volumes:
+      - ./src/backend/server/:/app/server
+      - ./src/backend/_shared/:/app/_shared
+      - /app/node_modules
+      - /app/server/node_modules
+      - /app/_shared/node_modules
+    depends_on:
+      - db
+    networks:
+      - server
+
+  identity-server:
+    image: upg-identity-server
+    build:
+      context: ./
+      dockerfile: src/backend/identity-server/Dockerfile.development
+    volumes:
+      - ./src/backend/identity-server/:/app/identity-server
+      - ./src/backend/_shared/:/app/_shared
+      - /app/node_modules
+      - /app/identity-server/node_modules
+      - /app/_shared/node_modules
+    depends_on:
+      - db
+    networks:
+      - server
+
+  db:
+    image: upg-db
+    build:
+      context: ./src/db/redis
+      dockerfile: Dockerfile.development
+    volumes:
+      - cache:/data
+    networks:
+      - server
+
+  redisinsight:
+    image: redislabs/redisinsight:3.0
+    ports:
+      - '8001:8001'
+    volumes:
+      - cache:/data
+    depends_on:
+      - db
+    networks:
+      - server
+
+  proxy:
+    image: upg-proxy
+    build:
+      context: ./src/proxy
+      dockerfile: Dockerfile.development
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - server
+      - identity-server
+    networks:
+      - frontend
+      - server
+
+networks:
+  frontend:
+  server:
+
+
+volumes:
+  cache:
+    driver: local
