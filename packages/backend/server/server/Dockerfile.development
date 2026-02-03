@@ -1,0 +1,23 @@
+FROM node:25.5.0
+
+WORKDIR /app
+
+RUN npm install -g pnpm@10.28.2
+
+COPY ./pnpm-lock.yaml /app/pnpm-lock.yaml
+COPY ./pnpm-workspace.yaml /app/pnpm-workspace.yaml
+
+COPY ./src/backend/server/package.json /app/src/backend/server/package.json
+
+RUN pnpm install
+
+COPY ./src/backend/server/ /app/src/backend/server
+
+WORKDIR /app/src/backend/server
+
+RUN mkdir -p build && touch build/server.js
+
+EXPOSE 5001
+#USER node
+
+CMD ["pnpm", "start" ]
