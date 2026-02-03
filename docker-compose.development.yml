@@ -17,7 +17,7 @@ services:
     image: upg-server
     build:
       context: ./
-      dockerfile: src/backend/server/Dockerfile.development
+      dockerfile: src/backend/server/server/Dockerfile.development
     volumes:
       - ./src/backend/server/:/app/server
       - ./src/backend/_shared/:/app/_shared
@@ -33,7 +33,7 @@ services:
     image: upg-identity-server
     build:
       context: ./
-      dockerfile: src/backend/identity-server/Dockerfile.development
+      dockerfile: src/backend/server/identity-server/Dockerfile.development
     volumes:
       - ./src/backend/identity-server/:/app/identity-server
       - ./src/backend/_shared/:/app/_shared
@@ -48,7 +48,7 @@ services:
   db:
     image: upg-db
     build:
-      context: ./src/db/redis
+      context: ./src/backend/db/redis
       dockerfile: Dockerfile.development
     volumes:
       - cache:/data
@@ -69,7 +69,7 @@ services:
   proxy:
     image: upg-proxy
     build:
-      context: ./src/proxy
+      context: ./src/backend/proxy/nginx
       dockerfile: Dockerfile.development
     ports:
       - "80:80"

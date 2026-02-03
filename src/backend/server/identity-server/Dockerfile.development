@@ -7,13 +7,13 @@ RUN npm install -g pnpm@10.28.2
 COPY ./pnpm-lock.yaml /app/pnpm-lock.yaml
 COPY ./pnpm-workspace.yaml /app/pnpm-workspace.yaml
 
-COPY ./src/backend/identity-server/package.json /app/src/backend/identity-server/package.json
-COPY ./src/backend/_shared/package.json /app/src/backend/_shared/package.json
+COPY ./src/backend/server/identity-server/package.json /app/src/backend/identity-server/package.json
+COPY ./src/backend/server/_shared/package.json /app/src/backend/_shared/package.json
 
 RUN pnpm install
 
-COPY ./src/backend/identity-server/ /app/src/backend/identity-server
-COPY ./src/backend/_shared/ /app/src/backend/_shared
+COPY ./src/backend/server/identity-server/ /app/src/backend/identity-server
+COPY ./src/backend/server/_shared/ /app/src/backend/_shared
 
 WORKDIR /app/src/backend/identity-server
 
