@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+        "module": "esnext",
+        "target": "ES6",
+        "lib": [
+            "es2019",
+            "dom"
+        ],
+        "sourceMap": false,
+        "allowJs": false,
+        "moduleResolution": "node",
+        "outDir": "src",
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "strictNullChecks": false,
+        "removeComments": true,
+        "skipLibCheck": true,
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "types": [
+            "node",
+            "jest"
+        ],
+        "paths": {
+            "@Shared/*": [
+                "../_shared/src/*"
+            ]
+        },
+        "noUnusedLocals": true,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "isolatedModules": false,
+        "noEmit": false
+    },
+    "exclude": [
+        "node_modules/*",
+        "build"
+    ]
+}

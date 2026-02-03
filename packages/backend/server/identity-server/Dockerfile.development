@@ -1,0 +1,25 @@
+FROM node:25.5.0
+
+WORKDIR /app
+
+RUN npm install -g pnpm@10.28.2
+
+COPY ./pnpm-lock.yaml /app/pnpm-lock.yaml
+COPY ./pnpm-workspace.yaml /app/pnpm-workspace.yaml
+
+COPY ./src/backend/identity-server/package.json /app/src/backend/identity-server/package.json
+COPY ./src/backend/_shared/package.json /app/src/backend/_shared/package.json
+
+RUN pnpm install
+
+COPY ./src/backend/identity-server/ /app/src/backend/identity-server
+COPY ./src/backend/_shared/ /app/src/backend/_shared
+
+WORKDIR /app/src/backend/identity-server
+
+RUN mkdir -p build && touch build/server.js
+
+EXPOSE 8001
+#USER node
+
+CMD ["pnpm", "start" ]
