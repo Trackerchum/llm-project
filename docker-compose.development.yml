@@ -48,7 +48,7 @@ services:
   db-redis:
     image: ulp-redis
     build:
-      context: ./src/backend/db/redis
+      context: ./src/db/redis
       dockerfile: Dockerfile.development
     volumes:
       - cache:/data
@@ -69,7 +69,7 @@ services:
   proxy-nginx:
     image: ulp-proxy-nginx
     build:
-      context: ./src/backend/proxy/nginx
+      context: ./src/proxy/nginx
       dockerfile: Dockerfile.development
     ports:
       - "80:80"
