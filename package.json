@@ -5,7 +5,7 @@
         "reinstall": "pnpm run uninstall && pnpm install",
         "docker:images:clean": "for /F %i in ('docker images -a -q') do docker rmi -f %i",
         "docker:containers:clean": "docker container prune",
-        "docker:clean": "docker system prune && docker container prune && yarn docker:images:clean"
+        "docker:clean": "docker system prune && docker container prune && pnpm docker:images:clean"
     },
     "engines": {
         "node": ">=25",
