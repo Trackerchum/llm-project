@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: upg-frontend
+    image: ulp-frontend
     build:
       context: ./
       dockerfile: src/frontend/main-ui/Dockerfile.development
@@ -14,7 +14,7 @@ services:
       - frontend
 
   server:
-    image: upg-server
+    image: ulp-server
     build:
       context: ./
       dockerfile: src/backend/server/server/Dockerfile.development
@@ -25,12 +25,12 @@ services:
       - /app/server/node_modules
       - /app/_shared/node_modules
     depends_on:
-      - db
+      - db-redis
     networks:
       - server
 
   identity-server:
-    image: upg-identity-server
+    image: ulp-identity-server
     build:
       context: ./
       dockerfile: src/backend/server/identity-server/Dockerfile.development
@@ -41,12 +41,12 @@ services:
       - /app/identity-server/node_modules
       - /app/_shared/node_modules
     depends_on:
-      - db
+      - db-redis
     networks:
       - server
 
-  db:
-    image: upg-db
+  db-redis:
+    image: ulp-redis
     build:
       context: ./src/backend/db/redis
       dockerfile: Dockerfile.development
@@ -55,19 +55,19 @@ services:
     networks:
       - server
 
-  redisinsight:
+  redis-insight:
     image: redislabs/redisinsight:3.0
     ports:
       - '8001:8001'
     volumes:
       - cache:/data
     depends_on:
-      - db
+      - db-redis
     networks:
       - server
 
-  proxy:
-    image: upg-proxy
+  proxy-nginx:
+    image: ulp-proxy-nginx
     build:
       context: ./src/backend/proxy/nginx
       dockerfile: Dockerfile.development
