@@ -1,8 +1,7 @@
 {
     "scripts": {
-        "dev": "docker-compose -f docker-compose.development.yml up --build",
-        "uninstall": "rm -rf node_modules src/**/node_modules src/**/**/node_modules",
-        "reinstall": "pnpm run uninstall && pnpm install",
+        "dev": "npm run rm:node_modules && docker-compose -f docker-compose.development.yml up --build",
+        "rm:node_modules": "rm -rf node_modules src/**/node_modules src/**/**/node_modules src/**/**/**/node_modules",
         "docker:images:clean": "for /F %i in ('docker images -a -q') do docker rmi -f %i",
         "docker:containers:clean": "docker container prune",
         "docker:clean": "docker system prune && docker container prune && pnpm docker:images:clean"

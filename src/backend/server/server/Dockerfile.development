@@ -3,21 +3,4 @@ FROM node:25.5.0
 WORKDIR /app
 
 RUN npm install -g pnpm@10.28.2
-
-COPY ./pnpm-lock.yaml /app/pnpm-lock.yaml
-COPY ./pnpm-workspace.yaml /app/pnpm-workspace.yaml
-
-COPY ./src/backend/server/server/package.json /app/src/backend/server/server/package.json
-
-RUN pnpm install
-
-COPY ./src/backend/server/server/ /app/src/backend/server/server
-
-WORKDIR /app/src/backend/server/server
-
-RUN mkdir -p build && touch build/server.js
-
-EXPOSE 5001
-#USER node
-
-CMD ["pnpm", "start" ]
+RUN pnpm config set store-dir /pnpm-store

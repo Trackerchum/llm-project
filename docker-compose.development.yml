@@ -1,49 +1,65 @@
 services:
-  frontend:
-    image: ulp-frontend
-    build:
-      context: ./
-      dockerfile: src/frontend/main-ui/Dockerfile.development
-      args:
-        - REACT_APP_SERVICES_HOST=/api
-    volumes:
-      - ./src/frontend/main-ui/:/app
-      - /app/node_modules
-      - /app/src/frontend/main-ui/node_modules
-    networks:
-      - frontend
+  # frontend:
+  #   image: ulp-frontend
+  #   build:
+  #     context: ./
+  #     dockerfile: src/frontend/main-ui/Dockerfile.development
+  #     args:
+  #       - REACT_APP_SERVICES_HOST=/api
+  #   volumes:
+  #     - ./src/frontend/main-ui/:/app
+  #     - /app/node_modules
+  #     - /app/src/frontend/main-ui/node_modules
+  #   networks:
+  #     - frontend
 
   server:
     image: ulp-server
     build:
-      context: ./
+      context: .
       dockerfile: src/backend/server/server/Dockerfile.development
+    container_name: backend-server
+    working_dir: /app/src/backend/server/server
+    # Dev setup note:
+    # node_modules are stored in Docker volumes (not the image) to avoid Windows↔Linux pnpm/symlink issues and to support hot reload.
+    # Because volumes are empty at startup, `pnpm install` and mkdir must run at container runtime (not during image build).
+    # Prod images should bake dependencies instead.
+    command: sh -c "pnpm install --frozen-lockfile && mkdir -p build && touch build/server.js && pnpm run start"
+    ports:
+      - "5001:5001"
     volumes:
-      - ./src/backend/server/server/:/app/src/backend/server/server
-      - ./src/backend/server/_shared/:/app/src/backend/server/_shared
-      - /app/node_modules
-      - /app/src/backend/server/server/node_modules
-      - /app/src/backend/server/_shared/node_modules
+      - .:/app
+      # Root workspace deps
+      - root_node_modules:/app/node_modules
+      # Workspace package deps
+      - server_server_node_modules:/app/src/backend/server/server/node_modules
+      - shared_node_modules:/app/src/backend/server/_shared/node_modules
+      # pnpm store
+      - pnpm_store:/pnpm-store
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
     depends_on:
       - db-redis
     networks:
       - server
 
-  identity-server:
-    image: ulp-identity-server
-    build:
-      context: ./
-      dockerfile: src/backend/server/identity-server/Dockerfile.development
-    volumes:
-      - ./src/backend/server/identity-server/:/app/src/backend/server/identity-server
-      - ./src/backend/server/_shared/:/app/src/backend/server/_shared
-      - /app/node_modules
-      - /app/src/backend/server/identity-server/node_modules
-      - /app/src/backend/server/_shared/node_modules
-    depends_on:
-      - db-redis
-    networks:
-      - server
+  # identity-server:
+  #   image: ulp-identity-server
+  #   build:
+  #     context: ./
+  #     dockerfile: src/backend/server/identity-server/Dockerfile.development
+  #   volumes:
+  #     - ./src/backend/server/identity-server/:/app/src/backend/server/identity-server
+  #     - ./src/backend/server/_shared/:/app/src/backend/server/_shared
+  #     - /app/node_modules
+  #     - /app/src/backend/server/identity-server/node_modules
+  #     - /app/src/backend/server/_shared/node_modules
+  #   depends_on:
+  #     - db-redis
+  #   networks:
+  #     - server
 
   db-redis:
     image: ulp-redis
@@ -55,31 +71,31 @@ services:
     networks:
       - server
 
-  redis-insight:
-    image: redislabs/redisinsight:3.0
-    ports:
-      - '8001:8001'
-    volumes:
-      - cache:/data
-    depends_on:
-      - db-redis
-    networks:
-      - server
+  # redis-insight:
+  #   image: redislabs/redisinsight:3.0
+  #   ports:
+  #     - '8001:8001'
+  #   volumes:
+  #     - cache:/data
+  #   depends_on:
+  #     - db-redis
+  #   networks:
+  #     - server
 
-  proxy-nginx:
-    image: ulp-proxy-nginx
-    build:
-      context: ./src/proxy/nginx
-      dockerfile: Dockerfile.development
-    ports:
-      - "80:80"
-    depends_on:
-      - frontend
-      - server
-      - identity-server
-    networks:
-      - frontend
-      - server
+  # proxy-nginx:
+  #   image: ulp-proxy-nginx
+  #   build:
+  #     context: ./src/proxy/nginx
+  #     dockerfile: Dockerfile.development
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - frontend
+  #     - server
+  #     - identity-server
+  #   networks:
+  #     - frontend
+  #     - server
 
 networks:
   frontend:
@@ -87,5 +103,9 @@ networks:
 
 
 volumes:
+  root_node_modules:
+  server_server_node_modules:
+  shared_node_modules:
+  pnpm_store:
   cache:
     driver: local
