@@ -15,9 +15,9 @@ RUN pnpm install
 
 COPY ./src/frontend/main-ui /app/src/frontend/main-ui
 
-WORKDIR /app/src/frontend
+WORKDIR /app/src/frontend/main-ui
 
 EXPOSE 3000
 #USER node
 
-CMD ["pnpm", "dev"]
+CMD ["pnpm", "start"]
