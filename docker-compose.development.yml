@@ -9,7 +9,7 @@ services:
     volumes:
       - ./src/frontend/main-ui/:/app
       - /app/node_modules
-      - /app/.next
+      - /app/src/frontend/main-ui/node_modules
     networks:
       - frontend
 
@@ -19,11 +19,11 @@ services:
       context: ./
       dockerfile: src/backend/server/server/Dockerfile.development
     volumes:
-      - ./src/backend/server/:/app/server
-      - ./src/backend/_shared/:/app/_shared
+      - ./src/backend/server/server/:/app/src/backend/server/server
+      - ./src/backend/server/_shared/:/app/src/backend/server/_shared
       - /app/node_modules
-      - /app/server/node_modules
-      - /app/_shared/node_modules
+      - /app/src/backend/server/server/node_modules
+      - /app/src/backend/server/_shared/node_modules
     depends_on:
       - db-redis
     networks:
@@ -35,11 +35,11 @@ services:
       context: ./
       dockerfile: src/backend/server/identity-server/Dockerfile.development
     volumes:
-      - ./src/backend/identity-server/:/app/identity-server
-      - ./src/backend/_shared/:/app/_shared
+      - ./src/backend/server/identity-server/:/app/src/backend/server/identity-server
+      - ./src/backend/server/_shared/:/app/src/backend/server/_shared
       - /app/node_modules
-      - /app/identity-server/node_modules
-      - /app/_shared/node_modules
+      - /app/src/backend/server/identity-server/node_modules
+      - /app/src/backend/server/_shared/node_modules
     depends_on:
       - db-redis
     networks:
