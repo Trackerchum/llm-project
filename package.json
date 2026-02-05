@@ -4,7 +4,7 @@
         "rm:node_modules": "rm -rf node_modules src/**/node_modules src/**/**/node_modules src/**/**/**/node_modules",
         "docker:images:clean": "for /F %i in ('docker images -a -q') do docker rmi -f %i",
         "docker:containers:clean": "docker container prune",
-        "docker:clean": "docker system prune && docker container prune && pnpm docker:images:clean"
+        "docker:clean": "docker system prune && pnpm docker:containers:clean && pnpm docker:images:clean"
     },
     "engines": {
         "node": ">=25",
