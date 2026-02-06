@@ -92,6 +92,9 @@ services:
     build:
       context: ./src/db/redis
       dockerfile: Dockerfile.development
+    container_name: db-redis
+    ports:
+      - 6379:6379
     volumes:
       - cache:/data
     networks:
