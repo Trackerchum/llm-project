@@ -1,17 +1,35 @@
+
+# Dev setup note:
+# node_modules are stored in Docker volumes (not the image) to avoid Windows↔Linux pnpm/symlink issues and to support hot reload.
+# Because volumes are empty at startup, `pnpm install` and mkdir must run at container runtime (not during image build).
+# Prod images should bake dependencies instead.
 services:
-  # frontend:
-  #   image: ulp-frontend
-  #   build:
-  #     context: ./
-  #     dockerfile: src/frontend/main-ui/Dockerfile.development
-  #     args:
-  #       - REACT_APP_SERVICES_HOST=/api
-  #   volumes:
-  #     - ./src/frontend/main-ui/:/app
-  #     - /app/node_modules
-  #     - /app/src/frontend/main-ui/node_modules
-  #   networks:
-  #     - frontend
+  frontend:
+    image: ulp-frontend
+    build:
+      context: .
+      dockerfile: src/frontend/main-ui/Dockerfile.development
+      args:
+        - REACT_APP_SERVICES_HOST=/api
+    container_name: frontend-main-ui
+    working_dir: /app/src/frontend/main-ui
+    command: sh -c "pnpm install --frozen-lockfile && pnpm run start"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      # Root workspace deps
+      - root_node_modules:/app/node_modules
+      # Workspace package deps
+      - frontend_main-ui_node_modules:/app/src/frontend/main-ui/node_modules
+      # pnpm store
+      - pnpm_store:/pnpm-store
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    networks:
+      - frontend
 
   server:
     image: ulp-server
@@ -20,10 +38,6 @@ services:
       dockerfile: src/backend/server/server/Dockerfile.development
     container_name: backend-server
     working_dir: /app/src/backend/server/server
-    # Dev setup note:
-    # node_modules are stored in Docker volumes (not the image) to avoid Windows↔Linux pnpm/symlink issues and to support hot reload.
-    # Because volumes are empty at startup, `pnpm install` and mkdir must run at container runtime (not during image build).
-    # Prod images should bake dependencies instead.
     command: sh -c "pnpm install --frozen-lockfile && mkdir -p build && touch build/server.js && pnpm run start"
     ports:
       - "5001:5001"
@@ -104,6 +118,7 @@ networks:
 
 volumes:
   root_node_modules:
+  frontend_main-ui_node_modules:
   server_server_node_modules:
   shared_node_modules:
   pnpm_store:
