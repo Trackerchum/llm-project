@@ -94,22 +94,24 @@ services:
       dockerfile: Dockerfile.development
     container_name: db-redis
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
       - cache:/data
     networks:
       - server
 
-  # redis-insight:
-  #   image: redislabs/redisinsight:3.0
-  #   ports:
-  #     - '8001:8001'
-  #   volumes:
-  #     - cache:/data
-  #   depends_on:
-  #     - db-redis
-  #   networks:
-  #     - server
+  redis-insight:
+    image: redislabs/redisinsight:3.0
+    # run as root user so container can write to volume
+    user: "0:0"
+    ports:
+      - "6479:6479"
+    volumes:
+      - cache:/data
+    depends_on:
+      - db-redis
+    networks:
+      - server
 
   proxy-nginx:
     image: ulp-proxy-nginx
