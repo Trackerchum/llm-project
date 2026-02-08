@@ -111,20 +111,20 @@ services:
   #   networks:
   #     - server
 
-  # proxy-nginx:
-  #   image: ulp-proxy-nginx
-  #   build:
-  #     context: ./src/proxy/nginx
-  #     dockerfile: Dockerfile.development
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - frontend
-  #     - server
-  #     - identity-server
-  #   networks:
-  #     - frontend
-  #     - server
+  proxy-nginx:
+    image: ulp-proxy-nginx
+    build:
+      context: ./src/proxy/nginx
+      dockerfile: Dockerfile.development
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - server
+      - identity-server
+    networks:
+      - frontend
+      - server
 
 networks:
   frontend:
