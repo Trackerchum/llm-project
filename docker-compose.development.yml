@@ -46,7 +46,7 @@ services:
       # Root workspace deps
       - root_node_modules:/app/node_modules
       # Workspace package deps
-      - server_server_node_modules:/app/src/backend/server/node_modules
+      - backend_server_node_modules:/app/src/backend/server/node_modules
       - shared_node_modules:/app/src/backend/shared/node_modules
       # pnpm store
       - pnpm_store:/pnpm-store
@@ -74,7 +74,7 @@ services:
       # Root workspace deps
       - root_node_modules:/app/node_modules
       # Workspace package deps
-      - server_identity-server_node_modules:/app/src/backend/identity-server/node_modules
+      - backend_identity-server_node_modules:/app/src/backend/identity-server/node_modules
       - shared_node_modules:/app/src/backend/shared/node_modules
       # pnpm store
       - pnpm_store:/pnpm-store
@@ -96,7 +96,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - cache:/data
+      - redis_data:/data
     networks:
       - server
 
@@ -107,7 +107,7 @@ services:
     ports:
       - "6479:6479"
     volumes:
-      - cache:/data
+      - redisinsight_data:/data
     depends_on:
       - db-redis
     networks:
@@ -136,9 +136,9 @@ networks:
 volumes:
   root_node_modules:
   frontend_main-ui_node_modules:
-  server_server_node_modules:
-  server_identity-server_node_modules:
+  backend_server_node_modules:
+  backend_identity-server_node_modules:
   shared_node_modules:
   pnpm_store:
-  cache:
-    driver: local
+  redis_data:
+  redisinsight_data:
