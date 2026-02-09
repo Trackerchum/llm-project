@@ -15,7 +15,6 @@
         "noImplicitThis": true,
         "noImplicitAny": true,
         "strictNullChecks": false,
-        "suppressImplicitAnyIndexErrors": true,
         "removeComments": true,
         "skipLibCheck": true,
         "typeRoots": [

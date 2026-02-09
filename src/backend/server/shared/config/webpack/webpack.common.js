@@ -34,7 +34,7 @@ module.exports = {
     resolve: {
         extensions: ['.json', '.ts', '.js'],
         alias: {
-            "@Shared": path.join(projectDirectory, '../_shared/src/'),
+            "@Shared": path.join(projectDirectory, '../shared/src/'),
         },
     },
     output: {

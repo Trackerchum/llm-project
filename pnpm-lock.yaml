@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  src/backend/server/_shared:
+  src/backend/server/shared:
     dependencies:
       bcryptjs:
         specifier: ^3.0.3

@@ -26,7 +26,7 @@
         ],
         "paths": {
             "@Shared/*": [
-                "../_shared/src/*"
+                "../shared/src/*"
             ]
         },
         "noUnusedLocals": true,
