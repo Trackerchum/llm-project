@@ -7,7 +7,7 @@
         "docker:clean": "docker system prune && pnpm docker:containers:clean && pnpm docker:images:clean"
     },
     "engines": {
-        "node": ">=25",
+        "node": ">=22",
         "pnpm": ">=10"
     }
 }
