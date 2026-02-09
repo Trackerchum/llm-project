@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  src/backend/server/shared:
+  src/backend/shared:
     dependencies:
       bcryptjs:
         specifier: ^3.0.3
@@ -57,7 +57,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  src/backend/server/identity-server:
+  src/backend/identity-server:
     dependencies:
       bcryptjs:
         specifier: ^3.0.3
@@ -106,7 +106,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  src/backend/server/server:
+  src/backend/server:
     dependencies:
       bcryptjs:
         specifier: ^3.0.3

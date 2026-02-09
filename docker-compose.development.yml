@@ -35,9 +35,9 @@ services:
     image: ulp-server
     build:
       context: .
-      dockerfile: src/backend/server/server/Dockerfile.development
+      dockerfile: src/backend/server/Dockerfile.development
     container_name: backend-server
-    working_dir: /app/src/backend/server/server
+    working_dir: /app/src/backend/server
     command: sh -c "pnpm install --frozen-lockfile && mkdir -p build && touch build/server.js && pnpm run start"
     ports:
       - "5001:5001"
@@ -46,8 +46,8 @@ services:
       # Root workspace deps
       - root_node_modules:/app/node_modules
       # Workspace package deps
-      - server_server_node_modules:/app/src/backend/server/server/node_modules
-      - shared_node_modules:/app/src/backend/server/shared/node_modules
+      - server_server_node_modules:/app/src/backend/server/node_modules
+      - shared_node_modules:/app/src/backend/shared/node_modules
       # pnpm store
       - pnpm_store:/pnpm-store
     environment:
@@ -63,9 +63,9 @@ services:
     image: ulp-identity-server
     build:
       context: .
-      dockerfile: src/backend/server/identity-server/Dockerfile.development
+      dockerfile: src/backend/identity-server/Dockerfile.development
     container_name: backend-identity-server
-    working_dir: /app/src/backend/server/identity-server
+    working_dir: /app/src/backend/identity-server
     command: sh -c "pnpm install --frozen-lockfile && mkdir -p build && touch build/server.js && pnpm run start"
     ports:
       - "8001:8001"
@@ -74,8 +74,8 @@ services:
       # Root workspace deps
       - root_node_modules:/app/node_modules
       # Workspace package deps
-      - server_identity-server_node_modules:/app/src/backend/server/identity-server/node_modules
-      - shared_node_modules:/app/src/backend/server/shared/node_modules
+      - server_identity-server_node_modules:/app/src/backend/identity-server/node_modules
+      - shared_node_modules:/app/src/backend/shared/node_modules
       # pnpm store
       - pnpm_store:/pnpm-store
     environment:
