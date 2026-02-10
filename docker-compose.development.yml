@@ -1,32 +1,40 @@
 
 services:
+  dependencies:
+    image: node:22.0.0-alpine
+    working_dir: /app
+    restart: "no"
+    command: >
+      sh -c "
+        if [ ! -f node_modules/.deps_installed ]; then
+          npm ci && touch node_modules/.deps_installed;
+        fi
+      "
+    volumes:
+      - .:/app
+      - root_node_modules:/app/node_modules
+
   frontend:
     image: ulp-frontend
     build:
       context: .
       dockerfile: src/frontend/main-ui/Dockerfile.development
-      args:
-        - REACT_APP_SERVICES_HOST=/api
     container_name: frontend-main-ui
     working_dir: /app/src/frontend/main-ui
-    command: >
-      sh -c "
-        cd /app
-        if [ ! -d node_modules ]; then
-          npm ci
-        fi
-        cd /app/src/frontend/main-ui
-        npm run start
-      "
+    command: sh -c "npm run start"
     ports:
       - "3000:3000"
     volumes:
       - .:/app
       - root_node_modules:/app/node_modules
     environment:
+      - REACT_APP_SERVICES_HOST=/api
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+    depends_on:
+      dependencies:
+        condition: service_completed_successfully
     networks:
       - frontend
 
@@ -37,17 +45,7 @@ services:
       dockerfile: src/backend/server/Dockerfile.development
     container_name: backend-server
     working_dir: /app/src/backend/server
-    command: >
-      sh -c "
-        cd /app
-        if [ ! -d node_modules ]; then
-          npm ci
-        fi
-        cd /app/src/backend/server
-        mkdir -p build
-        touch build/server.js
-        npm run start
-      "
+    command: sh -c "mkdir -p build && touch build/server.js && npm run start"
     ports:
       - "5001:5001"
     volumes:
@@ -58,7 +56,10 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     depends_on:
-      - db-redis
+      dependencies:
+        condition: service_completed_successfully
+      db-redis:
+        condition: service_started
     networks:
       - server
 
@@ -69,17 +70,7 @@ services:
       dockerfile: src/backend/identity-server/Dockerfile.development
     container_name: backend-identity-server
     working_dir: /app/src/backend/identity-server
-    command: >
-      sh -c "
-        cd /app
-        if [ ! -d node_modules ]; then
-          npm ci
-        fi
-        cd /app/src/backend/identity-server
-        mkdir -p build
-        touch build/server.js
-        npm run start
-      "
+    command: sh -c "mkdir -p build && touch build/server.js && npm run start"
     ports:
       - "8001:8001"
     volumes:
@@ -90,7 +81,10 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     depends_on:
-      - db-redis
+      dependencies:
+        condition: service_completed_successfully
+      db-redis:
+        condition: service_started
     networks:
       - server
 
