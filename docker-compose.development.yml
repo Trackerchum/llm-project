@@ -4,14 +4,7 @@ services:
     image: node:22.0.0-alpine
     working_dir: /app
     restart: "no"
-    command: >
-      sh -c "
-        set -e
-        if [ ! -f node_modules/.deps_installed ]; then
-          npm ci --workspaces --include-workspace-root
-          touch node_modules/.deps_installed
-        fi
-      "
+    command: sh -c "set -e npm ci --workspaces --include-workspace-root"
     volumes:
       - .:/app
       - root_node_modules:/app/node_modules
