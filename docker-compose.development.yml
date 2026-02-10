@@ -1,8 +1,4 @@
 
-# Dev setup note:
-# node_modules are stored in Docker volumes (not the image) to avoid Windows↔Linux pnpm/symlink issues and to support hot reload.
-# Because volumes are empty at startup, `pnpm install` and mkdir must run at container runtime (not during image build).
-# Prod images should bake dependencies instead.
 services:
   frontend:
     image: ulp-frontend
@@ -13,17 +9,20 @@ services:
         - REACT_APP_SERVICES_HOST=/api
     container_name: frontend-main-ui
     working_dir: /app/src/frontend/main-ui
-    command: sh -c "pnpm install --frozen-lockfile && pnpm run start"
+    command: >
+      sh -c "
+        cd /app
+        if [ ! -d node_modules ]; then
+          npm ci
+        fi
+        cd /app/src/frontend/main-ui
+        npm run start
+      "
     ports:
       - "3000:3000"
     volumes:
       - .:/app
-      # Root workspace deps
       - root_node_modules:/app/node_modules
-      # Workspace package deps
-      - frontend_main-ui_node_modules:/app/src/frontend/main-ui/node_modules
-      # pnpm store
-      - pnpm_store:/pnpm-store
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
@@ -38,18 +37,22 @@ services:
       dockerfile: src/backend/server/Dockerfile.development
     container_name: backend-server
     working_dir: /app/src/backend/server
-    command: sh -c "pnpm install --frozen-lockfile && mkdir -p build && touch build/server.js && pnpm run start"
+    command: >
+      sh -c "
+        cd /app
+        if [ ! -d node_modules ]; then
+          npm ci
+        fi
+        cd /app/src/backend/server
+        mkdir -p build
+        touch build/server.js
+        npm run start
+      "
     ports:
       - "5001:5001"
     volumes:
       - .:/app
-      # Root workspace deps
       - root_node_modules:/app/node_modules
-      # Workspace package deps
-      - backend_server_node_modules:/app/src/backend/server/node_modules
-      - shared_node_modules:/app/src/backend/shared/node_modules
-      # pnpm store
-      - pnpm_store:/pnpm-store
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
@@ -66,18 +69,22 @@ services:
       dockerfile: src/backend/identity-server/Dockerfile.development
     container_name: backend-identity-server
     working_dir: /app/src/backend/identity-server
-    command: sh -c "pnpm install --frozen-lockfile && mkdir -p build && touch build/server.js && pnpm run start"
+    command: >
+      sh -c "
+        cd /app
+        if [ ! -d node_modules ]; then
+          npm ci
+        fi
+        cd /app/src/backend/identity-server
+        mkdir -p build
+        touch build/server.js
+        npm run start
+      "
     ports:
       - "8001:8001"
     volumes:
       - .:/app
-      # Root workspace deps
       - root_node_modules:/app/node_modules
-      # Workspace package deps
-      - backend_identity-server_node_modules:/app/src/backend/identity-server/node_modules
-      - shared_node_modules:/app/src/backend/shared/node_modules
-      # pnpm store
-      - pnpm_store:/pnpm-store
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
@@ -135,10 +142,5 @@ networks:
 
 volumes:
   root_node_modules:
-  frontend_main-ui_node_modules:
-  backend_server_node_modules:
-  backend_identity-server_node_modules:
-  shared_node_modules:
-  pnpm_store:
   redis_data:
   redisinsight_data:
