@@ -1,13 +1,17 @@
 {
+    "name": "llm-project",
+    "workspaces": ["src/backend/identity-server", "src/backend/server", "src/backend/shared", "src/frontend/main-ui"],
     "scripts": {
         "dev": "docker compose -f docker-compose.development.yml up --build",
-        "rm:node_modules": "rm -rf node_modules src/**/node_modules src/**/**/node_modules src/**/**/**/node_modules",
+        "clean": "npm run rm:node_modules && npm run rm:builds",
+        "rm:node_modules": "rm -rf src/**/node_modules src/**/**/node_modules",
+        "rm:builds": "rm -rf src/**/build src/**/**/build",
         "docker:images:clean": "for /F %i in ('docker images -a -q') do docker rmi -f %i",
         "docker:containers:clean": "docker container prune",
-        "docker:clean": "docker system prune && pnpm docker:containers:clean && pnpm docker:images:clean"
+        "docker:clean": "docker system prune && npm run docker:containers:clean && npm run docker:images:clean"
     },
     "engines": {
         "node": ">=22",
-        "pnpm": ">=10"
+        "npm": ">=11"
     }
 }

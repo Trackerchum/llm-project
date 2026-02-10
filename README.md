@@ -1,6 +1,6 @@
 # llm-project
 
-This is a monorepo containing multiple frontend, backend, and infrastructure projects that are developed and run together in a single Docker Compose environment. Node ≥22 and pnpm ≥10 are required on the host only for local tooling and IDE support; all runtime code executes inside Linux Docker containers. Package manager choice is transitional and will likely change (e.g. npm or yarn). The key components and projects are as follows: 
+This is a monorepo containing multiple frontend, backend, and infrastructure projects that are developed and run together in a single Docker Compose environment. Node ≥22 and npm ≥11 are required on the host only for local tooling and IDE support; all runtime code executes inside Linux Docker containers. Package manager choice is transitional and will likely change (e.g. npm or yarn). The key components and projects are as follows: 
 
 - A TypeScript/React frontend.
 - A TypeScript/Express server.
@@ -52,9 +52,8 @@ The main directory structure is as follows:
 ├── .dockerignore
 ├── .gitignore
 ├── docker-compose.development.yml
+├── package-lock.json
 ├── package.json
-├── pnpm-lock.yaml
-├── pnpm-workspace.yaml
 └── README.md
 
 This setup is development-only; production images and deployment will be handled separately. Docker Compose is used to bring up all projects and components with a single command. The root docker-compose.development.yml file references all project-level Dockerfile.development files. RedisInsight is included only via a prebuilt image defined directly in the compose file. The project will be developed by hosts using Windows, macOS and Linux, and all Docker containers are built Linux based. Operating system compatibility and developer experience on development hosts is key. Any developer on any of those three main operating systems should be able to pull the repository from GitHub, and run the command "docker compose -f docker-compose.development.yml up --build" to run everything with minimal to no setup after installing Docker.
