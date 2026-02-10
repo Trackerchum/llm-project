@@ -6,8 +6,10 @@ services:
     restart: "no"
     command: >
       sh -c "
+        set -e
         if [ ! -f node_modules/.deps_installed ]; then
-          npm ci && touch node_modules/.deps_installed;
+          npm ci --workspaces --include-workspace-root
+          touch node_modules/.deps_installed
         fi
       "
     volumes:
