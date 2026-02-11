@@ -5,7 +5,7 @@
     "main": "src/index.ts",
     "scripts": {
         "server:watch": "tsup --env.NODE_ENV dev",
-        "server:run": "node build/server.js --legacy-watch",
+        "server:run": "nodemon build/server.js --legacy-watch",
         "start": "concurrently -n BUILD,SERVER -c magenta,cyan \"npm run server:watch\" \"npm run server:run\"",
         "build": "tsup",
         "test": "jest",
