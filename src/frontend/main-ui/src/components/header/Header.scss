@@ -1,0 +1,11 @@
+.Header {
+    height: 2.5rem;
+    --tw-bg-opacity: 1;
+    background-color: rgb(51 65 85 / var(--tw-bg-opacity));
+
+    & > div {
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+}
