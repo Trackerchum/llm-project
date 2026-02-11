@@ -1,4 +1,3 @@
-import { RedisCommandArgument } from '@node-redis/client/dist/lib/commands';
 import { createClient, RedisClientType } from 'redis';
 
 export class RedisClient {
@@ -30,9 +29,9 @@ export class RedisClient {
         this.isConnected = true;
     };
 
-    disconnect = async () => {
+    destroy = async () => {
         try {
-            await this.Client.disconnect();
+            await this.Client.destroy();
         }
         catch (error) {
             throw error;
@@ -40,11 +39,11 @@ export class RedisClient {
         this.isConnected = false;
     }
 
-    set = (key: RedisCommandArgument, value: string) => {
+    set = (key: string, value: string) => {
         return this.Client.set(key, value);
     }
 
-    get = (key: RedisCommandArgument) => {
+    get = (key: string) => {
         return this.Client.get(key);
     }
 }
