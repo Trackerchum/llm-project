@@ -102,7 +102,7 @@ services:
     # run as root user so container can write to volume
     user: "0:0"
     ports:
-      - "6479:6479"
+      - "6479:5540"
     volumes:
       - redisinsight_data:/data
     depends_on:
