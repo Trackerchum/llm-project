@@ -21,9 +21,11 @@ export abstract class BaseController implements DependencyInjectedClasses {
 
     abstract setupRoutes: (app: Express) => void;
 
-    getUser = async (email: string): Promise<User> => {
+    getUser = async (email: string): Promise<User | null> => {
         const response = await this.client.get(email);
-        const user = JSON.parse(response);
-        return user;
+        if (typeof response === "string") {
+            return JSON.parse(response);
+        }
+        return null;
     }
 }
