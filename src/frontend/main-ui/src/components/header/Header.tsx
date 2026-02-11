@@ -1,4 +1,4 @@
-import { appName } from '../../helpers/sharedStrings';
+import { appName } from '../../helpers/constants';
 import './Header.scss';
 
 interface Props {
