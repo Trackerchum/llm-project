@@ -1,11 +1,7 @@
 import { appName } from '../../helpers/constants';
 import './Header.scss';
 
-interface Props {
-
-}
-
-const Header = ({ }: Props) => {
+const Header = () => {
 
     return <header className='Header'>
         <div className='container h-full flex justify-between'>
