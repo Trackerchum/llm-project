@@ -12,8 +12,6 @@ const fetcher = async <T>(
 	const incomingHeaders: { [key: string]: any } = serverOptions?.req
 		? { ...serverOptions.req.headers }
 		: {};
-	delete incomingHeaders["host"];
-	delete incomingHeaders["cookie"];
 
 	options.headers = {
 		"Content-Type": "application/json",
