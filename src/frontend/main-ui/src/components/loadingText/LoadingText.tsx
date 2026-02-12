@@ -6,25 +6,17 @@ interface Props {
 }
 
 const LoadingText = ({ text = "Loading", dotsNum = 5 }: Props) => {
-    const [dots, setDots] = useState(".");
-    let interval: NodeJS.Timer;
+  const [dots, setDots] = useState(".");
 
-    useEffect(() => {
-        if (!interval) {
-            interval = setInterval(() => {
-                if (dots.length === dotsNum) {
-                    setDots(".");
-                }
-                else {
-                    setDots(dots => dots + ".");
-                }
-            }, 500);
-        }
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDots((prev) => (prev.length >= dotsNum ? "." : prev + "."));
+    }, 500);
 
-        return () => clearInterval(interval);
-    }, [dots]);
+    return () => clearInterval(timer);
+  }, [dotsNum]);
 
-    return <>{text + dots}</>
-}
+  return <>{text + dots}</>;
+};
 
 export default LoadingText;
