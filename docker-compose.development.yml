@@ -1,4 +1,4 @@
-
+# REMOVE PORTS FOR STAING/PRODUCTION
 services:
   dependencies:
     image: node:22.0.0-alpine
@@ -30,6 +30,10 @@ services:
     depends_on:
       dependencies:
         condition: service_completed_successfully
+      server:
+        condition: service_started
+      identity-server:
+        condition: service_started
     networks:
       - frontend
 
@@ -54,6 +58,8 @@ services:
         condition: service_completed_successfully
       db-redis:
         condition: service_started
+      llm-ollama-init:
+        condition: service_completed_successfully
     networks:
       - server
 
@@ -121,6 +127,40 @@ services:
       - frontend
       - server
 
+  llm-ollama:
+    image: ollama/ollama:0.16.1
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - server
+
+  llm-ollama-init:
+    image: ollama/ollama:0.16.1
+    depends_on:
+      - llm-ollama
+    restart: "no"
+    environment:
+      OLLAMA_HOST: "http://llm-ollama:11434"
+      OLLAMA_MODEL: "llama3.2:1b"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - server
+    entrypoint: []
+    command:
+      - /bin/sh
+      - -c
+      - |
+        set -eux
+        echo "INIT: OLLAMA_HOST=$$OLLAMA_HOST"
+        ollama list || true
+        ollama pull "$$OLLAMA_MODEL"
+        ollama list
+
 networks:
   frontend:
   server:
@@ -130,3 +170,4 @@ volumes:
   root_node_modules:
   redis_data:
   redisinsight_data:
+  ollama_data:
