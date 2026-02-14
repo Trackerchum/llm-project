@@ -10,13 +10,17 @@ const HomePage = () => {
 
     const [isLoading, setLoading] = useState(false);
     const [promptText, setPromptText] = useState("");
+    const [chatHistory, setChatHistory] = useState<Array<{
+        host: "prompt" | "reply",
+        text: string
+    }>>([]);
 
 
     return <div className="chatPage">
         <h1>Chat page</h1>
         <div className='chatWindow'>
             <div>
-            
+                {chatHistory.map((message, n) => <p key={n} className={message.host}>{message.text}</p>)}
             </div>
             <TextInput
                 labelText='Prompt: '
@@ -32,11 +36,20 @@ const HomePage = () => {
                     window.alert("Prompt text mustn't be blank");
                     return;
                 }
+                setChatHistory(prev => [...prev, { host: "prompt", text: promptText }]);
                 setLoading(true);
-                client.post("/", { prompt: promptText })
+                client.post<{response: string}>("/", { prompt: promptText })
                     .then(response => {
                         setLoading(false);
-                        console.log(response);
+                        if (response.isError) {
+                            setChatHistory(prev => [
+                                ...prev,
+                                { host: "reply", text: `Error: ${response.error}` }
+                            ]);
+                            return;
+                        }
+                        console.log(response)
+                        setChatHistory(prev => [...prev, { host: "reply", text: response.data.response }]);
                     });
             }}/>
     </div>

@@ -1,5 +1,15 @@
 .chatPage {
     .chatWindow {
         margin-bottom: 20px;
+
+        > div {
+            p.prompt {
+                text-align: right;
+            }
+
+            p.reply {
+                text-align: left;
+            }
+        }
     }
 }
