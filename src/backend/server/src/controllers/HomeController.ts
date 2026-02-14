@@ -7,16 +7,14 @@ export class HomeController extends BaseController {
     }
 
     setupRoutes = (app: Express) => {
-        app.get(this.baseUrl, async (req, res) => {
-            const response = await this.ollamaClient.generate(
-                "How much wood could a woodchuck chuck if a woodchuck could chuck wood?"
-            );
+        app.post(this.baseUrl, async (req, res) => {
+            const response = await this.ollamaClient.generate(req.body.prompt);
 
             if (response.error) {
                 return res.status(502).json(response)
             }
-            
-            return res.json({ ok: true, response: response });
+
+            return res.json({ ok: true, response: response.response });
         });
     }
 }

@@ -18,12 +18,12 @@ export class Client {
         });
     }
 
-    async post<ExpectedReturn>(url: string, body: string): Promise<FetcherResponse<ExpectedReturn>> {
+    async post<ExpectedReturn>(url: string, body: Record<string, any>): Promise<FetcherResponse<ExpectedReturn>> {
         const path = new URL(this.baseUrl + url, window.location.origin);
         return fetcher<ExpectedReturn>(path.toString(), {
             method: "POST",
             headers: this.defaultHeaders,
-            body
+            body: JSON.stringify(body)
         });
     }
 }

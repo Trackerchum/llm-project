@@ -15,10 +15,11 @@ const HomePage = () => {
             loading={isLoading}
             onSubmit={() => {
                 setLoading(true);
-                client.get("/").then(response => {
-                    setLoading(false);
-                    console.log(response);
-                });
+                client.post("/", { prompt: "What day is it today?" })
+                    .then(response => {
+                        setLoading(false);
+                        console.log(response);
+                    });
             }}/>
     </div>
 }
