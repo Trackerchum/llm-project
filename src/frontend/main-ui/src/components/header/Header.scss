@@ -7,5 +7,18 @@
         height: 100%;
         display: flex;
         justify-content: space-between;
+
+        .navBar {
+            height: 100%;
+            display: flex;
+
+            > a {
+                margin-right: 10px;
+
+                &:last-of-type {
+                margin-right: 0px;
+                }
+            }
+        }
     }
 }

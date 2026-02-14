@@ -1,10 +1,6 @@
 import './Footer.scss';
 
-interface Props {
-
-}
-
-const Footer = ({ }: Props) => {
+const Footer = () => {
     return <footer className='Footer h-10 bg-slate-700'>
         <div className="container">
 
