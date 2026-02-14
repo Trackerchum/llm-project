@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { RedisClient } from '@Shared/models/redisClient';
 import { DependencyInjectedClasses, setupControllers } from '@Shared/controllers';
 import { HomeController } from './controllers';
+import { OllamaClient } from '@Shared/models/ollamaClient';
 
 dotenv.config();
 
@@ -11,17 +12,20 @@ app.use(express.json());
 
 const port = parseInt(process.env.API_PORT, 10);
 
-const client = new RedisClient(
+const redisClient = new RedisClient(
     process.env.REDIS_HOSTNAME,
     parseInt(process.env.REDIS_PORT, 10),
     process.env.REDIS_PASSWORD
 );
 
+const ollamaClient = new OllamaClient();
+
 const diClasses: DependencyInjectedClasses = {
-    client,
+    redisClient,
+    ollamaClient
 };
 
-client
+redisClient
     .connect()
     .then(() => {
         setupControllers(app, [new HomeController('/')], diClasses);

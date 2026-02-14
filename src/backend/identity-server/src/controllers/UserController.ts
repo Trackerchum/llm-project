@@ -42,7 +42,7 @@ export class UserController extends BaseController {
 
                 const encryptedPassword = await bcrypt.hash(user.password, 10);
 
-                const response = await this.client.set(user.email, JSON.stringify({
+                const response = await this.redisClient.set(user.email, JSON.stringify({
                     firstName: user.firstName,
                     lastName: user.lastName,
                     email: user.email,
