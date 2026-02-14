@@ -12,9 +12,10 @@ interface Props {
     readonly errorText?: string;
     readonly type?: string;
     readonly disabled?: boolean;
+    readonly onKeyDown?: React.KeyboardEventHandler<HTMLInputElement> | undefined
 }
 
-const TextInput = ({ value, onChange, propName, labelText, placeholder, onBlur, errorText, type, disabled }: Props) => {
+const TextInput = ({ value, onChange, propName, labelText, placeholder, onBlur, errorText, type, disabled, onKeyDown }: Props) => {
     const labelId = useRef(propName);
     return <div className='textInput'>
         <div>
@@ -28,6 +29,7 @@ const TextInput = ({ value, onChange, propName, labelText, placeholder, onBlur, 
                 placeholder={placeholder}
                 value={value}
                 disabled={disabled}
+                onKeyDown={onKeyDown}
             />
             {errorText ? <p>{errorText}</p> : <HorizontalSpacer />}
         </div>

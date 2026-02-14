@@ -15,6 +15,28 @@ const HomePage = () => {
         text: string
     }>>([]);
 
+    const submitPrompt = () => {
+        if (!promptText) {
+            window.alert("Prompt text mustn't be blank");
+            return;
+        }
+        setChatHistory(prev => [...prev, { host: "prompt", text: promptText }]);
+        setLoading(true);
+        setPromptText("");
+        client.post<{response: string}>("/", { prompt: promptText })
+            .then(response => {
+                setLoading(false);
+                if (response.isError) {
+                    setChatHistory(prev => [
+                        ...prev,
+                        { host: "reply", text: `Error: ${response.error}` }
+                    ]);
+                    return;
+                }
+                setChatHistory(prev => [...prev, { host: "reply", text: response.data.response }]);
+            });
+    }
+
 
     return <div className="chatPage">
         <h1>Chat page</h1>
@@ -27,31 +49,17 @@ const HomePage = () => {
                 propName="promptText"
                 value={promptText}
                 onChange={(_, newValue: string) => { setPromptText(newValue) }}
+                onKeyDown={(e: React.KeyboardEvent) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        submitPrompt();
+                    }
+                }}
             />
         </div>
         <Button text='Submit Prompt'
             loading={isLoading}
-            onSubmit={() => {
-                if (!promptText) {
-                    window.alert("Prompt text mustn't be blank");
-                    return;
-                }
-                setChatHistory(prev => [...prev, { host: "prompt", text: promptText }]);
-                setLoading(true);
-                setPromptText("");
-                client.post<{response: string}>("/", { prompt: promptText })
-                    .then(response => {
-                        setLoading(false);
-                        if (response.isError) {
-                            setChatHistory(prev => [
-                                ...prev,
-                                { host: "reply", text: `Error: ${response.error}` }
-                            ]);
-                            return;
-                        }
-                        setChatHistory(prev => [...prev, { host: "reply", text: response.data.response }]);
-                    });
-            }}/>
+            onSubmit={submitPrompt}/>
     </div>
 }
 
