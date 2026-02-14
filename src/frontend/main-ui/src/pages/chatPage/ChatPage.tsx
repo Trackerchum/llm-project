@@ -19,9 +19,9 @@ const HomePage = () => {
     return <div className="chatPage">
         <h1>Chat page</h1>
         <div className='chatWindow'>
-            <div>
+            {chatHistory.length !== 0 && <div className='chat' >
                 {chatHistory.map((message, n) => <p key={n} className={message.host}>{message.text}</p>)}
-            </div>
+            </div>}
             <TextInput
                 labelText='Prompt: '
                 propName="promptText"
@@ -38,6 +38,7 @@ const HomePage = () => {
                 }
                 setChatHistory(prev => [...prev, { host: "prompt", text: promptText }]);
                 setLoading(true);
+                setPromptText("");
                 client.post<{response: string}>("/", { prompt: promptText })
                     .then(response => {
                         setLoading(false);
@@ -48,7 +49,6 @@ const HomePage = () => {
                             ]);
                             return;
                         }
-                        console.log(response)
                         setChatHistory(prev => [...prev, { host: "reply", text: response.data.response }]);
                     });
             }}/>

@@ -2,13 +2,35 @@
     .chatWindow {
         margin-bottom: 20px;
 
-        > div {
-            p.prompt {
-                text-align: right;
-            }
+        > div.chat {
+            background: #eee;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: 600px;
 
-            p.reply {
-                text-align: left;
+            p {
+                padding: 5px 10px;
+                border-radius: 10px;
+                width: fit-content;
+
+                &.prompt {
+                    align-self: flex-end;
+                    text-align: right;
+                    margin-left: 15%;
+                    background: #47f047;
+                }
+
+                &.reply {
+                    align-self: flex-start;
+                    text-align: left;
+                    margin-right: 15%;
+                    background: #cecece;
+                }
+            
             }
         }
     }
