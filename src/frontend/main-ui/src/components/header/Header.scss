@@ -1,24 +1,24 @@
 .Header {
-    height: 2.5rem;
-    --tw-bg-opacity: 1;
-    background-color: rgb(51 65 85 / var(--tw-bg-opacity));
+	height: 2.5rem;
+	--tw-bg-opacity: 1;
+	background-color: rgb(51 65 85 / var(--tw-bg-opacity));
 
-    & > div {
-        height: 100%;
-        display: flex;
-        justify-content: space-between;
+	& > div {
+		height: 100%;
+		display: flex;
+		justify-content: space-between;
 
-        .navBar {
-            height: 100%;
-            display: flex;
+		.navBar {
+			height: 100%;
+			display: flex;
 
-            > a {
-                margin-right: 10px;
+			> a {
+				margin-right: 10px;
 
-                &:last-of-type {
-                margin-right: 0px;
-                }
-            }
-        }
-    }
+				&:last-of-type {
+					margin-right: 0px;
+				}
+			}
+		}
+	}
 }

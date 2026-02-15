@@ -1,38 +1,37 @@
 .chatPage {
-    .chatWindow {
-        margin-bottom: 20px;
+	.chatWindow {
+		margin-bottom: 20px;
 
-        > div.chat {
-            background: #eee;
-            padding: 5px 10px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            max-height: 600px;
-            justify-content: flex-end;
+		> div.chat {
+			background: #eee;
+			padding: 5px 10px;
+			border-radius: 20px;
+			margin-bottom: 20px;
+			display: flex;
+			flex-direction: column;
+			overflow-y: auto;
+			max-height: 600px;
+			justify-content: flex-end;
 
-            p {
-                padding: 5px 10px;
-                border-radius: 10px;
-                width: fit-content;
+			p {
+				padding: 5px 10px;
+				border-radius: 10px;
+				width: fit-content;
 
-                &.prompt {
-                    align-self: flex-end;
-                    text-align: right;
-                    margin-left: 15%;
-                    background: #47f047;
-                }
+				&.prompt {
+					align-self: flex-end;
+					text-align: right;
+					margin-left: 15%;
+					background: #47f047;
+				}
 
-                &.reply {
-                    align-self: flex-start;
-                    text-align: left;
-                    margin-right: 15%;
-                    background: #cecece;
-                }
-            
-            }
-        }
-    }
+				&.reply {
+					align-self: flex-start;
+					text-align: left;
+					margin-right: 15%;
+					background: #cecece;
+				}
+			}
+		}
+	}
 }

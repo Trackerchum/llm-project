@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 
 interface Props {
-    text?: string,
-    dotsNum?: number
+	text?: string;
+	dotsNum?: number;
 }
 
 const LoadingText = ({ text = "Loading", dotsNum = 5 }: Props) => {
-  const [dots, setDots] = useState(".");
+	const [dots, setDots] = useState(".");
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDots((prev) => (prev.length >= dotsNum ? "." : prev + "."));
-    }, 500);
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setDots((prev) => (prev.length >= dotsNum ? "." : prev + "."));
+		}, 500);
 
-    return () => clearInterval(timer);
-  }, [dotsNum]);
+		return () => clearInterval(timer);
+	}, [dotsNum]);
 
-  return <>{text + dots}</>;
+	return <>{text + dots}</>;
 };
 
 export default LoadingText;

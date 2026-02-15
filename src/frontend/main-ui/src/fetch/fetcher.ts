@@ -1,17 +1,13 @@
 import { ServerOptions } from "../types/cookieHandling";
 
-type FetcherResponse<T> =
-	| { isError: false; data: T }
-	| { isError: true; error: string | Error };
+type FetcherResponse<T> = { isError: false; data: T } | { isError: true; error: string | Error };
 
 const fetcher = async <T>(
 	url: string,
 	options: RequestInit,
 	serverOptions?: ServerOptions,
 ): Promise<FetcherResponse<T>> => {
-	const incomingHeaders: { [key: string]: any } = serverOptions?.req
-		? { ...serverOptions.req.headers }
-		: {};
+	const incomingHeaders: { [key: string]: any } = serverOptions?.req ? { ...serverOptions.req.headers } : {};
 
 	options.headers = {
 		"Content-Type": "application/json",

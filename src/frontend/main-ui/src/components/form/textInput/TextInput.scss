@@ -1,22 +1,22 @@
 .textInput {
-    > div {
-        display: flex;
+	> div {
+		display: flex;
 
-        > label {
-            margin: 0.25rem;
-        }
+		> label {
+			margin: 0.25rem;
+		}
 
-        > input {
-            width: 100%;
-            border-style: solid;
-            border-color: #000;
-            border-width: 1px;
-            padding-left: 0.25rem;
-            padding-right: 0.25rem;
-        }
+		> input {
+			width: 100%;
+			border-style: solid;
+			border-color: #000;
+			border-width: 1px;
+			padding-left: 0.25rem;
+			padding-right: 0.25rem;
+		}
 
-        > p {
-            color: #dc2626;
-        }
-    }
+		> p {
+			color: #dc2626;
+		}
+	}
 }

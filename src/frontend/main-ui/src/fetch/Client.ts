@@ -1,29 +1,27 @@
-import { fetcher, FetcherResponse } from './fetcher';
+import { fetcher, FetcherResponse } from "./fetcher";
 
 export class Client {
-    baseUrl: string;
+	baseUrl: string;
 
-    constructor(baseUrl: string) {
-        this.baseUrl = baseUrl;
-    }
+	constructor(baseUrl: string) {
+		this.baseUrl = baseUrl;
+	}
 
-    defaultHeaders: HeadersInit = {
+	defaultHeaders: HeadersInit = {};
 
-    }
+	async get<ExpectedReturn>(url: string): Promise<FetcherResponse<ExpectedReturn>> {
+		const path = new URL(this.baseUrl + url, window.location.origin);
+		return fetcher<ExpectedReturn>(path.toString(), {
+			method: "GET",
+		});
+	}
 
-    async get<ExpectedReturn>(url: string): Promise<FetcherResponse<ExpectedReturn>> {
-        const path = new URL(this.baseUrl + url, window.location.origin);
-        return fetcher<ExpectedReturn>(path.toString(), {
-            method: "GET",
-        });
-    }
-
-    async post<ExpectedReturn>(url: string, body: Record<string, any>): Promise<FetcherResponse<ExpectedReturn>> {
-        const path = new URL(this.baseUrl + url, window.location.origin);
-        return fetcher<ExpectedReturn>(path.toString(), {
-            method: "POST",
-            headers: this.defaultHeaders,
-            body: JSON.stringify(body)
-        });
-    }
+	async post<ExpectedReturn>(url: string, body: Record<string, any>): Promise<FetcherResponse<ExpectedReturn>> {
+		const path = new URL(this.baseUrl + url, window.location.origin);
+		return fetcher<ExpectedReturn>(path.toString(), {
+			method: "POST",
+			headers: this.defaultHeaders,
+			body: JSON.stringify(body),
+		});
+	}
 }

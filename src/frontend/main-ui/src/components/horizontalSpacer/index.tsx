@@ -1,3 +1,3 @@
-import HorizontalSpacer from './HorizontalSpacer';
+import HorizontalSpacer from "./HorizontalSpacer";
 
 export default HorizontalSpacer;
