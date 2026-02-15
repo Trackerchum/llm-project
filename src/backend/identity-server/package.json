@@ -10,7 +10,7 @@
         "build": "tsup",
         "test": "jest",
         "test:watch": "jest --watch",
-        "prettier:write": "npm prettier . --write"
+        "prettier:write": "npx prettier . --write"
     },
     "dependencies": {
         "@untitled-llm-project/shared-backend": "*",
