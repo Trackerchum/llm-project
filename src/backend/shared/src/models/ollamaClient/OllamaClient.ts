@@ -1,4 +1,5 @@
 import path from "path";
+import { logger } from "../../logging";
 
 export class OllamaClient {
 	private endpoint: string;
@@ -11,7 +12,7 @@ export class OllamaClient {
 
 	generate = async (prompt: string) => {
 		try {
-			const response = await fetch(path.join(this.endpoint, "api/generate"), {
+			const response = await logger("Ollama generate", () => fetch(path.join(this.endpoint, "api/generate"), {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
@@ -19,7 +20,7 @@ export class OllamaClient {
 					prompt,
 					stream: false,
 				}),
-			});
+			}));
 
 			if (!response.ok) {
 				const text = await response.text();

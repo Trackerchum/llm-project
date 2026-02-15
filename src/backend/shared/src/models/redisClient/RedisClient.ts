@@ -1,4 +1,5 @@
 import { createClient, RedisClientType } from "redis";
+import { logger } from "../../logging";
 
 export class RedisClient {
 	private Client: RedisClientType;
@@ -21,7 +22,7 @@ export class RedisClient {
 
 	connect = async () => {
 		try {
-			await this.Client.connect();
+			await logger("RedisClient connect", () => this.Client.connect());
 		} catch (error) {
 			throw error;
 		}
@@ -38,10 +39,10 @@ export class RedisClient {
 	};
 
 	set = (key: string, value: string) => {
-		return this.Client.set(key, value);
+		return logger("RedisClient set", () => this.Client.set(key, value));
 	};
 
 	get = (key: string) => {
-		return this.Client.get(key);
+		return logger("RedisClient get", () => this.Client.get(key));
 	};
 }
