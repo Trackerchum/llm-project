@@ -8,7 +8,7 @@ This is a monorepo containing multiple frontend, backend, infrastructure project
 - A TypeScript project with components such as base controllers and utils, shared between the two backend servers.
 - A Redis database.
 - An NGINX reverse proxy.
-- An Ollama LLM instance.
+- An Ollama LLM instance running model llama3.2:1b.
 - For development, a RedisInsight instance.
 
 The main directory structure is as follows:
