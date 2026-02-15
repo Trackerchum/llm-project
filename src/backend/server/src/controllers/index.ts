@@ -1,5 +1,3 @@
-import { HomeController } from './HomeController';
+import { HomeController } from "./HomeController";
 
-export {
-    HomeController
-};
+export { HomeController };
