@@ -1,6 +1,6 @@
 # llm-project
 
-This is a monorepo containing multiple frontend, backend, and infrastructure projects that are developed and run together in a single Docker Compose environment. Node ≥22 and npm ≥10 are required on the host only for local tooling and IDE support; all runtime code executes inside Linux Docker containers. The package manager is npm and uses workspaces, to install a package within a workspace use `npm install -w .\src\<path-to-project> <package-name>` in the root of the repository. The key components and projects are as follows: 
+This is a monorepo containing multiple frontend, backend, infrastructure projects and an Ollama LLM running model llama3.2:1b that are developed and run together in a single Docker Compose environment. Node ≥22 and npm ≥10 are required on the host only for local tooling and IDE support; all runtime code executes inside Linux Docker containers. The package manager is npm and uses workspaces, to install a package within a workspace use `npm install -w .\src\<path-to-project> <package-name>` in the root of the repository. The key components and projects are as follows: 
 
 - A TypeScript/React frontend.
 - A TypeScript/Express server.
@@ -8,6 +8,7 @@ This is a monorepo containing multiple frontend, backend, and infrastructure pro
 - A TypeScript project with components such as base controllers and utils, shared between the two backend servers.
 - A Redis database.
 - An NGINX reverse proxy.
+- An Ollama LLM instance.
 - For development, a RedisInsight instance.
 
 The main directory structure is as follows:
@@ -75,4 +76,4 @@ Direct ports (optional / debugging):
 - RedisInsight: http://localhost:6479
 - Redis: localhost:6379
 
-If things get weird with NPM dependencies, run `docker compose -f docker-compose.development.yml down -v` to nuke it and start fresh. NOTE: This also nukes redis, redisinsight and ollama data.
+If things get weird with NPM dependencies, run `docker compose -f docker-compose.development.yml down -v` to nuke it and start fresh. NOTE: This also nukes redis, redisinsight and Ollama data.
