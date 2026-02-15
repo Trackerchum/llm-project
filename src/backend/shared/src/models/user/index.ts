@@ -1,7 +1,4 @@
-import { User } from './User';
-import { UserMethods } from './UserMethods';
+import { User } from "./User";
+import { UserMethods } from "./UserMethods";
 
-export {
-    User,
-    UserMethods
-}
+export { User, UserMethods };

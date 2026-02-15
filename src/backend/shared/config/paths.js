@@ -1,3 +1,3 @@
 module.exports = {
-    projectDirectory: process.env.INIT_CWD
-}
+	projectDirectory: process.env.INIT_CWD,
+};

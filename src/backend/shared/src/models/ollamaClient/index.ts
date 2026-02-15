@@ -1,5 +1,3 @@
 import { OllamaClient } from "./OllamaClient";
 
-export {
-    OllamaClient
-}
+export { OllamaClient };
