@@ -8,7 +8,8 @@
         "start": "concurrently -n BUILD,SERVER -c magenta,cyan \"npm run server:watch\" \"npm run server:run\"",
         "build": "tsup",
         "test": "jest",
-        "test:watch": "jest --watch"
+        "test:watch": "jest --watch",
+        "prettier:write": "npm prettier . --write"
     },
     "dependencies": {
         "bcryptjs": "^3.0.3",
@@ -26,6 +27,7 @@
         "@types/node": "^25.2.0",
         "@types/redis": "^4.0.10",
         "concurrently": "^9.2.1",
+        "prettier": "3.8.1",
         "ts-jest": "^29.4.6",
         "tsup": "^8.5.1",
         "typescript": "^5.9.3"
