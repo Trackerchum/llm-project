@@ -2,7 +2,7 @@ import express from "express";
 import * as dotenv from "dotenv";
 import { RedisClient } from "@Shared/models/redisClient";
 import { DependencyInjectedClasses, setupControllers } from "@Shared/controllers";
-import { HomeController } from "./controllers";
+import { MCPController } from "./controllers";
 import { OllamaClient } from "@Shared/models/ollamaClient";
 
 dotenv.config();
@@ -28,7 +28,7 @@ const diClasses: DependencyInjectedClasses = {
 redisClient
 	.connect()
 	.then(() => {
-		setupControllers(app, [new HomeController("/")], diClasses);
+		setupControllers(app, [new MCPController("/mcp/")], diClasses);
 
 		app.listen(port, () => {
 			console.log(`listening on port ${port}`);

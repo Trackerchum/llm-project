@@ -1,3 +1,3 @@
-import { HomeController } from "./HomeController";
+import { MCPController } from "./MCPController";
 
-export { HomeController };
+export { MCPController };
