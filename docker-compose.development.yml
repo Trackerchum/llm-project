@@ -58,6 +58,31 @@ services:
         condition: service_completed_successfully
       db-redis:
         condition: service_started
+    networks:
+      - server
+      
+
+  mcp-server:
+    image: ulp-mcp-server
+    build:
+      context: .
+      dockerfile: src/backend/mcp-server/Dockerfile.development
+    working_dir: /app/src/backend/mcp-server
+    command: sh -c "mkdir -p build && touch build/server.js && npm run start"
+    ports:
+      - "6001:6001"
+    volumes:
+      - .:/app
+      - root_node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    depends_on:
+      dependencies:
+        condition: service_completed_successfully
+      db-redis:
+        condition: service_started
       llm-ollama-init:
         condition: service_completed_successfully
     networks:
