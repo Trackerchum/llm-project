@@ -4,6 +4,7 @@ This is a monorepo containing multiple frontend, backend, infrastructure project
 
 - A TypeScript/React frontend.
 - A TypeScript/Express server.
+- A TypeScript/Express MCP server.
 - A TypeScript/Express identity server responsible for authentication and authorization.
 - A TypeScript project with components such as base controllers and utils, shared between the two backend servers.
 - A Redis database.
@@ -24,6 +25,14 @@ The main directory structure is as follows:
 │   │   │   ├── package.json
 │   │   │   └── tsup.config.json
 │   │   ├── server
+│   │   │   ├── src
+│   │   │   │   └── ...
+│   │   │   ├── .env
+│   │   │   ├── Dockerfile.development
+│   │   │   ├── tsconfig.json
+│   │   │   ├── package.json
+│   │   │   └── tsup.config.json
+│   │   ├── mcp-server
 │   │   │   ├── src
 │   │   │   │   └── ...
 │   │   │   ├── .env
