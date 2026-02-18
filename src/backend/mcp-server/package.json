@@ -13,12 +13,14 @@
 		"prettier:write": "npx prettier . --write"
 	},
 	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.26.0",
 		"@untitled-llm-project/shared-backend": "*",
 		"dotenv": "^17.2.3",
 		"express": "^5.2.1",
 		"jsonwebtoken": "^9.0.3",
 		"path": "^0.12.7",
-		"redis": "^5.10.0"
+		"redis": "^5.10.0",
+		"zod": "^4.3.6"
 	},
 	"devDependencies": {
 		"@types/core-js": "^2.5.8",
