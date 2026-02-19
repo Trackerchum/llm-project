@@ -7,11 +7,7 @@ type Tool = {
         description: string,
         parameters: z.ZodObject<any, any>,
     },
-    methods: {
-        [domain: string]: {
-            [permission: string]: boolean
-        };
-    };
+    cb: any // TODO type for cb
 };
 
 export { type Tool }

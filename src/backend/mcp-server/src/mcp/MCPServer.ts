@@ -10,16 +10,7 @@ class MCPServer extends McpServer {
         tools.forEach(tool => this.registerTool(
             tool.name,
             tool.config,
-            async (args: Record<string, unknown>) => { // TODO schema for args
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: args.text as string,
-                        },
-                    ],
-                };
-            }
+            tool.cb
         ));
     }
 }

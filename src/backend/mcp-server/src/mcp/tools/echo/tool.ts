@@ -9,10 +9,15 @@ const echoModule: Tool = {
         description,
         parameters,
     },
-    methods: {
-        'echo': {
-            read: true,
-        },
+    cb: async (args: Record<string, unknown>) => { // TODO schema for args
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: args.text as string,
+                },
+            ],
+        };
     }
 };
 
