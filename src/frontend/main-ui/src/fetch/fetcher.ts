@@ -11,7 +11,7 @@ const fetcher = async <T>(
 
 	options.headers = {
 		"Content-Type": "application/json",
-		Accept: "application/json",
+		Accept: "application/json, text/event-stream",
 		...(options.headers || {}),
 		...incomingHeaders,
 	};
@@ -22,7 +22,17 @@ const fetcher = async <T>(
 
 	if (response.ok) {
 		try {
-			let data = await response.json();
+			const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+			let data: T;
+
+			if (contentType.includes("text/event-stream")) {
+				data = response.body as T;
+			} else if (contentType.includes("application/json")) {
+				data = await response.json() as T;
+			} else {
+				data = await response.text() as T;
+			}
+
 			return { data, isError: false };
 		} catch (err) {
 			error = err as Error;
