@@ -8,13 +8,21 @@ const fetcher = async <T>(
 	serverOptions?: ServerOptions,
 ): Promise<FetcherResponse<T>> => {
 	const incomingHeaders: { [key: string]: any } = serverOptions?.req ? { ...serverOptions.req.headers } : {};
-
-	options.headers = {
-		"Content-Type": "application/json",
-		Accept: "application/json, text/event-stream",
+	const headers = new Headers({
 		...(options.headers || {}),
 		...incomingHeaders,
-	};
+	});
+
+	if (!headers.has("Accept")) {
+		headers.set("Accept", "application/json, text/event-stream");
+	}
+
+	const hasBody = options.body !== undefined && options.body !== null;
+	if (hasBody && !headers.has("Content-Type")) {
+		headers.set("Content-Type", "application/json");
+	}
+
+	options.headers = headers;
 
 	const response: Response = await fetch(url, options);
 
