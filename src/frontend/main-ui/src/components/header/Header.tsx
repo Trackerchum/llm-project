@@ -8,6 +8,7 @@ const Header = () => {
 				<div className="navBar">
 					<a href="/">{appName}</a>
 					<a href="/chat">Chat</a>
+					<a href="/mcp">MCP</a>
 				</div>
 				<div>
 					<a href="/login">Login/sign up</a>
