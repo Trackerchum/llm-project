@@ -122,6 +122,7 @@ const MCPTestPage = () => {
 
             <section className="mcpPage__panel">
                 <h2>initialize</h2>
+                <p className="mcpPage__description">Handshake note: this triggers two requests - <code>initialize</code> then <code>notifications/initialized</code>.</p>
                 <TextArea
                     labelText="Initialize params (JSON object)"
                     propName="initializeParams"

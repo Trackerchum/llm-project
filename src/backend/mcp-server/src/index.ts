@@ -21,26 +21,81 @@ app.use(cors({
 	origin: corsOrigin,
 	credentials: true,
 	methods: ["GET", "POST", "OPTIONS", "DELETE"],
-	allowedHeaders: ["Content-Type", "mcp-session-id", "x-mcp-session", "x-mcp-session-id"],
-	exposedHeaders: ["mcp-session-id", "x-mcp-session-id"]
+	allowedHeaders: ["Content-Type", "mcp-session-id", "Mcp-Session-Id", "x-mcp-session", "x-mcp-session-id"],
+	exposedHeaders: ["mcp-session-id", "Mcp-Session-Id", "x-mcp-session-id"]
 }));
 
 async function connectToMCP() {
-	const server = new MCPServer({
-		name: 'MCPServer',
-		version: '1.0.0',
-		description: 'MCPServer',
-	});
+	const transports = new Map<string, StreamableHTTPServerTransport>();
+	const normalizeSessionId = (value: string | undefined): string | undefined => {
+		if (!value) {
+			return undefined;
+		}
 
-	// Create transport with session support
-	const transport = new StreamableHTTPServerTransport({
-		sessionIdGenerator: () => randomUUID()
-	});
+		const first = value.split(",")[0]?.trim();
+		return first ? first : undefined;
+	};
+	const createTransportForSession = async (sessionId: string) => {
+		const server = new MCPServer({
+			name: "MCPServer",
+			version: "1.0.0",
+			description: "MCPServer",
+		});
 
-	await server.connect(transport);
+		const transport = new StreamableHTTPServerTransport({
+			sessionIdGenerator: () => sessionId,
+			enableJsonResponse: true,
+			onsessionclosed: (sessionId) => {
+				transports.delete(sessionId);
+			},
+		});
 
-	app.all("/mcp", (req, res) => {
-		void transport.handleRequest(req, res, req.body);
+		await server.connect(transport);
+		return transport;
+	};
+
+	app.all("/mcp", async (req, res) => {
+		const rawSessionId =
+			req.header("mcp-session-id")
+			?? req.header("Mcp-Session-Id")
+			?? req.header("x-mcp-session-id");
+		const sessionId = normalizeSessionId(rawSessionId);
+
+		let transport = sessionId ? transports.get(sessionId) : undefined;
+		const isInitializeRequest = req.method === "POST" && req.body?.method === "initialize";
+
+		if (!transport) {
+			if (sessionId && !isInitializeRequest) {
+				res.status(404).json({
+					jsonrpc: "2.0",
+					id: null,
+					error: {
+						code: -32000,
+						message: "Session not found",
+					},
+				});
+				return;
+			}
+
+			if (!isInitializeRequest) {
+				res.status(400).json({
+					jsonrpc: "2.0",
+					id: null,
+					error: {
+						code: -32000,
+						message: "Bad Request: Mcp-Session-Id header is required",
+					},
+				});
+				return;
+			}
+
+			const newSessionId = randomUUID();
+			transport = await createTransportForSession(newSessionId);
+			// Register immediately so the follow-up initialized notification can resolve.
+			transports.set(newSessionId, transport);
+		}
+
+		await transport.handleRequest(req, res, req.body);
 	});
 
 	const httpServer = app.listen(port, () => {
@@ -52,7 +107,7 @@ async function connectToMCP() {
 
 	process.on("SIGINT", () => {
 		console.log("Shutting down HTTP server...");
-		void transport.close();
+		void Promise.all(Array.from(transports.values()).map((transport) => transport.close()));
 		httpServer.close(() => {
 			process.exit(0);
 		});
