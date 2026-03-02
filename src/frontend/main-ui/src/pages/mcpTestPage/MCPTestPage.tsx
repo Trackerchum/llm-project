@@ -94,23 +94,6 @@ const MCPTestPage = () => {
         }
     };
 
-    const handleRawRequest = async () => {
-        if (!requestMethod.trim()) {
-            setErrorMessage("Request method is required.");
-            return;
-        }
-
-        try {
-            const params = requestParams.trim() ? parseJsonObject(requestParams) : undefined;
-            const request = params
-                ? { method: requestMethod.trim(), params }
-                : { method: requestMethod.trim() };
-            await runAction("request", request, () => client.request(requestMethod.trim(), params));
-        } catch (error) {
-            setErrorMessage(`Raw request params: ${error instanceof Error ? error.message : String(error)}`);
-        }
-    };
-
     return (
         <div className="mcpPage">
             <h1>MCP Method Tester</h1>
@@ -159,24 +142,6 @@ const MCPTestPage = () => {
                     onChange={(_, newValue) => setToolArgs(newValue)}
                 />
                 <Button text="Run tools/call" onSubmit={handleCallTool} loading={activeAction === "tools/call"} />
-            </section>
-
-            <section className="mcpPage__panel">
-                <h2>request (generic)</h2>
-                <TextInput
-                    labelText="Method"
-                    propName="requestMethodInput"
-                    value={requestMethod}
-                    placeholder="tools/list"
-                    onChange={(_, newValue) => setRequestMethod(newValue)}
-                />
-                <TextArea
-                    labelText="Params (JSON object, optional)"
-                    propName="requestParamsInput"
-                    value={requestParams}
-                    onChange={(_, newValue) => setRequestParams(newValue)}
-                />
-                <Button text="Run request" onSubmit={handleRawRequest} loading={activeAction === "request"} />
             </section>
 
             <section className="mcpPage__panel">
