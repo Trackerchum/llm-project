@@ -60,7 +60,6 @@ services:
         condition: service_started
     networks:
       - server
-      
 
   mcp-server:
     image: ulp-mcp-server
@@ -147,6 +146,7 @@ services:
     depends_on:
       - frontend
       - server
+      - mcp-server
       - identity-server
     networks:
       - frontend
