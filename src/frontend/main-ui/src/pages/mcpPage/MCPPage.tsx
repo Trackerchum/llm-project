@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "../../components/button/Button";
+import TextArea from "../../components/form/textArea/TextArea";
 import TextInput from "../../components/form/textInput/TextInput";
 import { MCPClient } from "../../fetch/MCPClient";
 import "./MCPPage.scss";
@@ -116,13 +117,23 @@ const MCPPage = () => {
 
             <section className="mcpPage__panel">
                 <h2>initialize</h2>
-                <textarea value={initializeParams} onChange={(e) => setInitializeParams(e.target.value)} />
+                <TextArea
+                    labelText="Initialize params (JSON object)"
+                    propName="initializeParams"
+                    value={initializeParams}
+                    onChange={(_, newValue) => setInitializeParams(newValue)}
+                />
                 <Button text="Run initialize" onSubmit={handleInitialize} loading={activeAction === "initialize"} />
             </section>
 
             <section className="mcpPage__panel">
                 <h2>tools/list</h2>
-                <textarea value={toolsListParams} onChange={(e) => setToolsListParams(e.target.value)} />
+                <TextArea
+                    labelText="Tools list params (JSON object)"
+                    propName="toolsListParams"
+                    value={toolsListParams}
+                    onChange={(_, newValue) => setToolsListParams(newValue)}
+                />
                 <Button text="Run tools/list" onSubmit={handleToolsList} loading={activeAction === "tools/list"} />
             </section>
 
@@ -135,8 +146,12 @@ const MCPPage = () => {
                     placeholder="exampleToolName"
                     onChange={(_, newValue) => setToolName(newValue)}
                 />
-                <label htmlFor="toolArgsInput">Arguments (JSON object)</label>
-                <textarea id="toolArgsInput" value={toolArgs} onChange={(e) => setToolArgs(e.target.value)} />
+                <TextArea
+                    labelText="Arguments (JSON object)"
+                    propName="toolArgsInput"
+                    value={toolArgs}
+                    onChange={(_, newValue) => setToolArgs(newValue)}
+                />
                 <Button text="Run tools/call" onSubmit={handleCallTool} loading={activeAction === "tools/call"} />
             </section>
 
@@ -149,8 +164,12 @@ const MCPPage = () => {
                     placeholder="tools/list"
                     onChange={(_, newValue) => setRequestMethod(newValue)}
                 />
-                <label htmlFor="requestParamsInput">Params (JSON object, optional)</label>
-                <textarea id="requestParamsInput" value={requestParams} onChange={(e) => setRequestParams(e.target.value)} />
+                <TextArea
+                    labelText="Params (JSON object, optional)"
+                    propName="requestParamsInput"
+                    value={requestParams}
+                    onChange={(_, newValue) => setRequestParams(newValue)}
+                />
                 <Button text="Run request" onSubmit={handleRawRequest} loading={activeAction === "request"} />
             </section>
 
