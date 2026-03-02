@@ -21,8 +21,8 @@ app.use(cors({
 	origin: corsOrigin,
 	credentials: true,
 	methods: ["GET", "POST", "OPTIONS", "DELETE"],
-	allowedHeaders: ["Content-Type", "mcp-session-id", "x-mcp-session", "x-mcp-session-id"],
-	exposedHeaders: ["mcp-session-id", "x-mcp-session-id"]
+	allowedHeaders: ["Content-Type", "mcp-session-id"],
+	exposedHeaders: ["mcp-session-id"]
 }));
 
 async function connectToMCP() {
