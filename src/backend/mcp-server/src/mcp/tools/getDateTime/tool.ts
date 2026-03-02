@@ -10,11 +10,12 @@ const getDateTime: Tool = {
         inputSchema,
     },
     cb: async (args: Record<string, unknown>) => { // TODO schema for args
-        const locale = typeof args.locale === "string" ? args.locale : "en-US";
+        const locale = typeof args.locale === "string" ? args.locale : undefined;
 
         const formattedDateTime = new Intl.DateTimeFormat(locale, {
             dateStyle: "full",
             timeStyle: "medium",
+            timeZone: "UTC",
         }).format(new Date());
 
         return {
