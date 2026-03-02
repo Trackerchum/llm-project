@@ -3,7 +3,7 @@ import Button from "../../components/button/Button";
 import TextArea from "../../components/form/textArea/TextArea";
 import TextInput from "../../components/form/textInput/TextInput";
 import { MCPClient } from "../../fetch/MCPClient";
-import "./MCPPage.scss";
+import "./MCPTestPage.scss";
 
 type ActionType = "initialize" | "tools/list" | "tools/call" | "request";
 
@@ -24,7 +24,7 @@ const parseJsonObject = (input: string): Record<string, unknown> => {
     return parsed as Record<string, unknown>;
 };
 
-const MCPPage = () => {
+const MCPTestPage = () => {
     const [initializeParams, setInitializeParams] = useState('{"client":"main-ui"}');
     const [toolsListParams, setToolsListParams] = useState("{}");
     const [toolName, setToolName] = useState("");
@@ -191,4 +191,4 @@ const MCPPage = () => {
     );
 };
 
-export default MCPPage;
+export default MCPTestPage;

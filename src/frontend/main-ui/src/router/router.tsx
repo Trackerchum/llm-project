@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import HomePage from "../pages/homePage";
 import ChatPage from "../pages/chatPage";
-import MCPPage from "../pages/mcpPage";
+import MCPTestPage from "../pages/mcpTestPage";
 
 const router = createBrowserRouter([
 	{
@@ -14,7 +14,7 @@ const router = createBrowserRouter([
 		children: [
 			{ index: true, element: <HomePage /> },
 			{ path: "chat", element: <ChatPage /> },
-			{ path: "mcp", element: <MCPPage /> },
+			{ path: "mcp", element: <MCPTestPage /> },
 		],
 	},
 ]);
