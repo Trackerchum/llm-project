@@ -1,5 +1,5 @@
 import { description } from "./description";
-import { parameters } from "./parameters";
+import { inputSchema } from "./inputSchema";
 import { Tool } from "../../../types/mcp";
 
 const echoModule: Tool = {
@@ -7,7 +7,7 @@ const echoModule: Tool = {
     method: "echo",
     config: {
         description,
-        parameters,
+        inputSchema,
     },
     cb: async (args: Record<string, unknown>) => { // TODO schema for args
         return {

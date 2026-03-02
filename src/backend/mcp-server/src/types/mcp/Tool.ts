@@ -5,7 +5,7 @@ type Tool = {
     method: string;
     config: {
         description: string,
-        parameters: z.ZodObject<any, any>,
+        inputSchema: z.ZodObject<any, any>,
     },
     cb: any // TODO type for cb
 };
