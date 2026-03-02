@@ -1,6 +1,8 @@
 import { ServerOptions } from "../types/cookieHandling";
 
-type FetcherResponse<T> = { isError: false; data: T } | { isError: true; error: string | Error };
+type FetcherResponse<T> =
+	| { isError: false; data: T; headers: Headers }
+	| { isError: true; error: string | Error; headers: Headers };
 
 const fetcher = async <T>(
 	url: string,
@@ -41,7 +43,7 @@ const fetcher = async <T>(
 				data = await response.text() as T;
 			}
 
-			return { data, isError: false };
+			return { data, isError: false, headers: response.headers };
 		} catch (err) {
 			error = err as Error;
 		}
@@ -53,7 +55,7 @@ const fetcher = async <T>(
 		}
 	}
 
-	return { error, isError: true };
+	return { error, isError: true, headers: response.headers };
 };
 
 export { fetcher, type FetcherResponse };

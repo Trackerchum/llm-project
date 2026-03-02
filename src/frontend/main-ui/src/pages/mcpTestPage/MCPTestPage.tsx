@@ -25,7 +25,9 @@ const parseJsonObject = (input: string): Record<string, unknown> => {
 };
 
 const MCPTestPage = () => {
-    const [initializeParams, setInitializeParams] = useState('{"client":"main-ui"}');
+    const [initializeParams, setInitializeParams] = useState(
+        '{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"main-ui","version":"0.1.0"}}',
+    );
     const [toolsListParams, setToolsListParams] = useState("{}");
     const [toolName, setToolName] = useState("");
     const [toolArgs, setToolArgs] = useState("{}");
@@ -34,6 +36,7 @@ const MCPTestPage = () => {
     const [activeAction, setActiveAction] = useState<ActionType | null>(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [logs, setLogs] = useState<LogEntry[]>([]);
+    const [sessionId, setSessionId] = useState<string | null>(null);
 
     const addLog = (entry: LogEntry) => {
         setLogs((prev) => [entry, ...prev]);
@@ -53,6 +56,7 @@ const MCPTestPage = () => {
         } catch (error) {
             setErrorMessage(error instanceof Error ? error.message : String(error));
         } finally {
+            setSessionId(client.getSessionId());
             setActiveAction(null);
         }
     };
@@ -112,6 +116,7 @@ const MCPTestPage = () => {
             <h1>MCP Method Tester</h1>
 
             <p className="mcpPage__description">Use this page to exercise every method in the MCP client and inspect the JSON-RPC response payloads.</p>
+            <p className="mcpPage__description">Session ID: {sessionId ?? "not set"}</p>
 
             {errorMessage && <p className="mcpPage__error">{errorMessage}</p>}
 
