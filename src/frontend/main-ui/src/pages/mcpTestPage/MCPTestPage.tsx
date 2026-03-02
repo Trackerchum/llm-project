@@ -31,8 +31,6 @@ const MCPTestPage = () => {
     const [toolsListParams, setToolsListParams] = useState("{}");
     const [toolName, setToolName] = useState("");
     const [toolArgs, setToolArgs] = useState("{}");
-    const [requestMethod, setRequestMethod] = useState("tools/list");
-    const [requestParams, setRequestParams] = useState("{}");
     const [activeAction, setActiveAction] = useState<ActionType | null>(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [logs, setLogs] = useState<LogEntry[]>([]);
