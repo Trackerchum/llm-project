@@ -1,1 +1,60 @@
-.mcpPage {}
+.mcpPage {
+    display: grid;
+    gap: 16px;
+    padding: 16px;
+
+    &__description {
+        margin: 0;
+    }
+
+    &__error {
+        margin: 0;
+        color: #b00020;
+        font-weight: 600;
+    }
+
+    &__panel {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid #d6d6d6;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    textarea {
+        min-height: 80px;
+        padding: 8px;
+        font-family: Consolas, "Courier New", monospace;
+        resize: vertical;
+    }
+
+    input {
+        padding: 8px;
+    }
+
+    button {
+        width: fit-content;
+        padding: 8px 12px;
+    }
+
+    &__logEntry {
+        padding: 8px;
+        border: 1px solid #ebebeb;
+        border-radius: 6px;
+        background: #fafafa;
+
+        h3,
+        p {
+            margin: 0 0 6px;
+        }
+
+        pre {
+            margin: 6px 0 10px;
+            padding: 8px;
+            overflow-x: auto;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+    }
+}
