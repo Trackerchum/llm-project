@@ -38,9 +38,9 @@ const fetcher = async <T>(
 			if (contentType.includes("text/event-stream")) {
 				data = response.body as T;
 			} else if (contentType.includes("application/json")) {
-				data = await response.json() as T;
+				data = (await response.json()) as T;
 			} else {
-				data = await response.text() as T;
+				data = (await response.text()) as T;
 			}
 
 			return { data, isError: false, headers: response.headers };
