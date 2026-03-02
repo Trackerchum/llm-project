@@ -17,13 +17,15 @@ app.use(express.json({ limit: "1mb" }));
 const port = parseInt(process.env.API_PORT, 10);
 
 const corsOrigin = process.env.CORS_ORIGIN ?? "*";
-app.use(cors({
-	origin: corsOrigin,
-	credentials: true,
-	methods: ["GET", "POST", "OPTIONS", "DELETE"],
-	allowedHeaders: ["Content-Type", "mcp-session-id", "Mcp-Session-Id", "x-mcp-session", "x-mcp-session-id"],
-	exposedHeaders: ["mcp-session-id", "Mcp-Session-Id", "x-mcp-session-id"]
-}));
+app.use(
+	cors({
+		origin: corsOrigin,
+		credentials: true,
+		methods: ["GET", "POST", "OPTIONS", "DELETE"],
+		allowedHeaders: ["Content-Type", "mcp-session-id", "Mcp-Session-Id", "x-mcp-session", "x-mcp-session-id"],
+		exposedHeaders: ["mcp-session-id", "Mcp-Session-Id", "x-mcp-session-id"],
+	}),
+);
 
 async function connectToMCP() {
 	const transports = new Map<string, StreamableHTTPServerTransport>();
@@ -56,9 +58,7 @@ async function connectToMCP() {
 
 	app.all("/mcp", async (req, res) => {
 		const rawSessionId =
-			req.header("mcp-session-id")
-			?? req.header("Mcp-Session-Id")
-			?? req.header("x-mcp-session-id");
+			req.header("mcp-session-id") ?? req.header("Mcp-Session-Id") ?? req.header("x-mcp-session-id");
 		const sessionId = normalizeSessionId(rawSessionId);
 
 		let transport = sessionId ? transports.get(sessionId) : undefined;
@@ -132,11 +132,11 @@ redisClient
 	.then(() => {
 		// setupControllers(app, [new MCPController("/mcp/")], diClasses);
 
-		connectToMCP().then(() => {
-
-		}).catch((error) => {
-			console.error(`Error connecting MCP server: ${error}`);
-		});
+		connectToMCP()
+			.then(() => {})
+			.catch((error) => {
+				console.error(`Error connecting MCP server: ${error}`);
+			});
 	})
 	.catch((error) => {
 		console.error(`Error connecting to redis client: ${error}`);
