@@ -2,7 +2,6 @@ import express from "express";
 import * as dotenv from "dotenv";
 import { RedisClient } from "@Shared/models/redisClient";
 import cors from "cors";
-import { connectToMCP } from "./connectToMCP";
 import { MCPController } from "./controllers";
 import { OllamaClient } from "@Shared/models/ollamaClient";
 import { DependencyInjectedClasses, setupControllers } from "@Shared/controllers";
@@ -38,16 +37,27 @@ const diClasses: DependencyInjectedClasses = {
 	ollamaClient,
 };
 
+const mcpController = new MCPController("/mcp");
+
 redisClient
 	.connect()
 	.then(() => {
-		setupControllers(app, [new MCPController("/mcp")], diClasses);
+		setupControllers(app, [mcpController], diClasses);
 
-		connectToMCP({ app, port, corsOrigin })
-			.then(() => { })
-			.catch((error) => {
-				console.error(`Error connecting MCP server: ${error}`);
+		const httpServer = app.listen(port, () => {
+			console.log(`MCP Server Starter (HTTP) listening on http://localhost:${String(port)}/mcp`);
+			console.log(`SSE endpoint: GET http://localhost:${String(port)}/mcp`);
+			console.log(`JSON-RPC endpoint: POST http://localhost:${String(port)}/mcp`);
+			console.log(`CORS origin: ${corsOrigin}`);
+		});
+
+		process.on("SIGINT", () => {
+			console.log("Shutting down HTTP server...");
+			mcpController.closeTransports();
+			httpServer.close(() => {
+				process.exit(0);
 			});
+		});
 	})
 	.catch((error) => {
 		console.error(`Error connecting to redis client: ${error}`);
