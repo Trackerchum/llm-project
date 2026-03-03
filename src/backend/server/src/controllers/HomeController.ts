@@ -8,7 +8,7 @@ export class HomeController extends BaseController {
 
 	setupRoutes = (app: Express) => {
 		app.post(this.baseUrl, async (req, res) => {
-			return res.json({ ok: true, response: "Hello world" });
+			return res.json({ ok: true, response: "Server running..." });
 		});
 	};
 }
