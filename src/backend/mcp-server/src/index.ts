@@ -22,8 +22,8 @@ app.use(
 		origin: corsOrigin,
 		credentials: true,
 		methods: ["GET", "POST", "OPTIONS", "DELETE"],
-		allowedHeaders: ["Content-Type", "mcp-session-id", "Mcp-Session-Id", "x-mcp-session", "x-mcp-session-id"],
-		exposedHeaders: ["mcp-session-id", "Mcp-Session-Id", "x-mcp-session-id"],
+		allowedHeaders: ["Content-Type", "mcp-session-id"],
+		exposedHeaders: ["mcp-session-id"],
 	}),
 );
 
@@ -57,8 +57,7 @@ async function connectToMCP() {
 	};
 
 	app.all("/mcp", async (req, res) => {
-		const rawSessionId =
-			req.header("mcp-session-id") ?? req.header("Mcp-Session-Id") ?? req.header("x-mcp-session-id");
+		const rawSessionId = req.header("mcp-session-id");
 		const sessionId = normalizeSessionId(rawSessionId);
 
 		let transport = sessionId ? transports.get(sessionId) : undefined;
@@ -83,7 +82,7 @@ async function connectToMCP() {
 					id: null,
 					error: {
 						code: -32000,
-						message: "Bad Request: Mcp-Session-Id header is required",
+						message: "Bad Request: mcp-session-id header is required",
 					},
 				});
 				return;
