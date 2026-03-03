@@ -15,7 +15,7 @@ const getDateTime: Tool = {
 
 		const formattedDateTime = new Intl.DateTimeFormat(locale, {
 			dateStyle: "full",
-			timeStyle: "medium",
+			timeStyle: "full",
 			timeZone: "UTC",
 		}).format(new Date());
 
