@@ -1,9 +1,7 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import { RedisClient } from "@Shared/models/redisClient";
-import { DependencyInjectedClasses, setupControllers } from "@Shared/controllers";
+import { getDIClasses, setupControllers } from "@Shared/controllers";
 import { HomeController, UserController } from "./controllers";
-import { OllamaClient } from "@Shared/models/ollamaClient";
 
 dotenv.config();
 
@@ -12,20 +10,14 @@ app.use(express.json());
 
 const port = parseInt(process.env.API_PORT, 10);
 
-const redisClient = new RedisClient(
-	process.env.REDIS_HOSTNAME,
-	parseInt(process.env.REDIS_PORT, 10),
-	process.env.REDIS_PASSWORD,
-);
+const diClasses = getDIClasses({
+	redis: {
+		hostname: process.env.REDIS_HOSTNAME,
+		port: parseInt(process.env.REDIS_PORT, 10), password: process.env.REDIS_PASSWORD
+	}
+})
 
-const ollamaClient = new OllamaClient();
-
-const diClasses: DependencyInjectedClasses = {
-	redisClient,
-	ollamaClient,
-};
-
-redisClient
+diClasses.redisClient
 	.connect()
 	.then(() => {
 		setupControllers(app, [new HomeController("/"), new UserController("/user")], diClasses);

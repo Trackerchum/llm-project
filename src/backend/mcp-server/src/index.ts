@@ -4,7 +4,7 @@ import { RedisClient } from "@Shared/models/redisClient";
 import cors from "cors";
 import { MCPController } from "./controllers";
 import { OllamaClient } from "@Shared/models/ollamaClient";
-import { DependencyInjectedClasses, setupControllers } from "@Shared/controllers";
+import { setupControllers, getDIClasses } from "@Shared/controllers";
 
 dotenv.config();
 
@@ -24,22 +24,16 @@ app.use(
 	}),
 );
 
-const redisClient = new RedisClient(
-	process.env.REDIS_HOSTNAME,
-	parseInt(process.env.REDIS_PORT, 10),
-	process.env.REDIS_PASSWORD,
-);
-
-const ollamaClient = new OllamaClient();
-
-const diClasses: DependencyInjectedClasses = {
-	redisClient,
-	ollamaClient,
-};
+const diClasses = getDIClasses({
+	redis: {
+		hostname: process.env.REDIS_HOSTNAME,
+		port: parseInt(process.env.REDIS_PORT, 10), password: process.env.REDIS_PASSWORD
+	}
+})
 
 const mcpController = new MCPController("/mcp");
 
-redisClient
+diClasses.redisClient
 	.connect()
 	.then(() => {
 		setupControllers(app, [mcpController], diClasses);
