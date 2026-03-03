@@ -2,7 +2,7 @@ import { description } from "./description";
 import { inputSchema } from "./inputSchema";
 import { Tool } from "../../../types/mcp";
 
-const echoModule: Tool = {
+const echo: Tool = {
 	name: "echo",
 	method: "echo",
 	config: {
@@ -15,11 +15,11 @@ const echoModule: Tool = {
 			content: [
 				{
 					type: "text",
-					text: args.text as string,
+					text: `echo: ${args.text as string}`,
 				},
 			],
 		};
 	},
 };
 
-export { echoModule };
+export { echo };

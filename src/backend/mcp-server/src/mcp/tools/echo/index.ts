@@ -1,3 +1,3 @@
-import { echoModule } from "./tool";
+import { echo } from "./echo";
 
-export { echoModule };
+export { echo };
