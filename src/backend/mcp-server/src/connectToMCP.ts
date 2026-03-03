@@ -1,4 +1,4 @@
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { MCPServer } from "./mcp/MCPServer";
 import { randomUUID } from "node:crypto";
 import { Express } from "express";
@@ -65,9 +65,9 @@ async function connectToMCP(config: { app: Express, port: number, corsOrigin: st
     });
 
     const httpServer = config.app.listen(config.port, () => {
-        console.log(`MCP Server Starter (HTTP) listening on http://localhost:${String(port)}/mcp`);
-        console.log(`SSE endpoint: GET http://localhost:${String(port)}/mcp`);
-        console.log(`JSON-RPC endpoint: POST http://localhost:${String(port)}/mcp`);
+        console.log(`MCP Server Starter (HTTP) listening on http://localhost:${String(config.port)}/mcp`);
+        console.log(`SSE endpoint: GET http://localhost:${String(config.port)}/mcp`);
+        console.log(`JSON-RPC endpoint: POST http://localhost:${String(config.port)}/mcp`);
         console.log(`CORS origin: ${config.corsOrigin}`);
     });
 
