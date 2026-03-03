@@ -1,3 +1,3 @@
-import { getDateTime } from "./tool";
+import { getDateTime } from "./getDateTime";
 
 export { getDateTime };
