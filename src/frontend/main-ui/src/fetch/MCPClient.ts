@@ -11,29 +11,8 @@ export class MCPClient {
 		this.client = new Client("/api/mcp");
 	}
 
-	private normalizeSessionId(value: string): string {
-		return value.split(",")[0].trim();
-	}
-
 	private getSessionIdFromHeaders(headers: Headers): string | null {
-		const direct =
-			headers.get("mcp-session-id") ?? headers.get("Mcp-Session-Id") ?? headers.get("x-mcp-session-id");
-		if (direct) {
-			return this.normalizeSessionId(direct);
-		}
-
-		let discovered: string | null = null;
-		headers.forEach((value, name) => {
-			const lowered = name.toLowerCase();
-			if (!discovered && (lowered === "mcp-session-id" || lowered === "x-mcp-session-id")) {
-				discovered = value;
-			}
-		});
-		if (discovered) {
-			return this.normalizeSessionId(discovered);
-		}
-
-		return null;
+		return headers.get("mcp-session-id");
 	}
 
 	private setSessionHeader(sessionId: string | null) {
