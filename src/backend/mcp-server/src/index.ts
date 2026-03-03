@@ -3,6 +3,9 @@ import * as dotenv from "dotenv";
 import { RedisClient } from "@Shared/models/redisClient";
 import cors from "cors";
 import { connectToMCP } from "./connectToMCP";
+import { MCPController } from "./controllers";
+import { OllamaClient } from "@Shared/models/ollamaClient";
+import { DependencyInjectedClasses, setupControllers } from "@Shared/controllers";
 
 dotenv.config();
 
@@ -28,10 +31,17 @@ const redisClient = new RedisClient(
 	process.env.REDIS_PASSWORD,
 );
 
+const ollamaClient = new OllamaClient();
+
+const diClasses: DependencyInjectedClasses = {
+	redisClient,
+	ollamaClient,
+};
+
 redisClient
 	.connect()
 	.then(() => {
-		// setupControllers(app, [new MCPController("/mcp/")], diClasses);
+		setupControllers(app, [new MCPController("/mcp")], diClasses);
 
 		connectToMCP({ app, port, corsOrigin })
 			.then(() => { })
@@ -42,3 +52,4 @@ redisClient
 	.catch((error) => {
 		console.error(`Error connecting to redis client: ${error}`);
 	});
+

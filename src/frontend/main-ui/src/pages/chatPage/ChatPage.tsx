@@ -25,7 +25,7 @@ const HomePage = () => {
 		setLoading(true);
 		setPromptText("");
 
-		client.post<{ response: string }>("/mcp", { prompt: promptText }).then((response) => {
+		client.post<{ response: string }>("/mcp/generate", { prompt: promptText }).then((response) => {
 			setLoading(false);
 			if (response.isError) {
 				setChatHistory((prev) => [...prev, { host: "reply", text: `Error: ${response.error}` }]);

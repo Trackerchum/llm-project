@@ -5,6 +5,7 @@ import { Express } from "express";
 
 async function connectToMCP(config: { app: Express, port: number, corsOrigin: string }): Promise<Express> {
     const transports = new Map<string, StreamableHTTPServerTransport>();
+
     const createTransportForSession = async (sessionId: string) => {
         const server = new MCPServer({
             name: "MCPServer",

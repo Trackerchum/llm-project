@@ -7,7 +7,7 @@ export class MCPController extends BaseController {
 	}
 
 	setupRoutes = (app: Express) => {
-		app.post(this.baseUrl, async (req, res) => {
+		app.post(this.baseUrl + "/generate", async (req, res) => {
 			const response = await this.ollamaClient.generate(req.body.prompt);
 
 			if (response.error) {
