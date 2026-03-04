@@ -1,10 +1,9 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import { RedisClient } from "@Shared/models/redisClient";
 import cors from "cors";
 import { MCPController } from "./controllers";
-import { OllamaClient } from "@Shared/models/ollamaClient";
 import { setupControllers, getDIClasses } from "@Shared/controllers";
+import { MCP_SESSION_ID } from "@Shared/constants"
 
 dotenv.config();
 
@@ -19,8 +18,8 @@ app.use(
 		origin: corsOrigin,
 		credentials: true,
 		methods: ["GET", "POST", "OPTIONS", "DELETE"],
-		allowedHeaders: ["Content-Type", "mcp-session-id"],
-		exposedHeaders: ["mcp-session-id"],
+		allowedHeaders: ["Content-Type", MCP_SESSION_ID],
+		exposedHeaders: [MCP_SESSION_ID],
 	}),
 );
 

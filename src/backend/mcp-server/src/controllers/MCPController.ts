@@ -3,6 +3,7 @@ import { BaseController } from "@Shared/controllers/BaseController";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { MCPServer } from "../mcp/MCPServer";
 import { randomUUID } from "node:crypto";
+import { MCP_SESSION_ID } from "@Shared/constants";
 
 export class MCPController extends BaseController {
 	private transports = new Map<string, StreamableHTTPServerTransport>();
@@ -42,7 +43,7 @@ export class MCPController extends BaseController {
 		});
 
 		app.all(this.baseUrl, async (req, res) => {
-			const sessionId = req.header("mcp-session-id");
+			const sessionId = req.header(MCP_SESSION_ID);
 
 			let transport = sessionId ? this.transports.get(sessionId) : undefined;
 			const isInitializeRequest = req.method === "POST" && req.body?.method === "initialize";
