@@ -11,7 +11,7 @@ type CallToolParams = {
 export class MCPClient {
     private readonly baseUrl: string;
 
-    constructor(baseUrl = process.env.MCP_SERVER_BASE_URL ?? "http://mcp-server:6001/mcp") {
+    constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
     }
 
