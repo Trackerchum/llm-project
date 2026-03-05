@@ -1,4 +1,4 @@
-import { Tool } from "../../types/mcp/Tool";
+import { Tool } from "@Shared/types/mcp/Tool";
 import { echo } from "./echo";
 import { getDateTime } from "./getDateTime";
 
