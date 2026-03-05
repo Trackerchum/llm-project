@@ -18,6 +18,7 @@ export class MCPClient {
     private createHeaders(sessionId?: string) {
         const headers = new Headers({
             "content-type": "application/json",
+            accept: "application/json, text/event-stream",
         });
 
         if (sessionId) {
