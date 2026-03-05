@@ -80,7 +80,7 @@ export class MCPController extends BaseController {
 				this.transports.set(newSessionId, transport);
 			}
 
-			await transport.handleRequest(req, res, req.body);
+			await logger(`MCP ${req.body?.method ?? "method"}`, () => transport.handleRequest(req, res, req.body));
 		});
 	};
 
