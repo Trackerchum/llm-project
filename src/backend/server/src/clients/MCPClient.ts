@@ -51,7 +51,7 @@ export class MCPClient {
 
     private formatErrorMessage(error: unknown): string {
         if (error instanceof Error) {
-            return error.message;
+            return `${error.name}: ${error.message}`;
         }
 
         if (typeof error === "string") {
@@ -63,6 +63,18 @@ export class MCPClient {
         } catch {
             return "Unknown MCP error";
         }
+    }
+
+    private serializeError(error: unknown): Record<string, unknown> {
+        if (error instanceof Error) {
+            return {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+            };
+        }
+
+        return { raw: this.formatErrorMessage(error) };
     }
 
     private async request<TResult, TParams = Record<string, unknown>>(
@@ -77,6 +89,8 @@ export class MCPClient {
             ...(params !== undefined ? { params } : {}),
         };
 
+        let phase: "fetch" | "parse" = "fetch";
+
         try {
             const response = await fetch(this.baseUrl, {
                 method: "POST",
@@ -86,6 +100,7 @@ export class MCPClient {
 
             const responseSessionId = response.headers.get(MCP_SESSION_ID);
 
+            phase = "parse";
             const responseBody = (await response.json()) as unknown;
             if (this.isJsonRpcResponse<TResult>(responseBody)) {
                 return { response: responseBody, sessionId: responseSessionId };
@@ -104,13 +119,22 @@ export class MCPClient {
                 sessionId: responseSessionId,
             };
         } catch (error) {
+            const formattedError = this.formatErrorMessage(error);
             return {
                 response: {
                     jsonrpc: "2.0",
                     id: payload.id ?? null,
                     error: {
                         code: -32000,
-                        message: this.formatErrorMessage(error),
+                        message: `MCP request failed while calling "${method}" during ${phase} phase (${this.baseUrl}): ${formattedError}`,
+                        data: {
+                            method,
+                            phase,
+                            baseUrl: this.baseUrl,
+                            hasSessionId: Boolean(sessionId),
+                            requestId: payload.id ?? null,
+                            cause: this.serializeError(error),
+                        },
                     },
                 },
                 sessionId: sessionId ?? null,
@@ -131,15 +155,21 @@ export class MCPClient {
             params: {},
         };
 
-        const response = await fetch(this.baseUrl, {
-            method: "POST",
-            headers: this.createHeaders(sessionId),
-            body: JSON.stringify(payload),
-        });
+        try {
+            const response = await fetch(this.baseUrl, {
+                method: "POST",
+                headers: this.createHeaders(sessionId),
+                body: JSON.stringify(payload),
+            });
 
-        if (!response.ok) {
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to send MCP initialized notification (${String(response.status)} ${response.statusText}) to ${this.baseUrl}.`,
+                );
+            }
+        } catch (error) {
             throw new Error(
-                `Failed to send MCP initialized notification (${String(response.status)} ${response.statusText}).`,
+                `MCP notification "notifications/initialized" failed (${this.baseUrl}): ${this.formatErrorMessage(error)}`,
             );
         }
     }
