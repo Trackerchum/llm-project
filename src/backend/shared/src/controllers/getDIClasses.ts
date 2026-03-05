@@ -1,5 +1,5 @@
-import { OllamaClient } from "../models/ollamaClient";
-import { RedisClient } from "../models/redisClient";
+import { OllamaClient } from "../clients/ollamaClient";
+import { RedisClient } from "../clients/redisClient";
 import { DependencyInjectedClasses } from "./BaseController";
 
 

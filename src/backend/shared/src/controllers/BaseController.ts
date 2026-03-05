@@ -1,7 +1,7 @@
 import { Express } from "express";
-import { RedisClient } from "../models/redisClient";
+import { RedisClient } from "../clients/redisClient";
 import { User } from "../models/user";
-import { OllamaClient } from "../models/ollamaClient";
+import { OllamaClient } from "../clients/ollamaClient";
 
 export interface DependencyInjectedClasses {
 	redisClient: RedisClient;
