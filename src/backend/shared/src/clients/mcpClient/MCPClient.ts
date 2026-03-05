@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { MCP_SESSION_ID } from "@Shared/constants";
-import { JsonRpcRequest, JsonRpcResponse } from "@Shared/types/mcp";
+import { MCP_SESSION_ID } from "../../constants";
+import { JsonRpcRequest, JsonRpcResponse } from "../../types/mcp";
 
 
 type CallToolParams = {
