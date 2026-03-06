@@ -1,1 +1,0 @@
-export const description = "Echo back the provided text";
