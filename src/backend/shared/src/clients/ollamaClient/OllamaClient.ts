@@ -51,11 +51,6 @@ export class OllamaClient {
 		tools?: OllamaTool[];
 	}): Promise<OllamaChatSuccess | OllamaError> => {
 		try {
-			console.log(JSON.stringify({
-				model: this.model,
-				stream: this.stream,
-				...chat
-			}));
 			const response = await fetch(new URL("/api/chat", this.endpoint).toString(), {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -75,7 +70,10 @@ export class OllamaClient {
 				};
 			}
 
-			return response.json();
+			return {
+				ok: true,
+				response: await response.json()
+			};
 		} catch (err: any) {
 			return {
 				ok: false,
