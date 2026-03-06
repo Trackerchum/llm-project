@@ -1,5 +1,4 @@
 import { Express } from "express";
-import path from "path";
 import { BaseController } from "@Shared/controllers/BaseController";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -24,7 +23,7 @@ export class UserController extends BaseController {
 		);
 
 	setupRoutes = (app: Express) => {
-		app.post(path.join(this.baseUrl, "/register"), async (req, res) => {
+		app.post(new URL("/register", this.baseUrl).toString(), async (req, res) => {
 			try {
 				const user: User = req.body;
 				if (!user) {
@@ -63,7 +62,7 @@ export class UserController extends BaseController {
 			}
 		});
 
-		app.post(path.join(this.baseUrl, "/login"), async (req, res) => {
+		app.post(new URL("/login", this.baseUrl).toString(), async (req, res) => {
 			try {
 				const reqUser: User = req.body;
 

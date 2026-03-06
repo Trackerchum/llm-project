@@ -1,5 +1,3 @@
-import path from "path";
-
 export class OllamaClient {
 	private endpoint: string;
 	private model: string;
@@ -11,7 +9,7 @@ export class OllamaClient {
 
 	generate = async (prompt: string) => {
 		try {
-			const response = await fetch(path.join(this.endpoint, "api/generate"), {
+			const response = await fetch(new URL("/api/generate", this.endpoint).toString(), {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
