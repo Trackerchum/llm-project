@@ -104,7 +104,6 @@ export class ChatController extends BaseController {
 				}),
 			);
 
-			console.log(JSON.stringify(toolCalls));
 			toolCalls.forEach(call => {
 				if (call.ok) {
 					chatRequest.addMessage({
@@ -118,7 +117,13 @@ export class ChatController extends BaseController {
 
 			response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
 
-			return res.json({ ok: true, mcpSessionId, response: (response as any).response.message.content });
+			return res.json({
+				ok: true,
+				mcpSessionId,
+				response: (response as any).response.message.content,
+				// for degugging only, don't expose in prod/staging
+				chatHistory: chatRequest.getChatRequest()
+			});
 		});
 	};
 }
