@@ -9,16 +9,14 @@ interface OllamaChatSuccess {
         message: {
             role: Role,
             content?: string,
-            tool_calls?: [
-                {
-                    id: string,
-                    function: {
-                        index: number,
-                        name: string,
-                        arguments: Record<string, unknown>
-                    }
+            tool_calls?: {
+                id: string,
+                function: {
+                    index: number,
+                    name: string,
+                    arguments: Record<string, unknown>
                 }
-            ]
+            }[]
         },
     }
 }
