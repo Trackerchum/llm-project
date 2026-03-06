@@ -14,7 +14,7 @@ interface OllamaChatSuccess {
                     id: string,
                     function: {
                         index: number,
-                        namr: string,
+                        name: string,
                         arguments: Record<string, unknown>
                     }
                 }
