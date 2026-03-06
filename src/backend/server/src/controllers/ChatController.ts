@@ -73,16 +73,52 @@ export class ChatController extends BaseController {
 
 			chatRequest.addMessage({ role: "user", content: req.body.prompt });
 
-			const response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
+			let response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
 
-			// call the LLM with the user message + tool definitions - WIP
-			// LLM returns plain text so DONE. or...
-			// LLM returns call tool getDateTime with args { date: '2026-03-04' }"
-			// call tools/call with tool name and params
-			// append tool result to convo, ask LLM for final result.
-			// return response, inc tools called and reply
+			if (response.ok === false) {
+				return res.status(response.statusCode).json({
+					ok: false,
+					mcpSessionId,
+					error: response.error,
+				});
+			}
 
-			return res.json({ ok: true, response: response });
+			if (!response.response.message.tool_calls?.length) {
+				return res.json({ ok: true, mcpSessionId, response: response.response.message.content });
+			}
+
+			const toolCalls = await Promise.all(
+				response.response.message.tool_calls.map(async (tool) => {
+					const toolResponse = await this.mcpClient.callTool(mcpSessionId, {
+						name: tool.function.name,
+						arguments: tool.function.arguments,
+					});
+
+					return {
+						// TODO error handling
+						ok: true,
+						toolName: tool.function.name,
+						toolCallId: tool.id,
+						data: toolResponse,
+					};
+				}),
+			);
+
+			console.log(JSON.stringify(toolCalls));
+			toolCalls.forEach(call => {
+				if (call.ok) {
+					chatRequest.addMessage({
+						role: "tool",
+						// TODO narrowing on call.ok
+						content: (call.data as any).result.content[0].text,
+						tool_name: call.toolName
+					});
+				}
+			});
+
+			response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
+
+			return res.json({ ok: true, mcpSessionId, response: (response as any).response.message.content });
 		});
 	};
 }
