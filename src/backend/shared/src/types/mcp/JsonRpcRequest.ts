@@ -1,4 +1,4 @@
-type JsonRpcRequest<TParams = Record<string, unknown>> = {
+interface JsonRpcRequest<TParams = Record<string, unknown>> {
     jsonrpc: "2.0";
     id?: string;
     method: string;

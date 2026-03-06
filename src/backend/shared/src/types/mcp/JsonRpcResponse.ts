@@ -1,10 +1,10 @@
-type JsonRpcSuccess<TResult> = {
+interface JsonRpcSuccess<TResult> {
     jsonrpc: "2.0";
     id: string | number | null;
     result: TResult;
 };
 
-type JsonRpcError = {
+interface JsonRpcError {
     jsonrpc: "2.0";
     id: string | number | null;
     error: {
