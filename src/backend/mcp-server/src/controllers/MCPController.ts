@@ -33,16 +33,6 @@ export class MCPController extends BaseController {
 	};
 
 	setupRoutes = (app: Express) => {
-		app.post(this.baseUrl + "/generate", async (req, res) => {
-			const response = await logger("Ollama generate", () => this.ollamaClient.generate(req.body.prompt));
-
-			if (response.error) {
-				return res.status(502).json(response);
-			}
-
-			return res.json({ ok: true, response: response.response });
-		});
-
 		app.all(this.baseUrl, async (req, res) => {
 			const sessionId = req.header(MCP_SESSION_ID);
 

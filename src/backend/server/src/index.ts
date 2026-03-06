@@ -1,7 +1,7 @@
 import express from "express";
 import * as dotenv from "dotenv";
 import { getDIClasses, setupControllers } from "@Shared/controllers";
-import { ChatController, HomeController } from "./controllers";
+import { ChatController, GenerateController, HomeController } from "./controllers";
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ const diClasses = getDIClasses({
 diClasses.redisClient
 	.connect()
 	.then(() => {
-		setupControllers(app, [new HomeController("/"), new ChatController("/chat")], diClasses);
+		setupControllers(app, [new HomeController("/"), new ChatController("/chat"), new GenerateController("/generate")], diClasses);
 
 		app.listen(port, () => {
 			console.log(`listening on port ${port}`);
