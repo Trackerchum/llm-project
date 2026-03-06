@@ -1,4 +1,5 @@
-import { Message, Tool } from "../../types/mcp";
+import { Tool } from "../../types/mcp";
+import { Message } from "../../types/mcp/message";
 
 
 class ChatRequest {
@@ -12,8 +13,8 @@ class ChatRequest {
         stream?: boolean
     }) {
         this.messages = config?.initialInstructions ? [config.initialInstructions] : [{
-            role: "assistant",
-            content: "You may call tools when needed. If you call a tool, do not guess the tool output."
+            role: "system",
+            content: "You are a chat assistant. You may call tools when needed. If you call a tool, do not guess the tool output. Only request access to named tools provided"
         }];
         this.tools = config?.tools ?? [];
     }
