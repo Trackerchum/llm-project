@@ -1,6 +1,5 @@
-import { Tool } from "../../types/mcp";
 import { Message } from "../../types/mcp/message";
-import { OllamaChatSuccess, OllamaError } from "../../types/ollama";
+import { OllamaChatSuccess, OllamaError, OllamaTool } from "../../types/ollama";
 
 export class OllamaClient {
 	private endpoint: string;
@@ -49,7 +48,7 @@ export class OllamaClient {
 
 	chat = async (chat: {
 		messages: Message[];
-		tools?: Tool[];
+		tools?: OllamaTool[];
 	}): Promise<OllamaChatSuccess | OllamaError> => {
 		try {
 			console.log(JSON.stringify({

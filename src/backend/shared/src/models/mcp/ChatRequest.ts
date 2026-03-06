@@ -1,15 +1,15 @@
-import { Tool } from "../../types/mcp";
 import { Message } from "../../types/mcp/message";
+import { OllamaTool } from "../../types/ollama";
 
 
 class ChatRequest {
     private messages: Message[];
-    private tools: Tool[];
+    private tools: OllamaTool[];
 
     constructor(config?: {
         model?: string,
         initialInstructions?: Message,
-        tools?: Tool[],
+        tools?: OllamaTool[],
         stream?: boolean
     }) {
         this.messages = config?.initialInstructions ? [config.initialInstructions] : [{
@@ -23,7 +23,7 @@ class ChatRequest {
         this.messages.push(message);
     }
 
-    setTools(tools: Tool[]) {
+    setTools(tools: OllamaTool[]) {
         this.tools = tools;
     }
 

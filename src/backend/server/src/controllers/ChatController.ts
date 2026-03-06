@@ -5,7 +5,8 @@ import { MCPClient } from "@Shared/clients/mcpClient";
 import { jsonRpcErrorCodeToHttpStatus } from "@Shared/helpers/mcp";
 import { ChatRequest } from "@Shared/models/mcp";
 import { logger } from "@Shared/logging";
-import { Tool } from "@Shared/types/mcp";
+import { mcpToOllamaTools } from "@Shared/mappers/ollama";
+
 
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
@@ -66,7 +67,8 @@ export class ChatController extends BaseController {
 			}
 
 			const chatRequest = new ChatRequest({
-				tools: tools.result.tools as Tool[]
+				// TODO fix any
+				tools: mcpToOllamaTools((tools.result.tools ?? []) as any[]),
 			});
 
 			chatRequest.addMessage({ role: "user", content: req.body.prompt });
