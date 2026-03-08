@@ -1,3 +1,3 @@
 import { ChatRequest } from "./ChatRequest";
 
-export { ChatRequest }
+export { ChatRequest };

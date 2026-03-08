@@ -1,38 +1,37 @@
 import { Message } from "../../types/mcp/message";
 import { OllamaTool } from "../../types/ollama";
 
-
 class ChatRequest {
-    private messages: Message[];
-    private tools: OllamaTool[];
+	private messages: Message[];
+	private tools: OllamaTool[];
 
-    constructor(config?: {
-        model?: string,
-        initialInstructions?: Message,
-        tools?: OllamaTool[],
-        stream?: boolean
-    }) {
-        this.messages = config?.initialInstructions ? [config.initialInstructions] : [{
-            role: "system",
-            content: "You are a chat assistant. Prefer answering directly from general knowledge. Call a tool only when the user explicitly needs external or real-time data that the tool provides. If no tool is clearly needed, do not call any tools. If you call a tool, never invent the result."
-        }];
-        this.tools = config?.tools ?? [];
-    }
+	constructor(config?: { model?: string; initialInstructions?: Message; tools?: OllamaTool[]; stream?: boolean }) {
+		this.messages = config?.initialInstructions
+			? [config.initialInstructions]
+			: [
+					{
+						role: "system",
+						content:
+							"You are a chat assistant. Prefer answering directly from general knowledge. Call a tool only when the user explicitly needs external or real-time data that the tool provides. If no tool is clearly needed, do not call any tools. If you call a tool, never invent the result.",
+					},
+				];
+		this.tools = config?.tools ?? [];
+	}
 
-    addMessage(message: Message) {
-        this.messages.push(message);
-    }
+	addMessage(message: Message) {
+		this.messages.push(message);
+	}
 
-    setTools(tools: OllamaTool[]) {
-        this.tools = tools;
-    }
+	setTools(tools: OllamaTool[]) {
+		this.tools = tools;
+	}
 
-    getChatRequest() {
-        return {
-            messages: this.messages,
-            tools: this.tools,
-        }
-    }
+	getChatRequest() {
+		return {
+			messages: this.messages,
+			tools: this.tools,
+		};
+	}
 }
 
-export { ChatRequest }
+export { ChatRequest };

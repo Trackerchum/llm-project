@@ -1,3 +1,3 @@
-import { jsonRpcErrorCodeToHttpStatus } from "./jsonRpcErrorCodeToHttpStatus"
+import { jsonRpcErrorCodeToHttpStatus } from "./jsonRpcErrorCodeToHttpStatus";
 
-export { jsonRpcErrorCodeToHttpStatus }
+export { jsonRpcErrorCodeToHttpStatus };

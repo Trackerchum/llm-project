@@ -1,8 +1,8 @@
 type OllamaError = {
-    ok: false,
-    error: string,
-    body: string,
-    statusCode: number,
+	ok: false;
+	error: string;
+	body: string;
+	statusCode: number;
 };
 
-export { type OllamaError }
+export { type OllamaError };

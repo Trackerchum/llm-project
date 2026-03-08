@@ -46,10 +46,7 @@ export class OllamaClient {
 		}
 	};
 
-	chat = async (chat: {
-		messages: Message[];
-		tools?: OllamaTool[];
-	}): Promise<OllamaChatSuccess | OllamaError> => {
+	chat = async (chat: { messages: Message[]; tools?: OllamaTool[] }): Promise<OllamaChatSuccess | OllamaError> => {
 		try {
 			const response = await fetch(new URL("/api/chat", this.endpoint).toString(), {
 				method: "POST",
@@ -57,7 +54,7 @@ export class OllamaClient {
 				body: JSON.stringify({
 					model: this.model,
 					stream: this.stream,
-					...chat
+					...chat,
 				}),
 			});
 			if (!response.ok) {
@@ -72,7 +69,7 @@ export class OllamaClient {
 
 			return {
 				ok: true,
-				response: await response.json()
+				response: await response.json(),
 			};
 		} catch (err: any) {
 			return {
@@ -82,5 +79,5 @@ export class OllamaClient {
 				body: String(err?.cause?.message ?? ""),
 			};
 		}
-	}
+	};
 }

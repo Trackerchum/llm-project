@@ -1,3 +1,3 @@
 import { mcpToOllamaTools } from "./mcpToOllamaTools";
 
-export { mcpToOllamaTools }
+export { mcpToOllamaTools };
