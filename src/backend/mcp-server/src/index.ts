@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import { MCPController } from "./controllers";
 import { setupControllers, getDIClasses } from "@Shared/controllers";
-import { MCP_SESSION_ID } from "@Shared/constants"
+import { MCP_SESSION_ID } from "@Shared/constants";
 
 dotenv.config();
 
@@ -26,9 +26,10 @@ app.use(
 const diClasses = getDIClasses({
 	redis: {
 		hostname: process.env.REDIS_HOSTNAME,
-		port: parseInt(process.env.REDIS_PORT, 10), password: process.env.REDIS_PASSWORD
-	}
-})
+		port: parseInt(process.env.REDIS_PORT, 10),
+		password: process.env.REDIS_PASSWORD,
+	},
+});
 
 const mcpController = new MCPController("/mcp");
 
@@ -55,4 +56,3 @@ diClasses.redisClient
 	.catch((error) => {
 		console.error(`Error connecting to redis client: ${error}`);
 	});
-

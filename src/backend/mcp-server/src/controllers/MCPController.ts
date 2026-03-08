@@ -76,5 +76,5 @@ export class MCPController extends BaseController {
 
 	closeTransports = () => {
 		void Promise.all(Array.from(this.transports.values()).map((transport) => transport.close()));
-	}
+	};
 }
