@@ -11,7 +11,13 @@
         "rm:builds": "rm -rf src/**/build src/**/**/build",
         "docker:images:clean": "for /F %i in ('docker images -a -q') do docker rmi -f %i",
         "docker:containers:clean": "docker container prune",
-        "docker:clean": "docker system prune && npm run docker:containers:clean && npm run docker:images:clean"
+        "docker:clean": "docker system prune && npm run docker:containers:clean && npm run docker:images:clean",
+        "prettier:write:server": "cd src/backend/server/ && npm run prettier:write",
+        "prettier:write:identity-server": "cd src/backend/identity-server/ && npm run prettier:write",
+        "prettier:write:mcp-server": "cd src/backend/mcp-server/ && npm run prettier:write",
+        "prettier:write:shared-server": "cd src/backend/shared/ && npm run prettier:write",
+        "prettier:write:main-ui": "cd src/frontend/main-ui/ && npm run prettier:write",
+        "prettier:write:all": "npm run prettier:write:server && npm run prettier:write:identity-server && npm run prettier:write:mcp-server && npm run prettier:write:shared-server && npm run prettier:write:main-ui"
     },
     "engines": {
         "node": ">=22",
