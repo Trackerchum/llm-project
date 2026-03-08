@@ -13,14 +13,19 @@ const port = parseInt(process.env.API_PORT, 10);
 const diClasses = getDIClasses({
 	redis: {
 		hostname: process.env.REDIS_HOSTNAME,
-		port: parseInt(process.env.REDIS_PORT, 10), password: process.env.REDIS_PASSWORD
-	}
-})
+		port: parseInt(process.env.REDIS_PORT, 10),
+		password: process.env.REDIS_PASSWORD,
+	},
+});
 
 diClasses.redisClient
 	.connect()
 	.then(() => {
-		setupControllers(app, [new HomeController("/"), new ChatController("/chat"), new GenerateController("/generate")], diClasses);
+		setupControllers(
+			app,
+			[new HomeController("/"), new ChatController("/chat"), new GenerateController("/generate")],
+			diClasses,
+		);
 
 		app.listen(port, () => {
 			console.log(`listening on port ${port}`);

@@ -7,7 +7,6 @@ import { ChatRequest } from "@Shared/models/mcp";
 import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 
-
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
 
@@ -22,19 +21,21 @@ export class ChatController extends BaseController {
 				return res.status(400).json({
 					ok: false,
 					error: "Error, chat prompt missing.",
-				})
+				});
 			}
 			let mcpSessionId = req.header(MCP_SESSION_ID) ?? null;
 
 			if (!mcpSessionId) {
-				const initializeResult = await logger("initialize", () => this.mcpClient.initialize({
-					protocolVersion: "2024-11-05",
-					capabilities: {},
-					clientInfo: {
-						name: "server",
-						version: "0.1.0",
-					},
-				}));
+				const initializeResult = await logger("initialize", () =>
+					this.mcpClient.initialize({
+						protocolVersion: "2024-11-05",
+						capabilities: {},
+						clientInfo: {
+							name: "server",
+							version: "0.1.0",
+						},
+					}),
+				);
 				if ("error" in initializeResult.response) {
 					return res.status(502).json({
 						ok: false,
@@ -52,7 +53,6 @@ export class ChatController extends BaseController {
 				mcpSessionId = initializeResult.sessionId;
 				await logger("sendInitialized", () => this.mcpClient.sendInitialized(mcpSessionId));
 			}
-
 
 			// TODO periodically get and cache tools
 			const tools = await logger("toolsList", () => this.mcpClient.toolsList(mcpSessionId, {}));
@@ -104,13 +104,13 @@ export class ChatController extends BaseController {
 				}),
 			);
 
-			toolCalls.forEach(call => {
+			toolCalls.forEach((call) => {
 				if (call.ok) {
 					chatRequest.addMessage({
 						role: "tool",
 						// TODO narrowing on call.ok
 						content: (call.data as any).result.content[0].text,
-						tool_name: call.toolName
+						tool_name: call.toolName,
 					});
 				}
 			});
@@ -122,7 +122,7 @@ export class ChatController extends BaseController {
 				mcpSessionId,
 				response: (response as any).response.message.content,
 				// for degugging only, don't expose in prod/staging
-				chatHistory: chatRequest.getChatRequest()
+				chatHistory: chatRequest.getChatRequest(),
 			});
 		});
 	};
