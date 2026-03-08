@@ -1,10 +1,4 @@
-import { OllamaTool } from "../../types/ollama";
-
-type MCPListTool = {
-	name: string;
-	description?: string;
-	inputSchema?: Record<string, unknown>;
-};
+import { MCPListTool, OllamaTool } from "../../types/ollama";
 
 const mcpToOllamaTools = (tools: MCPListTool[]): OllamaTool[] =>
 	tools.map((tool) => ({
