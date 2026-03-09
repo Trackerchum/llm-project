@@ -115,9 +115,9 @@ const MCPTestPage = () => {
 				</p>
 				<TextArea
 					labelText="Initialize params (JSON object)"
-					propName="initializeParams"
+					name="initializeParams"
 					value={initializeParams}
-					onChange={(_, newValue) => setInitializeParams(newValue)}
+					onChange={(newValue) => setInitializeParams(newValue)}
 				/>
 				<Button text="Run initialize" onSubmit={handleInitialize} loading={activeAction === "initialize"} />
 			</section>
@@ -126,9 +126,9 @@ const MCPTestPage = () => {
 				<h2>tools/list</h2>
 				<TextArea
 					labelText="Tools list params (JSON object)"
-					propName="toolsListParams"
+					name="toolsListParams"
 					value={toolsListParams}
-					onChange={(_, newValue) => setToolsListParams(newValue)}
+					onChange={(newValue) => setToolsListParams(newValue)}
 				/>
 				<Button text="Run tools/list" onSubmit={handleToolsList} loading={activeAction === "tools/list"} />
 			</section>
@@ -137,16 +137,16 @@ const MCPTestPage = () => {
 				<h2>tools/call</h2>
 				<TextInput
 					labelText="Tool name"
-					propName="toolNameInput"
+					name="toolNameInput"
 					value={toolName}
 					placeholder="exampleToolName"
-					onChange={(_, newValue) => setToolName(newValue)}
+					onChange={(newValue) => setToolName(newValue)}
 				/>
 				<TextArea
 					labelText="Arguments (JSON object)"
-					propName="toolArgsInput"
+					name="toolArgsInput"
 					value={toolArgs}
-					onChange={(_, newValue) => setToolArgs(newValue)}
+					onChange={(newValue) => setToolArgs(newValue)}
 				/>
 				<Button text="Run tools/call" onSubmit={handleCallTool} loading={activeAction === "tools/call"} />
 			</section>

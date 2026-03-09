@@ -50,9 +50,9 @@ const HomePage = () => {
 				)}
 				<TextInput
 					labelText="Prompt: "
-					propName="promptText"
+					name="promptText"
 					value={promptText}
-					onChange={(_, newValue: string) => {
+					onChange={(newValue: string) => {
 						setPromptText(newValue);
 					}}
 					onKeyDown={(e: React.KeyboardEvent) => {
