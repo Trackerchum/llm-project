@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../../components/button";
 import { Client } from "../../fetch";
 import "./ChatPage.scss";
-import TextInput from "../../components/form";
+import TextInput from "../../components/form/textInput";
 
 const client = new Client("/api");
 
