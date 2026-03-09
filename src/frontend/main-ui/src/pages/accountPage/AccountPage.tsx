@@ -1,4 +1,4 @@
-import "./accountPage.scss"
+import "./AccountPage.scss"
 
 const AccountPage = () => {
 

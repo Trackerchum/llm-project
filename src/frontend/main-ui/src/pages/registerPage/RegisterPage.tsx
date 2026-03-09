@@ -1,4 +1,4 @@
-import "./registerPage.scss"
+import "./RegisterPage.scss"
 
 const RegisterPage = () => {
     return <div className="registerPage"></div>
