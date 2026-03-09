@@ -52,16 +52,16 @@ const LoginPage = () => {
 				<>
 					<TextInput
 						value={localUser.email}
-						onChange={(propName, newValue) => updateUser(propName as keyof User, newValue)}
-						propName="email"
+						onChange={(newValue) => updateUser("email", newValue)}
+						name="email"
 						labelText="*Email:"
 						onBlur={() => setEmailError(UserMethods.getEmailError(localUser))}
 						errorText={emailError}
 					/>
 					<TextInput
 						value={localUser.password ?? ""}
-						onChange={(propName, newValue) => updateUser(propName as keyof User, newValue)}
-						propName="password"
+						onChange={(newValue) => updateUser("password", newValue)}
+						name="password"
 						labelText="*Password:"
 						type="password"
 						onBlur={() => setPasswordError(UserMethods.getPasswordError(localUser, true))}

@@ -4,8 +4,8 @@ import "./TextInput.scss";
 
 interface Props {
 	readonly value: string;
-	readonly onChange: (propName: string, newValue: string) => void;
-	readonly propName: string;
+	readonly onChange: (newValue: string) => void;
+	readonly name: string;
 	readonly labelText?: string;
 	readonly placeholder?: string;
 	readonly onBlur?: (e: any) => void;
@@ -18,7 +18,7 @@ interface Props {
 const TextInput = ({
 	value,
 	onChange,
-	propName,
+	name,
 	labelText,
 	placeholder,
 	onBlur,
@@ -27,18 +27,18 @@ const TextInput = ({
 	disabled,
 	onKeyDown,
 }: Props) => {
-	const labelId = useRef(propName);
+	const labelId = useRef(name);
 	return (
 		<div className="textInput">
 			<div>
 				{labelText && <label htmlFor={labelId.current}>{labelText}</label>}
 				<input
-					name={propName}
+					name={name}
 					onBlur={onBlur}
 					onChange={
 						disabled
 							? undefined
-							: (e: React.ChangeEvent<HTMLInputElement>) => onChange(propName, e.target.value)
+							: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)
 					}
 					type={type}
 					id={labelId.current}
