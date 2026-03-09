@@ -5,6 +5,7 @@ import { Client } from "../../fetch";
 import HorizontalSpacer from "../../components/horizontalSpacer";
 import Form from "../../components/form/Form";
 import TextInput from "../../components/form/textInput";
+import "./LoginPage.scss";
 
 const LoginPage = () => {
 	const navigate = useNavigate();
