@@ -15,7 +15,7 @@ const LoginPage = () => {
 	const [passwordError, setPasswordError] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const client = new Client("/api");
+	const userClient = new Client("/api/user");
 
 	const updateUser = (propName: keyof User, newValue: string) => {
 		let newUser: User = { ...localUser };
@@ -26,7 +26,7 @@ const LoginPage = () => {
 	const onSubmit = async () => {
 		if (UserMethods.fieldsValidForLogin(localUser)) {
 			setLoading(true);
-			const response = await client.post<User>("/user/login", localUser);
+			const response = await userClient.post<User>("/login", localUser);
 
 			if (!response.isError) {
 				// TODO set user to local storage/state
