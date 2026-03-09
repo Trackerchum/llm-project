@@ -16,6 +16,7 @@ const router = createBrowserRouter([
 			{ index: true, element: <HomePage /> },
 			{ path: "chat", element: <ChatPage /> },
 			{ path: "mcp", element: <MCPTestPage /> },
+			{ path: "login", element: <AccountPage /> },
 			{ path: "account", element: <AccountPage /> },
 		],
 	},
