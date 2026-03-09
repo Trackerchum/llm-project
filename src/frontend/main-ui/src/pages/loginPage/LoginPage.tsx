@@ -53,7 +53,7 @@ const LoginPage = () => {
 						value={localUser.email}
 						onChange={(propName, newValue) => updateUser(propName as keyof User, newValue)}
 						propName="email"
-						labelText="Email"
+						labelText="*Email:"
 						onBlur={() => setEmailError(UserMethods.getEmailError(localUser))}
 						errorText={emailError}
 					/>
@@ -61,7 +61,7 @@ const LoginPage = () => {
 						value={localUser.password ?? ""}
 						onChange={(propName, newValue) => updateUser(propName as keyof User, newValue)}
 						propName="password"
-						labelText="Password"
+						labelText="*Password:"
 						type="password"
 						onBlur={() => setPasswordError(UserMethods.getPasswordError(localUser, true))}
 						errorText={passwordError}
