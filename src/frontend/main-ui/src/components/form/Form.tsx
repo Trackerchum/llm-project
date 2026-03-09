@@ -17,7 +17,6 @@ const Form = ({ children, submitText, onSubmit, submitDisabled, loading }: Props
             text={submitText}
             onSubmit={onSubmit}
             disabled={submitDisabled || loading}
-            className="sm:col-span-2"
             loading={loading}
         />
     </form>;
