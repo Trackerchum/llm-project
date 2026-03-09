@@ -18,7 +18,7 @@
 		}
 	}
 
-	&>div {
+	& > div {
 		height: 2.5rem;
 		display: flex;
 		justify-content: space-between;
@@ -27,7 +27,7 @@
 			height: 100%;
 			display: flex;
 
-			>a {
+			> a {
 				margin-right: 10px;
 
 				&:last-of-type {
