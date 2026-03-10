@@ -6,9 +6,11 @@ import HorizontalSpacer from "../../components/horizontalSpacer";
 import Form from "../../components/form/Form";
 import TextInput from "../../components/form/textInput";
 import "./LoginPage.scss";
+import { useAuth } from "../../globalProvider";
 
 const LoginPage = () => {
 	const navigate = useNavigate();
+	const { setUser } = useAuth();
 
 	const [localUser, setLocalUser] = useState<User>(UserMethods.createWithDefaultProps(true));
 	const [emailError, setEmailError] = useState<string>("");
@@ -29,7 +31,7 @@ const LoginPage = () => {
 			const response = await userClient.post<User>("/login", localUser);
 
 			if (!response.isError) {
-				// TODO set user to local storage/state
+				setUser(response.data);
 				setLoading(false);
 				navigate("/");
 			} else {
