@@ -13,14 +13,14 @@ interface GlobalState {
     authState: AuthState
 }
 
-const GlobalState = createContext<GlobalState | null>(null);
+const globalState = createContext<GlobalState | null>(null);
 
 export function GlobalProvider({ children }: { children: React.ReactNode }) {
 
     const [user, setUserState] = useState<AuthState["user"]>(null);
 
     useEffect(() => {
-        window.cookieStore.get(userCookieKey).then((cookie: any) => {
+        window.cookieStore.get(userCookieKey).then((cookie: CookieListItem | null) => {
             if (cookie?.name === userCookieKey && cookie.value) {
                 setUserState(JSON.parse(cookie.value));
             }
@@ -38,7 +38,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <GlobalState.Provider value={{
+        <globalState.Provider value={{
             authState: {
                 user,
                 setUser,
@@ -47,12 +47,12 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
             }
         }}>
             {children}
-        </GlobalState.Provider>
+        </globalState.Provider>
     );
 }
 
 export function useAuth(): AuthState {
-    const ctx = useContext(GlobalState);
+    const ctx = useContext(globalState);
     if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
     return ctx.authState;
 }
