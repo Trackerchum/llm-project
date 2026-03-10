@@ -97,6 +97,6 @@ MongoDB defaults (development only):
 - App database: `llm_project`
 - App user: `llm_project_app`
 - App user password: `dev_app_password_change_me`
-- App connection string (inside Docker network): `mongodb://llm_project_app:dev_app_password_change_me@db-mongo:27017/llm_project?authSource=llm_project`
+- Backend `MONGO_URL` value (inside Docker network): `mongodb://llm_project_app:dev_app_password_change_me@db-mongo:27017/llm_project?authSource=llm_project`
 
 If things get weird with NPM dependencies, run `docker compose -f docker-compose.development.yml down -v` to nuke it and start fresh. NOTE: This also nukes Redis, MongoDB, RedisInsight and Ollama data.
