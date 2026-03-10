@@ -12,8 +12,10 @@ const Header = () => {
 					<p>|</p>
 					<a href="/">{appName}</a>
 					<p>|</p>
-					<a href="/chat">Chat</a>
-					<p>|</p>
+					{user && <>
+						<a href="/chat">Chat</a>
+						<p>|</p>
+					</>}
 					<a href="/mcp">MCP test</a>
 					<p>|</p>
 				</div>
