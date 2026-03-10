@@ -8,6 +8,7 @@ This is a monorepo containing multiple frontend, backend, infrastructure project
 - A TypeScript/Express identity server responsible for authentication and authorization.
 - A TypeScript project with components such as base controllers and utils, shared between the two backend servers.
 - A Redis database.
+- A MongoDB database.
 - An NGINX reverse proxy.
 - An Ollama LLM instance running model llama3.2:1b.
 - For development, a RedisInsight instance.
@@ -86,5 +87,16 @@ Direct ports (optional / debugging):
 - Identity server: http://localhost:8001
 - RedisInsight: http://localhost:6479
 - Redis: http://localhost:6379
+- MongoDB: mongodb://localhost:27017
 
-If things get weird with NPM dependencies, run `docker compose -f docker-compose.development.yml down -v` to nuke it and start fresh. NOTE: This also nukes redis, redisinsight and Ollama data.
+MongoDB defaults (development only):
+- Host (inside Docker network): `db-mongo`
+- Port: `27017`
+- Root user: `root`
+- Root password: `dev_root_password_change_me`
+- App database: `llm_project`
+- App user: `llm_project_app`
+- App user password: `dev_app_password_change_me`
+- App connection string (inside Docker network): `mongodb://llm_project_app:dev_app_password_change_me@db-mongo:27017/llm_project?authSource=llm_project`
+
+If things get weird with NPM dependencies, run `docker compose -f docker-compose.development.yml down -v` to nuke it and start fresh. NOTE: This also nukes Redis, MongoDB, RedisInsight and Ollama data.
