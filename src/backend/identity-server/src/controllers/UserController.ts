@@ -81,7 +81,7 @@ export class UserController extends BaseController {
 
 					return res.status(200).json(UserMethods.returnToBrowser(user));
 				}
-				return res.status(400).send("Invalid Credentials");
+				return res.status(401).send("Invalid Credentials");
 			} catch (err) {
 				return res.status(500).send(`There was a problem signing in. ${err}`);
 			}
