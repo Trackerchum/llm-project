@@ -16,8 +16,8 @@ const Header = () => {
 						<a href="/chat">Chat</a>
 						<p>|</p>
 					</>}
-					<a href="/mcp">MCP test</a>
-					<p>|</p>
+					{/* <a href="/mcp">MCP test</a>
+					<p>|</p> */}
 				</div>
 				<div>{user ? <a href="/account">Account</a> : <a href="/login">Login/sign up</a>}</div>
 			</div>
