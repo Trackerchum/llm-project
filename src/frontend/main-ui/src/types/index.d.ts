@@ -1,12 +1,12 @@
 declare global {
-    interface CookieListItem {
-        name: string;
-        value: string;
-    }
+	interface CookieListItem {
+		name: string;
+		value: string;
+	}
 
-    interface Window {
-        cookieStore: CookieStore;
-    }
+	interface Window {
+		cookieStore: CookieStore;
+	}
 }
 
-export { }
+export {};

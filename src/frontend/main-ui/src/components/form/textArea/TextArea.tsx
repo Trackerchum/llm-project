@@ -14,17 +14,7 @@ interface Props {
 	readonly rows?: number;
 }
 
-const TextArea = ({
-	value,
-	onChange,
-	name,
-	labelText,
-	placeholder,
-	onBlur,
-	errorText,
-	disabled,
-	rows = 4,
-}: Props) => {
+const TextArea = ({ value, onChange, name, labelText, placeholder, onBlur, errorText, disabled, rows = 4 }: Props) => {
 	const labelId = useRef(name);
 	return (
 		<div className="textArea">
@@ -34,9 +24,7 @@ const TextArea = ({
 					name={name}
 					onBlur={onBlur}
 					onChange={
-						disabled
-							? undefined
-							: (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)
+						disabled ? undefined : (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)
 					}
 					id={labelId.current}
 					placeholder={placeholder}

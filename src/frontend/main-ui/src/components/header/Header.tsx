@@ -12,9 +12,7 @@ const Header = () => {
 					<a href="/chat">Chat</a>
 					<a href="/mcp">MCP</a>
 				</div>
-				<div>
-					{user ? <a href="/account">Account</a> : <a href="/login">Login/sign up</a>}
-				</div>
+				<div>{user ? <a href="/account">Account</a> : <a href="/login">Login/sign up</a>}</div>
 			</div>
 		</header>
 	);

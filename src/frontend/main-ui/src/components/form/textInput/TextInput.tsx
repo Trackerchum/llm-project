@@ -36,9 +36,7 @@ const TextInput = ({
 					name={name}
 					onBlur={onBlur}
 					onChange={
-						disabled
-							? undefined
-							: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)
+						disabled ? undefined : (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)
 					}
 					type={type}
 					id={labelId.current}

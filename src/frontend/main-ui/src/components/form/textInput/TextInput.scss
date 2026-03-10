@@ -1,14 +1,14 @@
 .textInput {
-	>div {
+	> div {
 		display: flex;
 		flex-wrap: wrap;
 
-		>label {
+		> label {
 			margin: 0.25rem;
 			flex: 0 0 auto;
 		}
 
-		>input {
+		> input {
 			flex: 1 1 0;
 			min-width: 0;
 			width: auto;
@@ -19,14 +19,14 @@
 			padding-right: 0.25rem;
 		}
 
-		>p,
-		>div:last-child {
+		> p,
+		> div:last-child {
 			flex-basis: 100%;
 			margin: 0.25rem 0 0;
 			min-height: 1.5rem;
 		}
 
-		>p {
+		> p {
 			color: #dc2626;
 			line-height: 1.5rem;
 		}

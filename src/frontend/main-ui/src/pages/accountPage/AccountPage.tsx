@@ -1,18 +1,18 @@
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../globalProvider';
-import HorizontalSpacer from '../../components/horizontalSpacer';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../globalProvider";
+import HorizontalSpacer from "../../components/horizontalSpacer";
 import "./AccountPage.scss";
-import Button from '../../components/button';
+import Button from "../../components/button";
 
 const AccountPage = () => {
 	const navigate = useNavigate();
 	const { user, logoutUser } = useAuth();
 	if (!user && typeof window !== "undefined") {
-		navigate('/login');
+		navigate("/login");
 	}
 
 	return (
-		<div className='accountPage'>
+		<div className="accountPage">
 			<h1>My Account</h1>
 			<HorizontalSpacer />
 			<div>
@@ -21,15 +21,16 @@ const AccountPage = () => {
 				<p>Email: {user?.email}</p>
 			</div>
 			<HorizontalSpacer />
-			<Button text='Logout'
+			<Button
+				text="Logout"
 				buttonType={"Cancel"}
 				onSubmit={() => {
 					logoutUser();
-					navigate('/');
+					navigate("/");
 				}}
 			/>
 		</div>
 	);
-}
+};
 
 export default AccountPage;

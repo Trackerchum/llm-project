@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { User, UserMethods } from '../../models/user';
-import HorizontalSpacer from '../../components/horizontalSpacer';
-import Form from '../../components/form/Form';
-import TextInput from '../../components/form/textInput';
+import { useState } from "react";
+import { User, UserMethods } from "../../models/user";
+import HorizontalSpacer from "../../components/horizontalSpacer";
+import Form from "../../components/form/Form";
+import TextInput from "../../components/form/textInput";
 import "./RegisterPage.scss";
-import { useNavigate } from 'react-router-dom';
-import { Client } from '../../fetch';
+import { useNavigate } from "react-router-dom";
+import { Client } from "../../fetch";
 
 const RegisterPage = () => {
 	const navigate = useNavigate();
@@ -18,7 +18,7 @@ const RegisterPage = () => {
 	const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const client = new Client('/api/user');
+	const client = new Client("/api/user");
 
 	const updateUser = (propName: keyof User, newValue: string) => {
 		let newUser = { ...user };
@@ -32,81 +32,84 @@ const RegisterPage = () => {
 			let postUser = { ...user };
 			delete postUser.confirmPassword;
 
-			const response = await client.post<User>('/register', postUser);
+			const response = await client.post<User>("/register", postUser);
 
 			if (!response.isError) {
 				setLoading(false);
-				navigate('/login');
-			}
-			else {
+				navigate("/login");
+			} else {
 				// TODO handle error
 				setLoading(false);
 			}
 		}
-	}
+	};
 
-	return <div className='registerPage'>
-		<h1>Register</h1>
-		<HorizontalSpacer />
-		<Form
-			submitText='Register'
-			onSubmit={onSubmit}
-			submitDisabled={!UserMethods.fieldsValidForRegister(user)}
-			loading={loading}
-		>
-			<>
-				<TextInput
-					value={user.firstName ?? ""}
-					onChange={(newValue: string) => updateUser("firstName", newValue)}
-					name='firstName'
-					labelText='*First name:'
-					onBlur={() => setFirstNameError(UserMethods.getFirstNameError(user))}
-					errorText={firstNameError}
-				/>
-				<TextInput
-					value={user.lastName ?? ""}
-					onChange={(newValue: string) => updateUser("lastName", newValue)}
-					name='lastName'
-					labelText='*Last name:'
-					onBlur={() => setLastNameError(UserMethods.getLastNameError(user))}
-					errorText={lastNameError}
-				/>
-				<TextInput
-					value={user.email}
-					onChange={(newValue: string) => updateUser("email", newValue)}
-					name='email'
-					labelText='*Email:'
-					onBlur={() => setEmailError(UserMethods.getEmailError(user))}
-					errorText={emailError}
-				/>
-				<TextInput
-					value={user.password ?? ""}
-					onChange={(newValue: string) => updateUser("password", newValue)}
-					name='password'
-					labelText='*Password:'
-					type='password'
-					onBlur={() => {
-						setPasswordError(UserMethods.getPasswordError(user));
-						if (user.confirmPassword) {
-							setConfirmPasswordError(UserMethods.getConfirmPasswordError(user));
-						}
-					}}
-					errorText={passwordError}
-				/>
-				<TextInput
-					value={user.confirmPassword ?? ""}
-					onChange={(newValue: string) => updateUser("confirmPassword", newValue)}
-					name='confirmPassword'
-					labelText='*Confirm password:'
-					type='password'
-					onBlur={() => setConfirmPasswordError(UserMethods.getConfirmPasswordError(user))}
-					errorText={confirmPasswordError}
-				/>
-			</>
-		</Form>
-		<HorizontalSpacer />
-		<p>Already have an account? <a href={'/login'} >Login</a>.</p>
-	</div>
-}
+	return (
+		<div className="registerPage">
+			<h1>Register</h1>
+			<HorizontalSpacer />
+			<Form
+				submitText="Register"
+				onSubmit={onSubmit}
+				submitDisabled={!UserMethods.fieldsValidForRegister(user)}
+				loading={loading}
+			>
+				<>
+					<TextInput
+						value={user.firstName ?? ""}
+						onChange={(newValue: string) => updateUser("firstName", newValue)}
+						name="firstName"
+						labelText="*First name:"
+						onBlur={() => setFirstNameError(UserMethods.getFirstNameError(user))}
+						errorText={firstNameError}
+					/>
+					<TextInput
+						value={user.lastName ?? ""}
+						onChange={(newValue: string) => updateUser("lastName", newValue)}
+						name="lastName"
+						labelText="*Last name:"
+						onBlur={() => setLastNameError(UserMethods.getLastNameError(user))}
+						errorText={lastNameError}
+					/>
+					<TextInput
+						value={user.email}
+						onChange={(newValue: string) => updateUser("email", newValue)}
+						name="email"
+						labelText="*Email:"
+						onBlur={() => setEmailError(UserMethods.getEmailError(user))}
+						errorText={emailError}
+					/>
+					<TextInput
+						value={user.password ?? ""}
+						onChange={(newValue: string) => updateUser("password", newValue)}
+						name="password"
+						labelText="*Password:"
+						type="password"
+						onBlur={() => {
+							setPasswordError(UserMethods.getPasswordError(user));
+							if (user.confirmPassword) {
+								setConfirmPasswordError(UserMethods.getConfirmPasswordError(user));
+							}
+						}}
+						errorText={passwordError}
+					/>
+					<TextInput
+						value={user.confirmPassword ?? ""}
+						onChange={(newValue: string) => updateUser("confirmPassword", newValue)}
+						name="confirmPassword"
+						labelText="*Confirm password:"
+						type="password"
+						onBlur={() => setConfirmPasswordError(UserMethods.getConfirmPasswordError(user))}
+						errorText={confirmPasswordError}
+					/>
+				</>
+			</Form>
+			<HorizontalSpacer />
+			<p>
+				Already have an account? <a href={"/login"}>Login</a>.
+			</p>
+		</div>
+	);
+};
 
 export default RegisterPage;
