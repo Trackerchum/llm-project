@@ -1,2 +1,2 @@
-export const appName: string = "App name";
+export const appName: string = "Home";
 export const userCookieKey = "_user";
