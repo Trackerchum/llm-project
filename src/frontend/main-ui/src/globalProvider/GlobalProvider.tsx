@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { User } from "../models/user";
 import { userCookieKey } from "../helpers/constants";
 
@@ -16,7 +16,16 @@ interface GlobalState {
 const GlobalState = createContext<GlobalState | null>(null);
 
 export function GlobalProvider({ children }: { children: React.ReactNode }) {
+
     const [user, setUserState] = useState<AuthState["user"]>(null);
+
+    useEffect(() => {
+        window.cookieStore.get(userCookieKey).then((cookie: any) => {
+            if (cookie?.name === userCookieKey && cookie.value) {
+                setUserState(JSON.parse(cookie.value));
+            }
+        })
+    }, []);
 
     const setUser = (user: AuthState["user"]) => {
         window.cookieStore.set(userCookieKey, JSON.stringify(user));
