@@ -6,8 +6,7 @@ import Button from '../../components/button';
 
 const AccountPage = () => {
 	const navigate = useNavigate();
-	const { getUser, logoutUser } = useAuth();
-	const user = getUser();
+	const { user, logoutUser } = useAuth();
 	if (!user && typeof window !== "undefined") {
 		navigate('/login');
 	}

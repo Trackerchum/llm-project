@@ -4,9 +4,9 @@ import { userCookieKey } from "../helpers/constants";
 
 interface AuthState {
     user: User | null;
-    setUser: (user: AuthState["user"]) => void;
+    setUser: (user: AuthState["user"]) => Promise<void>;
     getUser: () => AuthState["user"];
-    logoutUser: () => void;
+    logoutUser: () => Promise<void>;
 };
 
 interface GlobalState {
@@ -27,13 +27,13 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
         })
     }, []);
 
-    const setUser = (user: AuthState["user"]) => {
-        window.cookieStore.set(userCookieKey, JSON.stringify(user));
+    const setUser = async (user: AuthState["user"]) => {
+        await window.cookieStore.set(userCookieKey, JSON.stringify(user));
         setUserState(user);
     }
 
-    const logoutUser = () => {
-        window.cookieStore.delete(userCookieKey);
+    const logoutUser = async () => {
+        await window.cookieStore.delete(userCookieKey);
         setUserState(null);
     }
 

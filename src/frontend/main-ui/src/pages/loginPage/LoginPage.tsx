@@ -31,9 +31,10 @@ const LoginPage = () => {
 			const response = await userClient.post<User>("/login", localUser);
 
 			if (!response.isError) {
-				setUser(response.data);
-				setLoading(false);
-				navigate("/");
+				setUser(response.data).then(() => {
+					setLoading(false);
+					navigate("/");
+				});
 			} else {
 				// TODO handle error
 				setLoading(false);
