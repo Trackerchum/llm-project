@@ -61,7 +61,7 @@ export class ChatController extends BaseController {
 				await logger("sendInitialized", () => this.mcpClient.sendInitialized(mcpSessionId));
 			}
 
-			// TODO get chat history, if exists, check when tools last fetch, cache etc... 
+			// TODO get chat history, if exists, check when tools last fetch, cache etc...
 
 			// TODO periodically get and cache tools
 			const tools = await logger("toolsList", () => this.mcpClient.toolsList(mcpSessionId, {}));
@@ -98,7 +98,7 @@ export class ChatController extends BaseController {
 			}
 
 			let isToolRequested = true;
-			let loopNumber = 0
+			let loopNumber = 0;
 
 			// loop while tools are requested
 			while (isToolRequested) {
@@ -150,15 +150,15 @@ export class ChatController extends BaseController {
 					chatRequest.setTools([]);
 					chatRequest.addMessage({
 						role: "user",
-						content: "Respond with only the information you currently have."
+						content: "Respond with only the information you currently have.",
 					});
 				}
 			}
 
 			chatRequest.addMessage({
 				role: "assistant",
-				content: (response as any).response.message.content
-			})
+				content: (response as any).response.message.content,
+			});
 
 			// TODO save chat history to mongoDB
 

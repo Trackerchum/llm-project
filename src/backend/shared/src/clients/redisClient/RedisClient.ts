@@ -13,9 +13,7 @@ export class RedisClient {
 				reconnectStrategy: (retries, cause) => {
 					const message = cause?.message ?? "";
 					const code =
-						typeof cause === "object" && cause !== null && "code" in cause
-							? String(cause.code)
-							: "";
+						typeof cause === "object" && cause !== null && "code" in cause ? String(cause.code) : "";
 
 					// Stop retries immediately for auth/config errors.
 					if (

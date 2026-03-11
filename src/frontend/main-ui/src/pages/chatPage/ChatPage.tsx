@@ -19,7 +19,6 @@ const HomePage = () => {
 		}>
 	>([]);
 
-
 	const submitPrompt = () => {
 		if (!promptText) {
 			window.alert("Prompt text mustn't be blank");
