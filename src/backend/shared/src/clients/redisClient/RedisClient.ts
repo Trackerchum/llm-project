@@ -10,6 +10,33 @@ export class RedisClient {
 			socket: {
 				host: host,
 				port: port,
+				reconnectStrategy: (retries, cause) => {
+					const message = cause?.message ?? "";
+					const code =
+						typeof cause === "object" && cause !== null && "code" in cause
+							? String(cause.code)
+							: "";
+
+					// Stop retries immediately for auth/config errors.
+					if (
+						message.includes("WRONGPASS") ||
+						message.includes("NOAUTH") ||
+						message.includes("invalid username-password pair") ||
+						message.includes("ERR AUTH") ||
+						code === "WRONGPASS"
+					) {
+						return new Error("Redis authentication failed. Check REDIS_PASSWORD.");
+					}
+
+					// Keep bounded retries for transient failures.
+					if (retries >= 10) {
+						return new Error("Redis reconnect retries exhausted.");
+					}
+
+					// Exponential backoff capped at 3s.
+					const delayMs = Math.min(250 * 2 ** retries, 3000);
+					return delayMs;
+				},
 			},
 			password: password,
 		});
