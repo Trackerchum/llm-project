@@ -3,10 +3,13 @@ import Button from "../../components/button";
 import { Client } from "../../fetch";
 import "./ChatPage.scss";
 import TextInput from "../../components/form/textInput";
+import { useAuth } from "../../globalProvider";
 
 const client = new Client("/api");
 
 const HomePage = () => {
+	const { user } = useAuth();
+
 	const [isLoading, setLoading] = useState(false);
 	const [promptText, setPromptText] = useState("");
 	const [chatHistory, setChatHistory] = useState<
@@ -16,16 +19,21 @@ const HomePage = () => {
 		}>
 	>([]);
 
+
 	const submitPrompt = () => {
 		if (!promptText) {
 			window.alert("Prompt text mustn't be blank");
+			return;
+		}
+		if (!user?.id) {
+			window.alert("You must be signed in");
 			return;
 		}
 		setChatHistory((prev) => [...prev, { host: "prompt", text: promptText }]);
 		setLoading(true);
 		setPromptText("");
 
-		client.post<{ response: string }>("/chat", { prompt: promptText }).then((response) => {
+		client.post<{ response: string }>("/chat", { prompt: promptText, userId: user.id }).then((response) => {
 			setLoading(false);
 			if (response.isError) {
 				setChatHistory((prev) => [...prev, { host: "reply", text: `Error: ${response.error}` }]);
