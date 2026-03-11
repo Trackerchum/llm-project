@@ -23,6 +23,10 @@ class ChatRequest {
 		this.tools = config?.tools ?? [];
 	}
 
+	setId(id: UUID) {
+		this.id = id;
+	}
+
 	addMessage(message: Message) {
 		this.messages.push(message);
 	}

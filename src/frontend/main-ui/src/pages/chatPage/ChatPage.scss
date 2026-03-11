@@ -18,14 +18,14 @@
 				border-radius: 10px;
 				width: fit-content;
 
-				&.prompt {
+				&.user {
 					align-self: flex-end;
 					text-align: right;
 					margin-left: 15%;
 					background: #47f047;
 				}
 
-				&.reply {
+				&.assistant {
 					align-self: flex-start;
 					text-align: left;
 					margin-right: 15%;

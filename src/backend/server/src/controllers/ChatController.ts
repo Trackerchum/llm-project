@@ -8,8 +8,16 @@ import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
 
+type ChatHistoryEntry = ReturnType<ChatRequest["getChatRequest"]>;
+
+interface UserChatHistoryDocument {
+	_id: string;
+	histories: ChatHistoryEntry[];
+}
+
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
+	private readonly chatHistoryCollection = "chatHistories";
 
 	constructor(baseUrl: string) {
 		super(baseUrl);
@@ -17,17 +25,37 @@ export class ChatController extends BaseController {
 	}
 
 	setupRoutes = (app: Express) => {
-		app.post(this.baseUrl, async (req, res) => {
-			if (!req.body?.prompt) {
+		app.get(`${this.baseUrl}/histories/:userId`, async (req, res) => {
+			if (!req.params?.userId) {
 				return res.status(400).json({
 					ok: false,
-					error: "Error, chat prompt missing.",
+					error: "Error, user ID missing.",
 				});
 			}
-			if (!req.body?.userId) {
-				return res.status(401).json({
+
+			try {
+				const chatHistories = await this.getUserChatHistories(req.params.userId);
+				return res.json({ ok: true, userId: req.params.userId, chatHistories });
+			} catch (error) {
+				return res.status(500).json({
 					ok: false,
-					error: "Error, user ID missing.",
+					error: `Error fetching chat histories: ${error}`,
+				});
+			}
+		});
+
+		app.post(this.baseUrl, async (req, res) => {
+			if (!req.body?.prompt || !req.body?.userId) {
+				const missingProperties =
+					!req.body?.prompt && !req.body?.userId
+						? "prompt and userId"
+						: !req.body?.prompt
+							? "prompt"
+							: "userId";
+				const errorMessage = `Error, ${missingProperties} missing.`;
+				return res.status(400).json({
+					ok: false,
+					error: errorMessage,
 				});
 			}
 			let mcpSessionId = req.header(MCP_SESSION_ID) ?? null;
@@ -61,8 +89,6 @@ export class ChatController extends BaseController {
 				await logger("sendInitialized", () => this.mcpClient.sendInitialized(mcpSessionId));
 			}
 
-			// TODO get chat history, if exists, check when tools last fetch, cache etc...
-
 			// TODO periodically get and cache tools
 			const tools = await logger("toolsList", () => this.mcpClient.toolsList(mcpSessionId, {}));
 			res.setHeader(MCP_SESSION_ID, mcpSessionId);
@@ -75,9 +101,21 @@ export class ChatController extends BaseController {
 				});
 			}
 
+			const chatHistories = await this.getUserChatHistories(req.body.userId);
+
 			const chatRequest = new ChatRequest({
 				tools: mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]),
 			});
+
+			if (chatHistories.length > 0 && chatHistories[0].messages.length > 0) {
+				chatRequest.setId(chatHistories[0].id);
+				chatHistories[0].messages.forEach((message) => {
+					chatRequest.addMessage({
+						role: message.role,
+						content: message.content,
+					});
+				});
+			}
 
 			chatRequest.addMessage({ role: "user", content: req.body.prompt });
 
@@ -93,7 +131,12 @@ export class ChatController extends BaseController {
 
 			// no tools requested, return message content
 			if (!response.response.message.tool_calls?.length) {
-				// TODO save chat history to mongoDB
+				chatRequest.addMessage({
+					role: "assistant",
+					content: response.response.message.content,
+				});
+				const chatHistory = chatRequest.getChatRequest();
+				await this.saveUserChatHistory(req.body.userId, chatHistory);
 				return res.json({ ok: true, mcpSessionId, response: response.response.message.content });
 			}
 
@@ -160,7 +203,8 @@ export class ChatController extends BaseController {
 				content: (response as any).response.message.content,
 			});
 
-			// TODO save chat history to mongoDB
+			const chatHistory = chatRequest.getChatRequest();
+			await this.saveUserChatHistory(req.body.userId, chatHistory);
 
 			return res.json({
 				ok: true,
@@ -170,5 +214,31 @@ export class ChatController extends BaseController {
 				chatHistory: chatRequest.getChatRequest(),
 			});
 		});
+	};
+
+	private saveUserChatHistory = async (userId: string, chatHistory: ChatHistoryEntry) => {
+		const updateResult = await this.mongoClient.updateOne<UserChatHistoryDocument>(
+			this.chatHistoryCollection,
+			{ _id: userId, "histories.id": chatHistory.id },
+			{ $set: { "histories.$": chatHistory } as any },
+		);
+
+		if (updateResult.matchedCount > 0) {
+			return;
+		}
+
+		await this.mongoClient.updateOne<UserChatHistoryDocument>(
+			this.chatHistoryCollection,
+			{ _id: userId },
+			{ $push: { histories: chatHistory } },
+			{ upsert: true },
+		);
+	};
+
+	private getUserChatHistories = async (userId: string): Promise<ChatHistoryEntry[]> => {
+		const document = await this.mongoClient.findOne<UserChatHistoryDocument>(this.chatHistoryCollection, {
+			_id: userId,
+		});
+		return document?.histories ?? [];
 	};
 }
