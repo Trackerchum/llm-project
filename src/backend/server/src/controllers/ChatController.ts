@@ -6,7 +6,7 @@ import { jsonRpcErrorCodeToHttpStatus } from "@Shared/helpers/mcp";
 import { ChatRequest } from "@Shared/models/mcp";
 import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
-import { MCPListTool } from "@Shared/types/ollama";
+import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
 
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
@@ -75,8 +75,6 @@ export class ChatController extends BaseController {
 
 			chatRequest.addMessage({ role: "user", content: req.body.prompt });
 
-			// TODO START LOOP - keep sending to MCP until no tools are requested and response is returned
-
 			let response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
 
 			if (response.ok === false) {
@@ -87,41 +85,69 @@ export class ChatController extends BaseController {
 				});
 			}
 
+			// no tools requested, return message content
 			if (!response.response.message.tool_calls?.length) {
+				// TODO save chat history to mongoDB
 				return res.json({ ok: true, mcpSessionId, response: response.response.message.content });
 			}
 
-			const toolCalls = await Promise.all(
-				response.response.message.tool_calls.map(async (tool) => {
-					const toolResponse = await this.mcpClient.callTool(mcpSessionId, {
-						name: tool.function.name,
-						arguments: tool.function.arguments,
-					});
+			let isToolRequested = true;
+			let loopNumber = 0
 
-					return {
-						// TODO error handling
-						ok: true,
-						toolName: tool.function.name,
-						toolCallId: tool.id,
-						data: toolResponse,
-					};
-				}),
-			);
+			// loop while tools are requested
+			while (isToolRequested) {
+				const toolCalls = await Promise.all(
+					(response as OllamaChatSuccess).response.message.tool_calls.map(async (tool) => {
+						const toolResponse = await this.mcpClient.callTool(mcpSessionId, {
+							name: tool.function.name,
+							arguments: tool.function.arguments,
+						});
 
-			toolCalls.forEach((call) => {
-				if (call.ok) {
-					chatRequest.addMessage({
-						role: "tool",
-						// TODO narrowing on call.ok
-						content: (call.data as any).result.content[0].text,
-						tool_name: call.toolName,
+						return {
+							// TODO error handling
+							ok: true,
+							toolName: tool.function.name,
+							toolCallId: tool.id,
+							data: toolResponse,
+						};
+					}),
+				);
+
+				toolCalls.forEach((call) => {
+					if (call.ok) {
+						chatRequest.addMessage({
+							role: "tool",
+							// TODO narrowing on call.ok, error handling
+							content: (call.data as any).result.content[0].text,
+							tool_name: call.toolName,
+						});
+					}
+				});
+
+				response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
+
+				if (response.ok === false) {
+					return res.status(response.statusCode).json({
+						ok: false,
+						mcpSessionId,
+						error: response.error,
 					});
 				}
-			});
 
-			response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
+				if (!response.response.message.tool_calls?.length) {
+					isToolRequested = false;
+				}
 
-			// TODO END LOOP
+				loopNumber++;
+				if (loopNumber === 5) {
+					// TODO find a better approach when there are more tools, currently this is just a simple loop break.
+					chatRequest.setTools([]);
+					chatRequest.addMessage({
+						role: "user",
+						content: "Respond with only the information you currently have."
+					});
+				}
+			}
 
 			// TODO save chat history to mongoDB
 
