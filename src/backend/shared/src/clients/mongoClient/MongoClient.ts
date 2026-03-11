@@ -14,15 +14,17 @@ export class MongoClient {
     private database: Db | null;
     private connectionString: string;
     private defaultDbName?: string;
-    private isConnected: boolean;
+    #isConnected: boolean;
 
     constructor(url: string, defaultDbName?: string) {
         this.connectionString = url;
         this.Client = new MongoNativeClient(url);
         this.database = null;
         this.defaultDbName = defaultDbName;
-        this.isConnected = false;
+        this.#isConnected = false;
     }
+
+    isConnected = (): boolean => this.#isConnected;
 
     connect = async () => {
         try {
@@ -32,7 +34,7 @@ export class MongoClient {
         } catch (error) {
             throw error;
         }
-        this.isConnected = true;
+        this.#isConnected = true;
     };
 
     destroy = async () => {
@@ -42,7 +44,7 @@ export class MongoClient {
             throw error;
         }
         this.database = null;
-        this.isConnected = false;
+        this.#isConnected = false;
     };
 
     // Convenience method similar to Redis set/get for key-value style storage.
