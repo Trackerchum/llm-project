@@ -24,6 +24,12 @@ export class ChatController extends BaseController {
 					error: "Error, chat prompt missing.",
 				});
 			}
+			if (!req.body?.userId) {
+				return res.status(401).json({
+					ok: false,
+					error: "Error, user ID missing.",
+				});
+			}
 			let mcpSessionId = req.header(MCP_SESSION_ID) ?? null;
 
 			if (!mcpSessionId) {
