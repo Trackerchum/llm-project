@@ -149,6 +149,11 @@ export class ChatController extends BaseController {
 				}
 			}
 
+			chatRequest.addMessage({
+				role: "assistant",
+				content: (response as any).response.message.content
+			})
+
 			// TODO save chat history to mongoDB
 
 			return res.json({
