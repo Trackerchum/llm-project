@@ -4,12 +4,12 @@ import { EmailHelpers } from "../../helpers/EmailHelpers";
 const blankFieldErrorMessage = "*This field is required";
 
 export class UserMethods {
-	static createWithDefaultProps: (login?: boolean) => User = (login = false) => {
+	static createWithDefaultProps = (isRegister = false): User => {
 		let user = {
 			email: "",
 			password: "",
 		};
-		if (!login) {
+		if (isRegister) {
 			user = Object.assign(user, {
 				firstName: "",
 				lastName: "",

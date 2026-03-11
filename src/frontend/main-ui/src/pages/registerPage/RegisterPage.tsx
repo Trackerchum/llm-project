@@ -10,7 +10,7 @@ import { Client } from "../../fetch";
 const RegisterPage = () => {
 	const navigate = useNavigate();
 
-	const [user, setUser] = useState<User>(UserMethods.createWithDefaultProps());
+	const [user, setUser] = useState<User>(UserMethods.createWithDefaultProps(true));
 	const [firstNameError, setFirstNameError] = useState<string>("");
 	const [lastNameError, setLastNameError] = useState<string>("");
 	const [emailError, setEmailError] = useState<string>("");

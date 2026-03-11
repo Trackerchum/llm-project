@@ -12,7 +12,7 @@ const LoginPage = () => {
 	const navigate = useNavigate();
 	const { setUser } = useAuth();
 
-	const [localUser, setLocalUser] = useState<User>(UserMethods.createWithDefaultProps(true));
+	const [localUser, setLocalUser] = useState<User>(UserMethods.createWithDefaultProps());
 	const [emailError, setEmailError] = useState<string>("");
 	const [passwordError, setPasswordError] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);

@@ -3,6 +3,7 @@ import { BaseController } from "@Shared/controllers/BaseController";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User, UserMethods } from "@Shared/models/user";
+import { randomUUID } from "node:crypto";
 
 export class UserController extends BaseController {
 	constructor(baseUrl: string) {
@@ -45,6 +46,7 @@ export class UserController extends BaseController {
 				const response = await this.redisClient.set(
 					user.email,
 					JSON.stringify({
+						id: randomUUID(),
 						firstName: user.firstName,
 						lastName: user.lastName,
 						email: user.email,
