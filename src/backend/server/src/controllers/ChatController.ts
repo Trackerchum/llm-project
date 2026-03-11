@@ -7,17 +7,11 @@ import { ChatRequest } from "@Shared/models/mcp";
 import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
-
-type ChatHistoryEntry = ReturnType<ChatRequest["getChatRequest"]>;
-
-interface UserChatHistoryDocument {
-	_id: string;
-	histories: ChatHistoryEntry[];
-}
+import { getUserChatHistories, saveUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
 
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
-	private readonly chatHistoryCollection = "chatHistories";
+	private readonly chatHistoryCollectionName = "chatHistories";
 
 	constructor(baseUrl: string) {
 		super(baseUrl);
@@ -34,7 +28,11 @@ export class ChatController extends BaseController {
 			}
 
 			try {
-				const chatHistories = await this.getUserChatHistories(req.params.userId);
+				const chatHistories = await getUserChatHistories(
+					this.mongoClient,
+					this.chatHistoryCollectionName,
+					req.params.userId,
+				);
 				return res.json({ ok: true, userId: req.params.userId, chatHistories });
 			} catch (error) {
 				return res.status(500).json({
@@ -101,7 +99,11 @@ export class ChatController extends BaseController {
 				});
 			}
 
-			const chatHistories = await this.getUserChatHistories(req.body.userId);
+			const chatHistories = await getUserChatHistories(
+				this.mongoClient,
+				this.chatHistoryCollectionName,
+				req.body.userId,
+			);
 
 			const chatRequest = new ChatRequest({
 				tools: mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]),
@@ -136,7 +138,12 @@ export class ChatController extends BaseController {
 					content: response.response.message.content,
 				});
 				const chatHistory = chatRequest.getChatRequest();
-				await this.saveUserChatHistory(req.body.userId, chatHistory);
+				await saveUserChatHistory(
+					this.mongoClient,
+					this.chatHistoryCollectionName,
+					req.body.userId,
+					chatHistory,
+				);
 				return res.json({ ok: true, mcpSessionId, response: response.response.message.content });
 			}
 
@@ -204,7 +211,7 @@ export class ChatController extends BaseController {
 			});
 
 			const chatHistory = chatRequest.getChatRequest();
-			await this.saveUserChatHistory(req.body.userId, chatHistory);
+			await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, req.body.userId, chatHistory);
 
 			return res.json({
 				ok: true,
@@ -214,31 +221,5 @@ export class ChatController extends BaseController {
 				chatHistory: chatRequest.getChatRequest(),
 			});
 		});
-	};
-
-	private saveUserChatHistory = async (userId: string, chatHistory: ChatHistoryEntry) => {
-		const updateResult = await this.mongoClient.updateOne<UserChatHistoryDocument>(
-			this.chatHistoryCollection,
-			{ _id: userId, "histories.id": chatHistory.id },
-			{ $set: { "histories.$": chatHistory } as any },
-		);
-
-		if (updateResult.matchedCount > 0) {
-			return;
-		}
-
-		await this.mongoClient.updateOne<UserChatHistoryDocument>(
-			this.chatHistoryCollection,
-			{ _id: userId },
-			{ $push: { histories: chatHistory } },
-			{ upsert: true },
-		);
-	};
-
-	private getUserChatHistories = async (userId: string): Promise<ChatHistoryEntry[]> => {
-		const document = await this.mongoClient.findOne<UserChatHistoryDocument>(this.chatHistoryCollection, {
-			_id: userId,
-		});
-		return document?.histories ?? [];
 	};
 }
