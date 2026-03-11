@@ -1,6 +1,6 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import { getDIClasses, setupControllers } from "@Shared/controllers";
+import { getDIClasses, setupControllers, setupGracefulShutdown } from "@Shared/controllers";
 import { ChatController, GenerateController, HomeController } from "./controllers";
 
 dotenv.config();
@@ -21,8 +21,7 @@ const diClasses = getDIClasses({
 	},
 });
 
-diClasses.redisClient
-	.connect()
+Promise.all([diClasses.redisClient.connect(), diClasses.mongoClient.connect()])
 	.then(() => {
 		setupControllers(
 			app,
@@ -30,10 +29,11 @@ diClasses.redisClient
 			diClasses,
 		);
 
-		app.listen(port, () => {
+		const httpServer = app.listen(port, () => {
 			console.log(`listening on port ${port}`);
 		});
+		setupGracefulShutdown(httpServer, diClasses);
 	})
 	.catch((error) => {
-		console.error(`Error connecting to redis client: ${error}`);
+		console.error(`Error connecting to dependency clients: ${error}`);
 	});

@@ -2,7 +2,7 @@ import express from "express";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import { MCPController } from "./controllers";
-import { setupControllers, getDIClasses } from "@Shared/controllers";
+import { setupControllers, getDIClasses, setupGracefulShutdown } from "@Shared/controllers";
 import { MCP_SESSION_ID } from "@Shared/constants";
 
 dotenv.config();
@@ -36,8 +36,7 @@ const diClasses = getDIClasses({
 
 const mcpController = new MCPController("/mcp");
 
-diClasses.redisClient
-	.connect()
+Promise.all([diClasses.redisClient.connect(), diClasses.mongoClient.connect()])
 	.then(() => {
 		setupControllers(app, [mcpController], diClasses);
 
@@ -47,15 +46,13 @@ diClasses.redisClient
 			console.log(`JSON-RPC endpoint: POST http://localhost:${String(port)}/mcp`);
 			console.log(`CORS origin: ${corsOrigin}`);
 		});
-
-		process.on("SIGINT", () => {
-			console.log("Shutting down HTTP server...");
-			mcpController.closeTransports();
-			httpServer.close(() => {
-				process.exit(0);
-			});
+		setupGracefulShutdown(httpServer, diClasses, {
+			message: "Shutting down HTTP server...",
+			onBeforeClose: () => {
+				mcpController.closeTransports();
+			},
 		});
 	})
 	.catch((error) => {
-		console.error(`Error connecting to redis client: ${error}`);
+		console.error(`Error connecting to dependency clients: ${error}`);
 	});
