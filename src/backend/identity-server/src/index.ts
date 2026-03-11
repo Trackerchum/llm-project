@@ -16,6 +16,9 @@ const diClasses = getDIClasses({
 		port: parseInt(process.env.REDIS_PORT, 10),
 		password: process.env.REDIS_PASSWORD,
 	},
+	mongo: {
+		url: process.env.MONGO_URL,
+	},
 });
 
 diClasses.redisClient

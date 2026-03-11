@@ -2,15 +2,18 @@ import { Express } from "express";
 import { RedisClient } from "../clients/redisClient";
 import { User } from "../models/user";
 import { OllamaClient } from "../clients/ollamaClient";
+import { MongoClient } from "../clients/mongoClient";
 
 export interface DependencyInjectedClasses {
 	redisClient: RedisClient;
+	mongoClient: MongoClient;
 	ollamaClient: OllamaClient;
 }
 
 export abstract class BaseController implements DependencyInjectedClasses {
 	baseUrl: string;
 	redisClient: RedisClient;
+	mongoClient: MongoClient;
 	ollamaClient: OllamaClient;
 
 	constructor(baseUrl: string) {
@@ -19,6 +22,7 @@ export abstract class BaseController implements DependencyInjectedClasses {
 
 	init = (app: Express, diClasses: DependencyInjectedClasses) => {
 		this.redisClient = diClasses.redisClient;
+		this.mongoClient = diClasses.mongoClient;
 		this.ollamaClient = diClasses.ollamaClient;
 		this.setupRoutes(app);
 	};
