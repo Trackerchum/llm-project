@@ -55,6 +55,8 @@ export class ChatController extends BaseController {
 				await logger("sendInitialized", () => this.mcpClient.sendInitialized(mcpSessionId));
 			}
 
+			// TODO get chat history, if exists, check when tools last fetch, cache etc... 
+
 			// TODO periodically get and cache tools
 			const tools = await logger("toolsList", () => this.mcpClient.toolsList(mcpSessionId, {}));
 			res.setHeader(MCP_SESSION_ID, mcpSessionId);
@@ -72,6 +74,8 @@ export class ChatController extends BaseController {
 			});
 
 			chatRequest.addMessage({ role: "user", content: req.body.prompt });
+
+			// TODO START LOOP - keep sending to MCP until no tools are requested and response is returned
 
 			let response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
 
@@ -116,6 +120,10 @@ export class ChatController extends BaseController {
 			});
 
 			response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
+
+			// TODO END LOOP
+
+			// TODO save chat history to mongoDB
 
 			return res.json({
 				ok: true,
