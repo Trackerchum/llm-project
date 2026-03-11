@@ -38,7 +38,7 @@ const RegisterPage = () => {
 				setLoading(false);
 				navigate("/login");
 			} else {
-				// TODO handle error
+				// TODO handle errors - invalid login, user already exists etc...
 				setLoading(false);
 			}
 		}
