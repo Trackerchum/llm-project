@@ -116,8 +116,8 @@ export class ChatController extends BaseController {
 			let chatNamePromise: Promise<any>
 
 			if (activeChatHistory && activeChatHistory.messages.length > 0) {
-				chatRequest.setId(chatHistories[0].id);
-				chatHistories[0].messages.forEach((message) => {
+				chatRequest.setId(activeChatHistory.id);
+				activeChatHistory.messages.forEach((message) => {
 					chatRequest.addMessage({
 						role: message.role,
 						content: message.content,
