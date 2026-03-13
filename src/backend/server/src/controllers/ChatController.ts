@@ -28,11 +28,11 @@ export class ChatController extends BaseController {
 			}
 
 			try {
-				const chatHistories = await getUserChatHistories(
+				const chatHistories = await logger("getUserChatHistories", () => getUserChatHistories(
 					this.mongoClient,
 					this.chatHistoryCollectionName,
 					req.params.userId,
-				);
+				));
 				return res.json({ ok: true, userId: req.params.userId, chatHistories });
 			} catch (error) {
 				return res.status(500).json({
