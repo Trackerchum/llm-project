@@ -148,6 +148,8 @@ export class ChatController extends BaseController {
 
 			// no tools requested, return message content
 			if (!response.response.message.tool_calls?.length) {
+				const chatName = activeChatHistory?.name ?? (await chatNamePromise).response;
+				chatRequest.setName(chatName);
 				chatRequest.addMessage({
 					role: "assistant",
 					content: response.response.message.content,
@@ -159,7 +161,15 @@ export class ChatController extends BaseController {
 					req.body.userId,
 					chatHistory,
 				);
-				return res.json({ ok: true, mcpSessionId, response: response.response.message.content });
+				return res.json({
+					ok: true,
+					mcpSessionId,
+					response: response.response.message.content,
+					chatId: chatRequest.getId(),
+					name: chatName,
+					// for degugging only, don't expose in prod/staging
+					chatHistory: chatRequest.getChatRequest(),
+				});
 			}
 
 			let isToolRequested = true;
