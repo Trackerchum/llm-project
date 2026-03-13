@@ -7,9 +7,9 @@ import { router } from "../router";
 
 const App = () => {
 	return (
-		<div className="App h-screen">
+		<div className="App">
 			<Header />
-			<main className="container mb-auto">
+			<main className="container">
 				<RouterProvider router={router} />
 			</main>
 			<Footer />
