@@ -47,7 +47,7 @@ const HomePage = () => {
 					setIsFetchingChatHistory(false);
 					return;
 				}
-				// TODO support mutliple chat histories
+
 				if (response.data.chatHistories?.length > 0) {
 					const histories = response.data.chatHistories.map(chatHistory => ({
 						id: chatHistory.id,
