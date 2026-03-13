@@ -64,7 +64,7 @@ const ChatPage = () => {
 				if (response.data.chatHistories?.length > 0) {
 					const histories = response.data.chatHistories.map((chatHistory) => ({
 						id: chatHistory.id,
-						name: chatHistory.name ?? chatHistory.id,
+						name: chatHistory.name,
 						messages: chatHistory.messages
 							.filter((message) => message.role === "assistant" || message.role === "user")
 							.map((message) => ({
@@ -105,23 +105,24 @@ const ChatPage = () => {
 		};
 	}, [user?.id]);
 
-	const updateChatHistoryImmutable = (
+	const updateChatHistoryImmutable = (params: {
 		previousState: ChatHistory[],
-		chatId: string,
 		newMessage: Message,
+		chatId: string,
+		name?: string,
 		newChatId?: string,
-	): ChatHistory[] => {
-		return previousState.map((chatHistory) => {
-			if (chatHistory.id !== chatId) {
+
+	}): ChatHistory[] => {
+		return params.previousState.map((chatHistory) => {
+			if (chatHistory.id !== params.chatId) {
 				return chatHistory;
 			}
 
 			return {
 				...chatHistory,
-				id: newChatId ? newChatId : chatHistory.id,
-				// TODO fix name
-				name: newChatId ? newChatId : chatHistory.name,
-				messages: [...chatHistory.messages, newMessage],
+				id: params.newChatId ? params.newChatId : chatHistory.id,
+				name: params.name ?? chatHistory.name,
+				messages: [...chatHistory.messages, params.newMessage],
 			};
 		});
 	};
@@ -139,7 +140,14 @@ const ChatPage = () => {
 			return;
 		}
 
-		setChatHistories((prev) => updateChatHistoryImmutable(prev, activeChatId, { host: "user", text: promptText }));
+		setChatHistories((prev) => updateChatHistoryImmutable({
+			previousState: prev,
+			chatId: activeChatId,
+			newMessage: {
+				host: "user",
+				text: promptText
+			}
+		}));
 		setIsSubmittingPrompt(true);
 		setPromptText("");
 
@@ -147,6 +155,7 @@ const ChatPage = () => {
 			.post<{
 				response: string;
 				chatId: string;
+				name: string;
 			}>("", { prompt: promptText, userId: user.id, chatId: activeChatId })
 			.then((response) => {
 				setIsSubmittingPrompt(false);
@@ -155,12 +164,13 @@ const ChatPage = () => {
 					return;
 				}
 				setChatHistories((prev) =>
-					updateChatHistoryImmutable(
-						prev,
-						activeChatId,
-						{ host: "assistant", text: response.data.response },
-						response.data.chatId,
-					),
+					updateChatHistoryImmutable({
+						previousState: prev,
+						chatId: activeChatId,
+						newMessage: { host: "assistant", text: response.data.response },
+						newChatId: response.data.chatId,
+						name: response.data.name
+					}),
 				);
 				setActiveChatId(response.data.chatId);
 			}).catch(error => {
@@ -195,14 +205,14 @@ const ChatPage = () => {
 								<button
 									type="button"
 									onClick={() => {
-									const chatHistory: ChatHistory = {
-										id: "",
-										name: newChatText,
-										messages: [],
-									};
-									setChatHistories((prev) => [...prev, chatHistory]);
-									setActiveChatId(chatHistory.id);
-								}}
+										const chatHistory: ChatHistory = {
+											id: "",
+											name: newChatText,
+											messages: [],
+										};
+										setChatHistories((prev) => [...prev, chatHistory]);
+										setActiveChatId(chatHistory.id);
+									}}
 								>{`+ ${newChatText}`}</button>
 							</li>
 						)}

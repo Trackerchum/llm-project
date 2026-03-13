@@ -113,6 +113,8 @@ export class ChatController extends BaseController {
 			// TODO get single chatHistory by req.body?.chatId from mongo
 			const activeChatHistory = chatHistories?.find((chat) => chat.id === req.body?.chatId);
 
+			let chatNamePromise: Promise<any>
+
 			if (activeChatHistory && activeChatHistory.messages.length > 0) {
 				chatRequest.setId(chatHistories[0].id);
 				chatHistories[0].messages.forEach((message) => {
@@ -121,6 +123,13 @@ export class ChatController extends BaseController {
 						content: message.content,
 					});
 				});
+			} else {
+				// new chat
+				chatNamePromise = logger("Ollama generate chat name", () => this.ollamaClient.generate(
+					`Summarise the content of the question or statement below into a title. The title must be no longer than five words, only return those five words.
+					
+					"${req.body.prompt}"`
+				));
 			}
 
 			chatRequest.addMessage({ role: "user", content: req.body.prompt });
@@ -214,7 +223,12 @@ export class ChatController extends BaseController {
 				content: (response as any).response.message.content,
 			});
 
+			const chatName = activeChatHistory?.name ?? await chatNamePromise;
+
+			chatRequest.setName(chatName.response);
+
 			const chatHistory = chatRequest.getChatRequest();
+
 			await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, req.body.userId, chatHistory);
 
 			return res.json({
@@ -222,6 +236,7 @@ export class ChatController extends BaseController {
 				mcpSessionId,
 				response: (response as any).response.message.content,
 				chatId: chatRequest.getId(),
+				name: chatName.response,
 				// for degugging only, don't expose in prod/staging
 				chatHistory: chatRequest.getChatRequest(),
 			});
