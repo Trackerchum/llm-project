@@ -2,10 +2,12 @@
 	text-align: center;
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
-	justify-content: space-between;
+	min-height: 100vh;
 
 	& > main {
-		margin-bottom: auto;
+		flex: 1 1 auto;
+		display: flex;
+		min-height: 0;
+		margin-bottom: 0;
 	}
 }

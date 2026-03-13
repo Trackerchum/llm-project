@@ -3,12 +3,16 @@
 	--sidebar-gap: 8px;
 	position: relative;
 	width: 100%;
+	display: flex;
+	min-height: 100%;
 
 	&__page {
 		box-sizing: border-box;
 		width: 100%;
 		display: flex;
+		flex: 1 1 auto;
 		flex-direction: column;
+		min-height: 100%;
 		transition: padding 0.2s ease;
 	}
 
