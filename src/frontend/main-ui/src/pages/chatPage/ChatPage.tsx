@@ -39,13 +39,25 @@ const ChatPage = () => {
 	const [activeChatId, setActiveChatId] = useState("");
 
 	useEffect(() => {
-		if (user?.id) {
+		const abortController = new AbortController();
+
+		if (!user?.id) {
+			setIsFetchingChatHistory(false);
+			return () => {
+				abortController.abort();
+			};
+		}
+
+		const fetchChatHistory = async () => {
 			setIsFetchingChatHistory(true);
-			chatClient.get<ChatHistoriesResponse>(`/histories/${user?.id}`).then((response) => {
+			try {
+				const response = await chatClient.get<ChatHistoriesResponse>(`/histories/${user.id}`, {
+					signal: abortController.signal,
+				});
+
 				if (response.isError) {
 					// TODO handle error properly
 					console.log(response.error);
-					setIsFetchingChatHistory(false);
 					return;
 				}
 
@@ -60,7 +72,7 @@ const ChatPage = () => {
 								text: message.content,
 							})),
 					}));
-					if (histories && histories.length > 0) {
+					if (histories.length > 0) {
 						setChatHistories(histories);
 						setActiveChatId(histories[0].id);
 					} else {
@@ -73,14 +85,25 @@ const ChatPage = () => {
 						setActiveChatId(newChat.id);
 					}
 				}
-				setIsFetchingChatHistory(false);
-			}).catch(error => {
+			} catch (error) {
+				if (abortController.signal.aborted) {
+					return;
+				}
 				// TODO handle error properly
 				console.log(error);
-				setIsFetchingChatHistory(false);
-			});
-		}
-	}, [user]);
+			} finally {
+				if (!abortController.signal.aborted) {
+					setIsFetchingChatHistory(false);
+				}
+			}
+		};
+
+		void fetchChatHistory();
+
+		return () => {
+			abortController.abort();
+		};
+	}, [user?.id]);
 
 	const updateChatHistoryImmutable = (
 		previousState: ChatHistory[],

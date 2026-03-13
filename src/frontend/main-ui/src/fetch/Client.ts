@@ -9,18 +9,27 @@ export class Client {
 
 	defaultHeaders: HeadersInit = {};
 
-	async get<ExpectedReturn>(url: string): Promise<FetcherResponse<ExpectedReturn>> {
+	async get<ExpectedReturn>(url: string, options: RequestInit = {}): Promise<FetcherResponse<ExpectedReturn>> {
 		const path = new URL(this.baseUrl + url, window.location.origin);
 		return fetcher<ExpectedReturn>(path.toString(), {
+			...options,
 			method: "GET",
 		});
 	}
 
-	async post<ExpectedReturn>(url: string, body: Record<string, any>): Promise<FetcherResponse<ExpectedReturn>> {
+	async post<ExpectedReturn>(
+		url: string,
+		body: Record<string, any>,
+		options: RequestInit = {},
+	): Promise<FetcherResponse<ExpectedReturn>> {
 		const path = new URL(this.baseUrl + url, window.location.origin);
 		return fetcher<ExpectedReturn>(path.toString(), {
+			...options,
 			method: "POST",
-			headers: this.defaultHeaders,
+			headers: {
+				...this.defaultHeaders,
+				...(options.headers || {}),
+			},
 			body: JSON.stringify(body),
 		});
 	}
