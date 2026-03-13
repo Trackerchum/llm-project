@@ -223,9 +223,9 @@ export class ChatController extends BaseController {
 				content: (response as any).response.message.content,
 			});
 
-			const chatName = activeChatHistory?.name ?? await chatNamePromise;
+			const chatName = activeChatHistory?.name ?? (await chatNamePromise).response;
 
-			chatRequest.setName(chatName.response);
+			chatRequest.setName(chatName);
 
 			const chatHistory = chatRequest.getChatRequest();
 
@@ -236,7 +236,7 @@ export class ChatController extends BaseController {
 				mcpSessionId,
 				response: (response as any).response.message.content,
 				chatId: chatRequest.getId(),
-				name: chatName.response,
+				name: chatName,
 				// for degugging only, don't expose in prod/staging
 				chatHistory: chatRequest.getChatRequest(),
 			});
