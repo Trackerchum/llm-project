@@ -106,6 +106,7 @@ export class ChatController extends BaseController {
 				req.body.userId,
 			);
 
+			// TODO generate chat request from existing
 			const chatRequest = new ChatRequest({
 				tools: mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]),
 			});
@@ -117,6 +118,7 @@ export class ChatController extends BaseController {
 
 			if (activeChatHistory && activeChatHistory.messages.length > 0) {
 				chatRequest.setId(activeChatHistory.id);
+				chatRequest.clearMessages();
 				activeChatHistory.messages.forEach((message) => {
 					chatRequest.addMessage({
 						role: message.role,

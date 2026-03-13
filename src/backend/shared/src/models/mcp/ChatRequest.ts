@@ -37,6 +37,10 @@ class ChatRequest {
 		this.name = name
 	}
 
+	clearMessages() {
+		this.messages = [];
+	}
+
 	addMessage(message: Message) {
 		this.messages.push(message);
 	}
