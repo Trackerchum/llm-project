@@ -71,18 +71,16 @@ const ChatPage = () => {
 								text: message.content,
 							})),
 					}));
-					if (histories.length > 0) {
-						setActiveChatId(histories[0].id);
-						setChatHistories(histories);
-					} else {
-						const newChat: ChatHistory = {
-							id: "",
-							name: newChatText,
-							messages: [],
-						};
-						setActiveChatId(newChat.id);
-						setChatHistories([newChat]);
-					}
+					setActiveChatId(histories[0].id);
+					setChatHistories(histories);
+				} else {
+					const newChat: ChatHistory = {
+						id: "",
+						name: newChatText,
+						messages: [],
+					};
+					setActiveChatId(newChat.id);
+					setChatHistories([newChat]);
 				}
 			} catch (error) {
 				if (abortController.signal.aborted) {
