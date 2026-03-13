@@ -1,6 +1,6 @@
 interface Message {
-    host: "user" | "assistant";
-    text: string;
+	host: "user" | "assistant";
+	text: string;
 }
 
-export { type Message }
+export { type Message };

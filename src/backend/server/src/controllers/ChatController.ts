@@ -111,7 +111,7 @@ export class ChatController extends BaseController {
 			});
 
 			// TODO get single chatHistory by req.body?.chatId from mongo
-			const activeChatHistory = chatHistories?.find(chat => chat.id === req.body?.chatId);
+			const activeChatHistory = chatHistories?.find((chat) => chat.id === req.body?.chatId);
 
 			if (activeChatHistory && activeChatHistory.messages.length > 0) {
 				chatRequest.setId(chatHistories[0].id);

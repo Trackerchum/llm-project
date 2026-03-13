@@ -1,9 +1,9 @@
-import { Message } from "./Message"
+import { Message } from "./Message";
 
 interface ChatHistory {
-    id: string,
-    name: string,
-    messages: Array<Message>
+	id: string;
+	name: string;
+	messages: Array<Message>;
 }
 
-export { type ChatHistory }
+export { type ChatHistory };
