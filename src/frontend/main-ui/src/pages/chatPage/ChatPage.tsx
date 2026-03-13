@@ -18,7 +18,6 @@ type ChatHistoriesResponse = {
 	userId: string;
 	chatHistories: Array<{
 		id: string;
-		// TODO assign on server
 		name: string;
 		messages: Array<{
 			role: "system" | "user" | "assistant" | "tool";
@@ -73,16 +72,16 @@ const ChatPage = () => {
 							})),
 					}));
 					if (histories.length > 0) {
-						setChatHistories(histories);
 						setActiveChatId(histories[0].id);
+						setChatHistories(histories);
 					} else {
 						const newChat: ChatHistory = {
 							id: "",
 							name: newChatText,
 							messages: [],
 						};
-						setChatHistories([newChat]);
 						setActiveChatId(newChat.id);
+						setChatHistories([newChat]);
 					}
 				}
 			} catch (error) {
@@ -210,8 +209,8 @@ const ChatPage = () => {
 											name: newChatText,
 											messages: [],
 										};
-										setChatHistories((prev) => [...prev, chatHistory]);
 										setActiveChatId(chatHistory.id);
+										setChatHistories((prev) => [...prev, chatHistory]);
 									}}
 								>{`+ ${newChatText}`}</button>
 							</li>
@@ -229,13 +228,11 @@ const ChatPage = () => {
 							<div className="chatWindow">
 								{activeChat && activeChat.messages.length > 0 && (
 									<div className="chat">
-										{chatHistories
-											.find((history) => history.id === activeChatId)
-											?.messages.map((message, n) => (
-												<p key={generateHash(message.text + message.host + n)} className={message.host}>
-													{message.text}
-												</p>
-											))}
+										{activeChat.messages.map((message, n) => (
+											<p key={generateHash(activeChat.name + message.text + message.host + n)} className={message.host}>
+												{message.text}
+											</p>
+										))}
 									</div>
 								)}
 								<TextInput
