@@ -221,6 +221,7 @@ export class ChatController extends BaseController {
 				ok: true,
 				mcpSessionId,
 				response: (response as any).response.message.content,
+				chatId: chatRequest.getId(),
 				// for degugging only, don't expose in prod/staging
 				chatHistory: chatRequest.getChatRequest(),
 			});
