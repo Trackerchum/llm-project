@@ -9,6 +9,7 @@ import { ChatHistory, Message } from "../../types/chat";
 import Sidebar from "../../components/sidebar";
 
 const chatClient = new Client("/api/chat");
+const newChatText = "New Chat";
 
 // TODO share type with backend ChatController
 type ChatHistoriesResponse = {
@@ -34,7 +35,7 @@ const HomePage = () => {
 	const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false);
 	const [promptText, setPromptText] = useState("");
 	const [chatHistories, setChatHistories] = useState<Array<ChatHistory>>([]);
-	const [activeChat, setActiveChat] = useState<ChatHistory | null>(null);
+	const [activeChatId, setActiveChatId] = useState("");
 
 	useEffect(() => {
 		if (user?.id) {
@@ -60,15 +61,15 @@ const HomePage = () => {
 					}));
 					if (histories && histories.length > 0) {
 						setChatHistories(histories);
-						setActiveChat(histories[0]);
+						setActiveChatId(histories[0].id);
 					} else {
 						const newChat: ChatHistory = {
 							id: "",
-							name: "New Chat",
+							name: newChatText,
 							messages: []
 						}
 						setChatHistories([newChat]);
-						setActiveChat(newChat);
+						setActiveChatId(newChat.id);
 					}
 				}
 				setIsFetchingChatHistory(false);
@@ -76,7 +77,7 @@ const HomePage = () => {
 		}
 	}, [user]);
 
-	const updateChatHistoryImmutable = (previousState: ChatHistory[], chatId: string, newMessage: Message): ChatHistory[] => {
+	const updateChatHistoryImmutable = (previousState: ChatHistory[], chatId: string, newMessage: Message, newChatId?: string): ChatHistory[] => {
 		return previousState.map((chatHistory) => {
 			if (chatHistory.id !== chatId) {
 				return chatHistory;
@@ -84,6 +85,9 @@ const HomePage = () => {
 
 			return {
 				...chatHistory,
+				id: newChatId ? newChatId : chatHistory.id,
+				// TODO fix name
+				name: newChatId ? newChatId : chatHistory.name,
 				messages: [...chatHistory.messages, newMessage],
 			};
 		});
@@ -98,19 +102,22 @@ const HomePage = () => {
 			window.alert("You must be signed in");
 			return;
 		}
-		setChatHistories((prev) => updateChatHistoryImmutable(prev, activeChat!.id, { host: "user", text: promptText }));
+		setChatHistories((prev) => updateChatHistoryImmutable(prev, activeChatId, { host: "user", text: promptText }));
 		setIsSubmittingPrompt(true);
 		setPromptText("");
 
-		chatClient.post<{ response: string }>("", { prompt: promptText, userId: user.id, chatId: activeChat!.id }).then((response) => {
+		chatClient.post<{ response: string, chatId: string }>("", { prompt: promptText, userId: user.id, chatId: activeChatId }).then((response) => {
 			setIsSubmittingPrompt(false);
 			if (response.isError) {
 				// TODO handle error
 				return;
 			}
-			setChatHistories((prev) => updateChatHistoryImmutable(prev, activeChat!.id, { host: "assistant", text: response.data.response }));
+			setChatHistories((prev) => updateChatHistoryImmutable(prev, activeChatId, { host: "assistant", text: response.data.response }, response.data.chatId));
+			setActiveChatId(response.data.chatId);
 		});
 	};
+
+	const activeChat = chatHistories.find(chatHistory => chatHistory.id === activeChatId);
 
 	return (
 		<Sidebar
@@ -118,20 +125,20 @@ const HomePage = () => {
 				<LoadingText text="Fetching chat history" />
 			) : (<ul className="chatList">{chatHistories.map(chatHistory => (
 				<li key={chatHistory.id}
-					className={chatHistory.id === activeChat?.id ? "active" : ""}
-					onClick={() => setActiveChat(chatHistory)}>
-					{chatHistory.name ?? chatHistory.id ?? "New Chat"}
+					className={chatHistory.id === activeChatId ? "active" : ""}
+					onClick={() => setActiveChatId(chatHistory.id)}>
+					{chatHistory.name ?? chatHistory.id ?? newChatText}
 				</li>)
 			)}
 				{!!!chatHistories.find(chatHistory => chatHistory.id === "") && <li onClick={() => {
 					const chatHistory: ChatHistory = {
 						id: "",
-						name: "New Chat",
+						name: newChatText,
 						messages: []
 					}
 					setChatHistories((prev) => [...prev, chatHistory]);
-					setActiveChat(chatHistory);
-				}}>+ New Chat</li>}
+					setActiveChatId(chatHistory.id);
+				}}>{`+ ${newChatText}`}</li>}
 			</ul>)}
 			page={<div className="chatPage">
 				{isFetchingChatHistory ? (
@@ -142,7 +149,7 @@ const HomePage = () => {
 						<div className="chatWindow">
 							{activeChat && activeChat.messages.length > 0 && (
 								<div className="chat">
-									{chatHistories.find(history => history.id === activeChat?.id)?.messages.map((message, n) => (
+									{chatHistories.find(history => history.id === activeChatId)?.messages.map((message, n) => (
 										<p key={n} className={message.host}>
 											{message.text}
 										</p>
