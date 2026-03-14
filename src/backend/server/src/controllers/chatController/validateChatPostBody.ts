@@ -30,8 +30,8 @@ const validateChatPostBody = (body: unknown): ChatPostBodyValidationResult => {
         return { ok: false, error: `Error, userId must be ${maxUserIdLength} characters or fewer.` };
     }
 
-    if (chatId != null && (typeof chatId !== "string" || chatId.trim().length === 0)) {
-        return { ok: false, error: "Error, chatId must be a non-empty string when provided." };
+    if (typeof chatId !== "string") {
+        return { ok: false, error: "Error, chatId must be a string." };
     }
 
     return {
@@ -39,7 +39,7 @@ const validateChatPostBody = (body: unknown): ChatPostBodyValidationResult => {
         value: {
             prompt: prompt.trim(),
             userId: userId.trim(),
-            chatId: typeof chatId === "string" ? chatId.trim() : undefined,
+            chatId: chatId.trim(),
         },
     };
 }
