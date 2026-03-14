@@ -1,3 +1,5 @@
+import { JsonRpcRequest } from "./JsonRpcRequest";
+
 type JsonRpcSuccess<TResult> = {
 	jsonrpc: "2.0";
 	id: string | number | null;
@@ -16,4 +18,4 @@ type JsonRpcError = {
 
 type JsonRpcResponse<TResult> = JsonRpcSuccess<TResult> | JsonRpcError;
 
-export { type JsonRpcResponse, type JsonRpcSuccess, type JsonRpcError };
+export { type JsonRpcRequest, type JsonRpcResponse, type JsonRpcSuccess, type JsonRpcError };

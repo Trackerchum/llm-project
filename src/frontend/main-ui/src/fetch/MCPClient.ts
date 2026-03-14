@@ -1,6 +1,5 @@
 import { createRequestId } from "../helpers/createRequestId";
-import { JsonRpcResponse } from "../types/MCP";
-import { JsonRpcRequest } from "../types/MCP/JsonRpcRequest";
+import { JsonRpcResponse, JsonRpcRequest } from "../types/MCP_";
 import { Client } from "./Client";
 
 export class MCPClient {
