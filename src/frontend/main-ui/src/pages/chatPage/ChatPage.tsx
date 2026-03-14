@@ -35,8 +35,13 @@ const ChatPage = () => {
 	const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false);
 	const [promptText, setPromptText] = useState("");
 	const [chatHistories, setChatHistories] = useState<Array<ChatHistory>>([]);
-	const [activeChatId, setActiveChatId] = useState("");
+	const [stateActiveChatId, setStateActiveChatId] = useState("");
 	const chatContainerRef = useRef<HTMLDivElement | null>(null);
+
+	const setActiveChatId = (chatId: string) => {
+		window.localStorage.setItem("activeChatId", chatId);
+		setStateActiveChatId(chatId);
+	}
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -72,7 +77,7 @@ const ChatPage = () => {
 								text: message.content,
 							})),
 					}));
-					setActiveChatId(histories[0].id);
+					setActiveChatId(window.localStorage.getItem("activeChatId") ?? histories[histories.length - 1].id);
 					setChatHistories(histories);
 				} else {
 					const newChat: ChatHistory = {
@@ -140,7 +145,7 @@ const ChatPage = () => {
 
 		setChatHistories((prev) => updateChatHistoryImmutable({
 			previousState: prev,
-			chatId: activeChatId,
+			chatId: stateActiveChatId,
 			newMessage: {
 				host: "user",
 				text: promptText
@@ -154,7 +159,7 @@ const ChatPage = () => {
 				response: string;
 				chatId: string;
 				name: string;
-			}>("", { prompt: promptText, userId: user.id, chatId: activeChatId })
+			}>("", { prompt: promptText, userId: user.id, chatId: stateActiveChatId })
 			.then((response) => {
 				setIsSubmittingPrompt(false);
 				if (response.isError) {
@@ -164,7 +169,7 @@ const ChatPage = () => {
 				setChatHistories((prev) =>
 					updateChatHistoryImmutable({
 						previousState: prev,
-						chatId: activeChatId,
+						chatId: stateActiveChatId,
 						newMessage: { host: "assistant", text: response.data.response },
 						newChatId: response.data.chatId,
 						name: response.data.name
@@ -178,7 +183,7 @@ const ChatPage = () => {
 			});
 	};
 
-	const activeChat = chatHistories.find((chatHistory) => chatHistory.id === activeChatId);
+	const activeChat = chatHistories.find((chatHistory) => chatHistory.id === stateActiveChatId);
 	const activeMessageCount = activeChat?.messages.length ?? 0;
 	const hasMessages = activeMessageCount > 0;
 
@@ -188,7 +193,7 @@ const ChatPage = () => {
 		}
 
 		chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-	}, [activeChatId, activeMessageCount, isSubmittingPrompt]);
+	}, [stateActiveChatId, activeMessageCount, isSubmittingPrompt]);
 
 	return (
 		<Sidebar
@@ -201,7 +206,7 @@ const ChatPage = () => {
 							<li key={chatHistory.id}>
 								<button
 									type="button"
-									className={chatHistory.id === activeChatId ? "active" : ""}
+									className={chatHistory.id === stateActiveChatId ? "active" : ""}
 									onClick={() => setActiveChatId(chatHistory.id)}
 								>
 									{chatHistory.name ?? chatHistory.id ?? newChatText}
