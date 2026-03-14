@@ -106,7 +106,6 @@ export class ChatController extends BaseController {
 			let chatNamePromise: Promise<any>;
 
 			if (!activeChatHistory) {
-				// new chat
 				chatNamePromise = logger("Ollama generate chat name", () =>
 					this.ollamaClient.generate(
 						`Summarise the content of the question or statement below into a title. The title must be no longer than five words, only return those five words.
