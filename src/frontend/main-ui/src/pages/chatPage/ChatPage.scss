@@ -35,6 +35,11 @@
 				border-radius: 10px;
 				width: fit-content;
 
+				&.loadingMessage {
+					font-style: italic;
+					opacity: 0.9;
+				}
+
 				&.user {
 					align-self: flex-end;
 					text-align: right;

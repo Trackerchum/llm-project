@@ -240,6 +240,11 @@ const ChatPage = () => {
 											{message.text}
 										</p>
 									))}
+									{isSubmittingPrompt && (
+										<p className="assistant loadingMessage">
+											<LoadingText text="Assistant is thinking" />
+										</p>
+									)}
 								</div>}
 								<div className={hasMessages ? "chatInputWrapper" : "chatInputWrapper centered"}>
 									{!hasMessages && <h2>What can I help with?</h2>}
