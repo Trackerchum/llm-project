@@ -242,6 +242,7 @@ const ChatPage = () => {
 									))}
 								</div>}
 								<div className={hasMessages ? "chatInputWrapper" : "chatInputWrapper centered"}>
+									{!hasMessages && <h2>What can I help with?</h2>}
 									<TextInput
 										labelText="Prompt: "
 										name="promptText"
