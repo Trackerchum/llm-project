@@ -12,6 +12,10 @@
 		min-height: 0;
 		overflow: hidden;
 
+		&.empty {
+			justify-content: center;
+		}
+
 		>div.chat {
 			background: #eee;
 			padding: 5px 10px;
@@ -45,6 +49,15 @@
 					background: #cecece;
 				}
 			}
+		}
+	}
+
+	.chatInputWrapper {
+		width: 100%;
+
+		&.centered {
+			max-width: 720px;
+			margin: 0 auto;
 		}
 	}
 }

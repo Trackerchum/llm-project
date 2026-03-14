@@ -180,6 +180,7 @@ const ChatPage = () => {
 
 	const activeChat = chatHistories.find((chatHistory) => chatHistory.id === activeChatId);
 	const activeMessageCount = activeChat?.messages.length ?? 0;
+	const hasMessages = activeMessageCount > 0;
 
 	useEffect(() => {
 		if (!chatContainerRef.current) {
@@ -232,28 +233,30 @@ const ChatPage = () => {
 						<LoadingText text="Fetching chat history" />
 					) : (
 						<>
-							<div className="chatWindow">
-								{activeChat && activeChat.messages.length > 0 && <div className="chat" ref={chatContainerRef}>
+							<div className={hasMessages ? "chatWindow" : "chatWindow empty"}>
+								{hasMessages && <div className="chat" ref={chatContainerRef}>
 									{activeChat?.messages.map((message, n) => (
 										<p key={generateHash(activeChat.name + message.text + message.host + n)} className={message.host}>
 											{message.text}
 										</p>
 									))}
 								</div>}
-								<TextInput
-									labelText="Prompt: "
-									name="promptText"
-									value={promptText}
-									onChange={(newValue: string) => {
-										setPromptText(newValue);
-									}}
-									onKeyDown={(e: React.KeyboardEvent) => {
-										if (e.key === "Enter") {
-											e.preventDefault();
-											submitPrompt();
-										}
-									}}
-								/>
+								<div className={hasMessages ? "chatInputWrapper" : "chatInputWrapper centered"}>
+									<TextInput
+										labelText="Prompt: "
+										name="promptText"
+										value={promptText}
+										onChange={(newValue: string) => {
+											setPromptText(newValue);
+										}}
+										onKeyDown={(e: React.KeyboardEvent) => {
+											if (e.key === "Enter") {
+												e.preventDefault();
+												submitPrompt();
+											}
+										}}
+									/>
+								</div>
 							</div>
 						</>
 					)}
