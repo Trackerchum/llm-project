@@ -1,17 +1,30 @@
 .chatPage {
-	.chatWindow {
-		margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
+	height: calc(100vh - 8rem);
+	min-height: 0;
+	overflow: hidden;
 
-		> div.chat {
+	.chatWindow {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-height: 0;
+		overflow: hidden;
+
+		>div.chat {
 			background: #eee;
 			padding: 5px 10px;
 			border-radius: 20px;
 			margin-bottom: 20px;
 			display: flex;
+			flex: 1 1 auto;
 			flex-direction: column;
+			min-height: 0;
 			overflow-y: auto;
-			max-height: 600px;
-			justify-content: flex-end;
+			overflow-x: hidden;
+			max-height: none;
+			justify-content: flex-start;
 
 			p {
 				padding: 5px 10px;
@@ -44,8 +57,8 @@
 	flex-direction: column;
 	gap: 6px;
 
-	> li {
-		> button {
+	>li {
+		>button {
 			display: block;
 			width: 100%;
 			padding: 10px 12px;

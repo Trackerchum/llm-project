@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../../components/button";
 import { Client } from "../../fetch";
 import "./ChatPage.scss";
@@ -36,6 +36,7 @@ const ChatPage = () => {
 	const [promptText, setPromptText] = useState("");
 	const [chatHistories, setChatHistories] = useState<Array<ChatHistory>>([]);
 	const [activeChatId, setActiveChatId] = useState("");
+	const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -178,6 +179,15 @@ const ChatPage = () => {
 	};
 
 	const activeChat = chatHistories.find((chatHistory) => chatHistory.id === activeChatId);
+	const activeMessageCount = activeChat?.messages.length ?? 0;
+
+	useEffect(() => {
+		if (!chatContainerRef.current) {
+			return;
+		}
+
+		chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+	}, [activeChatId, activeMessageCount, isSubmittingPrompt]);
 
 	return (
 		<Sidebar
@@ -222,17 +232,14 @@ const ChatPage = () => {
 						<LoadingText text="Fetching chat history" />
 					) : (
 						<>
-							<h1>Chat</h1>
 							<div className="chatWindow">
-								{activeChat && activeChat.messages.length > 0 && (
-									<div className="chat">
-										{activeChat.messages.map((message, n) => (
-											<p key={generateHash(activeChat.name + message.text + message.host + n)} className={message.host}>
-												{message.text}
-											</p>
-										))}
-									</div>
-								)}
+								{activeChat && activeChat.messages.length > 0 && <div className="chat" ref={chatContainerRef}>
+									{activeChat?.messages.map((message, n) => (
+										<p key={generateHash(activeChat.name + message.text + message.host + n)} className={message.host}>
+											{message.text}
+										</p>
+									))}
+								</div>}
 								<TextInput
 									labelText="Prompt: "
 									name="promptText"
@@ -248,7 +255,6 @@ const ChatPage = () => {
 									}}
 								/>
 							</div>
-							<Button text="Submit Prompt" loading={isSubmittingPrompt} onSubmit={submitPrompt} />
 						</>
 					)}
 				</div>
