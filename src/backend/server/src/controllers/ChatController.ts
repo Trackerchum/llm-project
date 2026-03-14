@@ -12,6 +12,49 @@ import { getUserChatHistories, saveUserChatHistory } from "@Shared/clients/mongo
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
 	private readonly chatHistoryCollectionName = "chatHistories";
+	private readonly maxPromptLength = 8000;
+	private readonly maxUserIdLength = 128;
+
+	private validateChatPostBody(body: unknown) {
+		if (!body || typeof body !== "object" || Array.isArray(body)) {
+			return { ok: false as const, error: "Invalid request body." };
+		}
+
+		const { prompt, userId, chatId } = body as {
+			prompt?: unknown;
+			userId?: unknown;
+			chatId?: unknown;
+		};
+
+		if (typeof prompt !== "string" || prompt.trim().length === 0) {
+			return { ok: false as const, error: "Error, prompt must be a non-empty string." };
+		}
+
+		if (prompt.length > this.maxPromptLength) {
+			return { ok: false as const, error: `Error, prompt must be ${this.maxPromptLength} characters or fewer.` };
+		}
+
+		if (typeof userId !== "string" || userId.trim().length === 0) {
+			return { ok: false as const, error: "Error, userId must be a non-empty string." };
+		}
+
+		if (userId.length > this.maxUserIdLength) {
+			return { ok: false as const, error: `Error, userId must be ${this.maxUserIdLength} characters or fewer.` };
+		}
+
+		if (chatId != null && (typeof chatId !== "string" || chatId.trim().length === 0)) {
+			return { ok: false as const, error: "Error, chatId must be a non-empty string when provided." };
+		}
+
+		return {
+			ok: true as const,
+			value: {
+				prompt: prompt.trim(),
+				userId: userId.trim(),
+				chatId: chatId?.toString().trim(),
+			},
+		};
+	}
 
 	constructor(baseUrl: string) {
 		super(baseUrl);
@@ -43,19 +86,15 @@ export class ChatController extends BaseController {
 		});
 
 		app.post(this.baseUrl, async (req, res) => {
-			if (!req.body?.prompt || !req.body?.userId) {
-				const missingProperties =
-					!req.body?.prompt && !req.body?.userId
-						? "prompt and userId"
-						: !req.body?.prompt
-							? "prompt"
-							: "userId";
-				const errorMessage = `Error, ${missingProperties} missing.`;
+			const validationResult = this.validateChatPostBody(req.body);
+			if (!validationResult.ok) {
 				return res.status(400).json({
 					ok: false,
-					error: errorMessage,
+					error: validationResult.error,
 				});
 			}
+
+			const { prompt, userId, chatId } = validationResult.value;
 			let mcpSessionId = req.header(MCP_SESSION_ID) ?? null;
 
 			if (!mcpSessionId) {
@@ -103,7 +142,7 @@ export class ChatController extends BaseController {
 			const chatHistories = await getUserChatHistories(
 				this.mongoClient,
 				this.chatHistoryCollectionName,
-				req.body.userId,
+				userId,
 			);
 
 			// TODO generate chat request from existing
@@ -112,7 +151,7 @@ export class ChatController extends BaseController {
 			});
 
 			// TODO get single chatHistory by req.body?.chatId from mongo
-			const activeChatHistory = chatHistories?.find((chat) => chat.id === req.body?.chatId);
+			const activeChatHistory = chatHistories?.find((chat) => chat.id === chatId);
 
 			let chatNamePromise: Promise<any>
 
@@ -130,11 +169,11 @@ export class ChatController extends BaseController {
 				chatNamePromise = logger("Ollama generate chat name", () => this.ollamaClient.generate(
 					`Summarise the content of the question or statement below into a title. The title must be no longer than five words, only return those five words.
 					
-					"${req.body.prompt}"`
+					"${prompt}"`
 				));
 			}
 
-			chatRequest.addMessage({ role: "user", content: req.body.prompt });
+			chatRequest.addMessage({ role: "user", content: prompt });
 
 			let response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
 
@@ -158,7 +197,7 @@ export class ChatController extends BaseController {
 				await saveUserChatHistory(
 					this.mongoClient,
 					this.chatHistoryCollectionName,
-					req.body.userId,
+					userId,
 					chatHistory,
 				);
 				return res.json({
@@ -241,7 +280,7 @@ export class ChatController extends BaseController {
 
 			const chatHistory = chatRequest.getChatRequest();
 
-			await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, req.body.userId, chatHistory);
+			await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, userId, chatHistory);
 
 			return res.json({
 				ok: true,
