@@ -7,7 +7,7 @@ import { ChatRequest } from "@Shared/models/mcp";
 import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
-import { getUserChatHistories, saveUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
+import { getUserChatHistories, getUserChatHistoryById, saveUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
 import { validateChatPostBody } from "./validateChatPostBody";
 
 export class ChatController extends BaseController {
@@ -94,16 +94,17 @@ export class ChatController extends BaseController {
 				});
 			}
 
-			// TODO get single chatHistory by req.body?.chatId from mongo
-			const chatHistories = await getUserChatHistories(this.mongoClient, this.chatHistoryCollectionName, userId);
-
 			// TODO generate chat request from existing
 			const chatRequest = new ChatRequest({
 				tools: mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]),
 			});
 
-			// TODO get single chatHistory by req.body?.chatId from mongo
-			const activeChatHistory = chatHistories?.find((chat) => chat.id === chatId);
+			const activeChatHistory = await getUserChatHistoryById(
+				this.mongoClient,
+				this.chatHistoryCollectionName,
+				userId,
+				chatId,
+			);
 
 			let chatNamePromise: Promise<any>;
 
