@@ -217,7 +217,7 @@ const ChatPage = () => {
 				)
 			}
 			page={
-				<div className="chatPage">
+				<div className="chatPage page">
 					{isFetchingChatHistory ? (
 						<LoadingText text="Fetching chat history" />
 					) : (

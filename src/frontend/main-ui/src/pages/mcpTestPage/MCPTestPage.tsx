@@ -97,7 +97,7 @@ const MCPTestPage = () => {
 	};
 
 	return (
-		<div className="mcpPage">
+		<div className="mcpPage page">
 			<h1>MCP Method Tester</h1>
 
 			<p className="mcpPage__description">

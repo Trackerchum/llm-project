@@ -12,7 +12,7 @@ const AccountPage = () => {
 	}
 
 	return (
-		<div className="accountPage">
+		<div className="accountPage page">
 			<h1>My Account</h1>
 			<HorizontalSpacer />
 			<div>

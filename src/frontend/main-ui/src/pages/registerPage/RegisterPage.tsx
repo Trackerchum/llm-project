@@ -45,7 +45,7 @@ const RegisterPage = () => {
 	};
 
 	return (
-		<div className="registerPage">
+		<div className="registerPage page">
 			<h1>Register</h1>
 			<HorizontalSpacer />
 			<Form

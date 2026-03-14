@@ -43,7 +43,7 @@ const LoginPage = () => {
 	};
 
 	return (
-		<div className="loginPage">
+		<div className="loginPage page">
 			<h1>Login</h1>
 			<HorizontalSpacer />
 			<Form
