@@ -1,4 +1,4 @@
-import { ChatController } from "./ChatController";
+import { ChatController } from "./chatController";
 import { GenerateController } from "./GenerateController";
 import { HomeController } from "./HomeController";
 

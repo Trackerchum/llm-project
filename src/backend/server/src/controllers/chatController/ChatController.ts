@@ -8,53 +8,12 @@ import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
 import { getUserChatHistories, saveUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
+import { validateChatPostBody } from "./validateChatPostBody";
+
 
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
 	private readonly chatHistoryCollectionName = "chatHistories";
-	private readonly maxPromptLength = 8000;
-	private readonly maxUserIdLength = 128;
-
-	private validateChatPostBody(body: unknown) {
-		if (!body || typeof body !== "object" || Array.isArray(body)) {
-			return { ok: false as const, error: "Invalid request body." };
-		}
-
-		const { prompt, userId, chatId } = body as {
-			prompt?: unknown;
-			userId?: unknown;
-			chatId?: unknown;
-		};
-
-		if (typeof prompt !== "string" || prompt.trim().length === 0) {
-			return { ok: false as const, error: "Error, prompt must be a non-empty string." };
-		}
-
-		if (prompt.length > this.maxPromptLength) {
-			return { ok: false as const, error: `Error, prompt must be ${this.maxPromptLength} characters or fewer.` };
-		}
-
-		if (typeof userId !== "string" || userId.trim().length === 0) {
-			return { ok: false as const, error: "Error, userId must be a non-empty string." };
-		}
-
-		if (userId.length > this.maxUserIdLength) {
-			return { ok: false as const, error: `Error, userId must be ${this.maxUserIdLength} characters or fewer.` };
-		}
-
-		if (chatId != null && (typeof chatId !== "string" || chatId.trim().length === 0)) {
-			return { ok: false as const, error: "Error, chatId must be a non-empty string when provided." };
-		}
-
-		return {
-			ok: true as const,
-			value: {
-				prompt: prompt.trim(),
-				userId: userId.trim(),
-				chatId: chatId?.toString().trim(),
-			},
-		};
-	}
 
 	constructor(baseUrl: string) {
 		super(baseUrl);
@@ -86,8 +45,8 @@ export class ChatController extends BaseController {
 		});
 
 		app.post(this.baseUrl, async (req, res) => {
-			const validationResult = this.validateChatPostBody(req.body);
-			if (!validationResult.ok) {
+			const validationResult = validateChatPostBody(req.body);
+			if (validationResult.ok === false) {
 				return res.status(400).json({
 					ok: false,
 					error: validationResult.error,
