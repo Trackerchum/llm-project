@@ -94,11 +94,6 @@ export class ChatController extends BaseController {
 				});
 			}
 
-			// TODO generate chat request from existing
-			const chatRequest = new ChatRequest({
-				tools: mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]),
-			});
-
 			const activeChatHistory = await getUserChatHistoryById(
 				this.mongoClient,
 				this.chatHistoryCollectionName,
@@ -106,18 +101,11 @@ export class ChatController extends BaseController {
 				chatId,
 			);
 
+			const chatRequest = new ChatRequest(mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]));
+
 			let chatNamePromise: Promise<any>;
 
-			if (activeChatHistory && activeChatHistory.messages.length > 0) {
-				chatRequest.setId(activeChatHistory.id);
-				chatRequest.clearMessages();
-				activeChatHistory.messages.forEach((message) => {
-					chatRequest.addMessage({
-						role: message.role,
-						content: message.content,
-					});
-				});
-			} else {
+			if (!activeChatHistory) {
 				// new chat
 				chatNamePromise = logger("Ollama generate chat name", () =>
 					this.ollamaClient.generate(
