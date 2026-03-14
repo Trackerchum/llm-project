@@ -10,7 +10,6 @@ import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
 import { getUserChatHistories, saveUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
 import { validateChatPostBody } from "./validateChatPostBody";
 
-
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
 	private readonly chatHistoryCollectionName = "chatHistories";
@@ -30,11 +29,9 @@ export class ChatController extends BaseController {
 			}
 
 			try {
-				const chatHistories = await logger("getUserChatHistories", () => getUserChatHistories(
-					this.mongoClient,
-					this.chatHistoryCollectionName,
-					req.params.userId,
-				));
+				const chatHistories = await logger("getUserChatHistories", () =>
+					getUserChatHistories(this.mongoClient, this.chatHistoryCollectionName, req.params.userId),
+				);
 				return res.json({ ok: true, userId: req.params.userId, chatHistories });
 			} catch (error) {
 				return res.status(500).json({
@@ -98,11 +95,7 @@ export class ChatController extends BaseController {
 			}
 
 			// TODO get single chatHistory by req.body?.chatId from mongo
-			const chatHistories = await getUserChatHistories(
-				this.mongoClient,
-				this.chatHistoryCollectionName,
-				userId,
-			);
+			const chatHistories = await getUserChatHistories(this.mongoClient, this.chatHistoryCollectionName, userId);
 
 			// TODO generate chat request from existing
 			const chatRequest = new ChatRequest({
@@ -112,7 +105,7 @@ export class ChatController extends BaseController {
 			// TODO get single chatHistory by req.body?.chatId from mongo
 			const activeChatHistory = chatHistories?.find((chat) => chat.id === chatId);
 
-			let chatNamePromise: Promise<any>
+			let chatNamePromise: Promise<any>;
 
 			if (activeChatHistory && activeChatHistory.messages.length > 0) {
 				chatRequest.setId(activeChatHistory.id);
@@ -125,11 +118,13 @@ export class ChatController extends BaseController {
 				});
 			} else {
 				// new chat
-				chatNamePromise = logger("Ollama generate chat name", () => this.ollamaClient.generate(
-					`Summarise the content of the question or statement below into a title. The title must be no longer than five words, only return those five words.
+				chatNamePromise = logger("Ollama generate chat name", () =>
+					this.ollamaClient.generate(
+						`Summarise the content of the question or statement below into a title. The title must be no longer than five words, only return those five words.
 					
-					"${prompt}"`
-				));
+					"${prompt}"`,
+					),
+				);
 			}
 
 			chatRequest.addMessage({ role: "user", content: prompt });
@@ -153,12 +148,7 @@ export class ChatController extends BaseController {
 					content: response.response.message.content,
 				});
 				const chatHistory = chatRequest.getChatRequest();
-				await saveUserChatHistory(
-					this.mongoClient,
-					this.chatHistoryCollectionName,
-					userId,
-					chatHistory,
-				);
+				await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, userId, chatHistory);
 				return res.json({
 					ok: true,
 					mcpSessionId,

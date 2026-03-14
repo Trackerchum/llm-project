@@ -1,7 +1,7 @@
 interface ChatPostBody {
-    prompt: string;
-    userId: string;
-    chatId: string;
-};
+	prompt: string;
+	userId: string;
+	chatId: string;
+}
 
-export { type ChatPostBody }
+export { type ChatPostBody };

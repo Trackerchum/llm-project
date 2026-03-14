@@ -16,7 +16,7 @@
 			justify-content: center;
 		}
 
-		>div.chat {
+		> div.chat {
 			background: #eee;
 			padding: 5px 10px;
 			border-radius: 20px;
@@ -75,8 +75,8 @@
 	flex-direction: column;
 	gap: 6px;
 
-	>li {
-		>button {
+	> li {
+		> button {
 			display: block;
 			width: 100%;
 			padding: 10px 12px;

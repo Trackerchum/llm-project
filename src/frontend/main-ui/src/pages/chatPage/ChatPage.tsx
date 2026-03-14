@@ -41,7 +41,7 @@ const ChatPage = () => {
 	const setActiveChatId = (chatId: string) => {
 		window.localStorage.setItem("activeChatId", chatId);
 		setStateActiveChatId(chatId);
-	}
+	};
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -109,12 +109,11 @@ const ChatPage = () => {
 	}, [user?.id]);
 
 	const updateChatHistoryImmutable = (params: {
-		previousState: ChatHistory[],
-		newMessage: Message,
-		chatId: string,
-		name?: string,
-		newChatId?: string,
-
+		previousState: ChatHistory[];
+		newMessage: Message;
+		chatId: string;
+		name?: string;
+		newChatId?: string;
 	}): ChatHistory[] => {
 		return params.previousState.map((chatHistory) => {
 			if (chatHistory.id !== params.chatId) {
@@ -143,14 +142,16 @@ const ChatPage = () => {
 			return;
 		}
 
-		setChatHistories((prev) => updateChatHistoryImmutable({
-			previousState: prev,
-			chatId: stateActiveChatId,
-			newMessage: {
-				host: "user",
-				text: promptText
-			}
-		}));
+		setChatHistories((prev) =>
+			updateChatHistoryImmutable({
+				previousState: prev,
+				chatId: stateActiveChatId,
+				newMessage: {
+					host: "user",
+					text: promptText,
+				},
+			}),
+		);
 		setIsSubmittingPrompt(true);
 		setPromptText("");
 
@@ -172,11 +173,12 @@ const ChatPage = () => {
 						chatId: stateActiveChatId,
 						newMessage: { host: "assistant", text: response.data.response },
 						newChatId: response.data.chatId,
-						name: response.data.name
+						name: response.data.name,
 					}),
 				);
 				setActiveChatId(response.data.chatId);
-			}).catch(error => {
+			})
+			.catch((error) => {
 				// TODO handle error properly
 				console.log(error);
 				setIsSubmittingPrompt(false);
@@ -213,7 +215,7 @@ const ChatPage = () => {
 								</button>
 							</li>
 						))}
-						{!chatHistories.some(history => history.id === "") && (
+						{!chatHistories.some((history) => history.id === "") && (
 							<li>
 								<button
 									type="button"
@@ -239,18 +241,23 @@ const ChatPage = () => {
 					) : (
 						<>
 							<div className={hasMessages ? "chatWindow" : "chatWindow empty"}>
-								{hasMessages && <div className="chat" ref={chatContainerRef}>
-									{activeChat?.messages.map((message, n) => (
-										<p key={generateHash(activeChat.name + message.text + message.host + n)} className={message.host}>
-											{message.text}
-										</p>
-									))}
-									{isSubmittingPrompt && (
-										<p className="assistant loadingMessage">
-											<LoadingText text="Assistant is thinking" />
-										</p>
-									)}
-								</div>}
+								{hasMessages && (
+									<div className="chat" ref={chatContainerRef}>
+										{activeChat?.messages.map((message, n) => (
+											<p
+												key={generateHash(activeChat.name + message.text + message.host + n)}
+												className={message.host}
+											>
+												{message.text}
+											</p>
+										))}
+										{isSubmittingPrompt && (
+											<p className="assistant loadingMessage">
+												<LoadingText text="Assistant is thinking" />
+											</p>
+										)}
+									</div>
+								)}
 								<div className={hasMessages ? "chatInputWrapper" : "chatInputWrapper centered"}>
 									{!hasMessages && <h2>What can I help with?</h2>}
 									<TextInput
