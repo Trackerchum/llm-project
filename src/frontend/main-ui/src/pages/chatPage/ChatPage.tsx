@@ -60,9 +60,6 @@ const ChatPage = () => {
 			try {
 				const response = await chatClient.get<ChatHistoriesResponse>("/histories", {
 					signal: abortController.signal,
-					headers: {
-						"x-access-token": userToken,
-					},
 				});
 
 				if (response.isError) {
@@ -171,11 +168,7 @@ const ChatPage = () => {
 				response: string;
 				chatId: string;
 				name: string;
-			}>("", { prompt: promptText, chatId: stateActiveChatId }, {
-				headers: {
-					"x-access-token": user.token,
-				},
-			})
+			}>("", { prompt: promptText, chatId: stateActiveChatId })
 			.then((response) => {
 				setIsSubmittingPrompt(false);
 				if (response.isError) {
