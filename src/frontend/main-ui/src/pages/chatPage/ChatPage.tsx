@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import Button from "../../components/button";
 import { Client } from "../../fetch";
 import "./ChatPage.scss";
 import TextInput from "../../components/form/textInput";
-import { useAuth } from "../../globalProvider";
+import { useAuth, useNotifications } from "../../globalProvider";
 import LoadingText from "../../components/loadingText";
 import { ChatHistory, Message } from "../../types/chat";
 import Sidebar from "../../components/sidebar";
 import { generateHash } from "../../helpers/generateHash";
+import { Guid } from "../../helpers/Guid";
 
 const chatClient = new Client("/api/chat");
 const newChatText = "New Chat";
@@ -30,6 +30,7 @@ type ChatHistoriesResponse = {
 
 const ChatPage = () => {
 	const { user } = useAuth();
+	const { addNotification } = useNotifications();
 
 	const [isFetchingChatHistory, setIsFetchingChatHistory] = useState(false);
 	const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false);
@@ -61,8 +62,11 @@ const ChatPage = () => {
 				});
 
 				if (response.isError) {
-					// TODO handle error properly
-					console.log(response.error);
+					addNotification({
+						id: Guid.NewGuid(),
+						text: `Error fetching chat history: ${response.error.toString()}`,
+						type: "Error"
+					});
 					return;
 				}
 
@@ -92,8 +96,11 @@ const ChatPage = () => {
 				if (abortController.signal.aborted) {
 					return;
 				}
-				// TODO handle error properly
-				console.log(error);
+				addNotification({
+					id: Guid.NewGuid(),
+					text: `Error fetching chat history: ${error}`,
+					type: "Error"
+				});
 			} finally {
 				if (!abortController.signal.aborted) {
 					setIsFetchingChatHistory(false);
@@ -164,7 +171,11 @@ const ChatPage = () => {
 			.then((response) => {
 				setIsSubmittingPrompt(false);
 				if (response.isError) {
-					// TODO handle error
+					addNotification({
+						id: Guid.NewGuid(),
+						text: `Error submitting prompt: ${response.error.toString()}`,
+						type: "Error"
+					});
 					return;
 				}
 				setChatHistories((prev) =>
@@ -179,8 +190,11 @@ const ChatPage = () => {
 				setActiveChatId(response.data.chatId);
 			})
 			.catch((error) => {
-				// TODO handle error properly
-				console.log(error);
+				addNotification({
+					id: Guid.NewGuid(),
+					text: `Error submitting prompt: ${error}`,
+					type: "Error"
+				});
 				setIsSubmittingPrompt(false);
 			});
 	};
