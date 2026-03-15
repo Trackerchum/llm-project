@@ -1,4 +1,4 @@
-import { Express } from "express";
+import { Express, Request, Response } from "express";
 import { RedisClient } from "../clients/redisClient";
 import { User } from "../models/user";
 import { OllamaClient } from "../clients/ollamaClient";
@@ -36,4 +36,13 @@ export abstract class BaseController implements DependencyInjectedClasses {
 		}
 		return null;
 	};
+
+	getAuthenticatedUserId = (req: Request, res: Response): string => {
+		const decodedUser = (req.body?.user ?? res.locals.user ?? {}) as {
+			id?: string;
+			email?: string;
+			sub?: string;
+		};
+		return decodedUser.id ?? decodedUser.sub;
+	}
 }

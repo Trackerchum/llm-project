@@ -8,6 +8,7 @@ import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
 import { getUserChatHistories, getUserChatHistoryById, saveUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
+import { verifyToken } from "@Shared/middleware/verifyToken";
 import { validateChatPostBody } from "./validateChatPostBody";
 
 export class ChatController extends BaseController {
@@ -20,19 +21,20 @@ export class ChatController extends BaseController {
 	}
 
 	setupRoutes = (app: Express) => {
-		app.get(`${this.baseUrl}/histories/:userId`, async (req, res) => {
-			if (!req.params?.userId) {
-				return res.status(400).json({
+		app.get(`${this.baseUrl}/histories`, verifyToken, async (req, res) => {
+			const authenticatedUserId = this.getAuthenticatedUserId(req, res);
+			if (!authenticatedUserId || !authenticatedUserId.trim()) {
+				return res.status(403).json({
 					ok: false,
-					error: "Error, user ID missing.",
+					error: "Authenticated user id missing from token.",
 				});
 			}
 
 			try {
 				const chatHistories = await logger("getUserChatHistories", () =>
-					getUserChatHistories(this.mongoClient, this.chatHistoryCollectionName, req.params.userId),
+					getUserChatHistories(this.mongoClient, this.chatHistoryCollectionName, authenticatedUserId),
 				);
-				return res.json({ ok: true, userId: req.params.userId, chatHistories });
+				return res.json({ ok: true, userId: authenticatedUserId, chatHistories });
 			} catch (error) {
 				return res.status(500).json({
 					ok: false,

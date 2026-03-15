@@ -47,18 +47,22 @@ const ChatPage = () => {
 	useEffect(() => {
 		const abortController = new AbortController();
 
-		if (!user?.id) {
+		if (!user?.token) {
 			setIsFetchingChatHistory(false);
 			return () => {
 				abortController.abort();
 			};
 		}
+		const userToken = user.token;
 
 		const fetchChatHistory = async () => {
 			setIsFetchingChatHistory(true);
 			try {
-				const response = await chatClient.get<ChatHistoriesResponse>(`/histories/${user.id}`, {
+				const response = await chatClient.get<ChatHistoriesResponse>("/histories", {
 					signal: abortController.signal,
+					headers: {
+						"x-access-token": userToken,
+					},
 				});
 
 				if (response.isError) {
@@ -113,7 +117,7 @@ const ChatPage = () => {
 		return () => {
 			abortController.abort();
 		};
-	}, [user?.id]);
+	}, [user?.token]);
 
 	const updateChatHistoryImmutable = (params: {
 		previousState: ChatHistory[];
