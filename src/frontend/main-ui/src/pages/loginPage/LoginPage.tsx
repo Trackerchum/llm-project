@@ -7,10 +7,13 @@ import Form from "../../components/form/Form";
 import TextInput from "../../components/form/textInput";
 import "./LoginPage.scss";
 import { useAuth } from "../../globalProvider";
+import { useNotifications } from "../../globalProvider/GlobalProvider";
+import { Guid } from "../../helpers/Guid";
 
 const LoginPage = () => {
 	const navigate = useNavigate();
 	const { setUser } = useAuth();
+	const { addNotification } = useNotifications();
 
 	const [localUser, setLocalUser] = useState<User>(UserMethods.createWithDefaultProps());
 	const [emailError, setEmailError] = useState<string>("");
@@ -33,11 +36,20 @@ const LoginPage = () => {
 			if (!response.isError) {
 				setUser(response.data).then(() => {
 					setLoading(false);
+					addNotification({
+						id: Guid.NewGuid(),
+						text: "Logged in.",
+						type: "Success"
+					});
 					navigate("/");
 				});
 			} else {
-				// TODO handle error
 				setLoading(false);
+				addNotification({
+					id: Guid.NewGuid(),
+					text: `There was an issue logging in: ${response.error.toString()}`,
+					type: "Error"
+				});
 			}
 		}
 	};
