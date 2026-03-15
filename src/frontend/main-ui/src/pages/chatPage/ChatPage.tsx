@@ -113,7 +113,7 @@ const ChatPage = () => {
 		return () => {
 			abortController.abort();
 		};
-	}, [user?.token]);
+	}, [user?.token, addNotification]);
 
 	const updateChatHistoryImmutable = (params: {
 		previousState: ChatHistory[];
