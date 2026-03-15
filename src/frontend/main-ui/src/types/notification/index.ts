@@ -1,3 +1,3 @@
 import { Notification } from "./Notification";
 
-export { type Notification }
+export { type Notification };

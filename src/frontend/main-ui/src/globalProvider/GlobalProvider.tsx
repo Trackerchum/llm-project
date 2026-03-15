@@ -11,9 +11,9 @@ interface AuthState {
 }
 
 interface NotificationsState {
-	notifications: Notification[],
-	addNotification: (notification: Notification) => void,
-	removeNotification: (notificationId: string) => void
+	notifications: Notification[];
+	addNotification: (notification: Notification) => void;
+	removeNotification: (notificationId: string) => void;
 }
 
 interface GlobalState {
@@ -56,15 +56,19 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
 				},
 				notificationsState: {
 					notifications,
-					addNotification: (notification: Notification) => setNotifications(prev => [...prev, notification]),
-					removeNotification: (notificationId: string) => setNotifications(prev => {
-						const notificationIndex = prev.findIndex(notification => notificationId === notification.id);
-						if (notificationIndex !== -1) {
-							return [...prev.slice(0, notificationIndex), ...prev.slice(notificationIndex + 1)];
-						}
-						return notifications;
-					})
-				}
+					addNotification: (notification: Notification) =>
+						setNotifications((prev) => [...prev, notification]),
+					removeNotification: (notificationId: string) =>
+						setNotifications((prev) => {
+							const notificationIndex = prev.findIndex(
+								(notification) => notificationId === notification.id,
+							);
+							if (notificationIndex !== -1) {
+								return [...prev.slice(0, notificationIndex), ...prev.slice(notificationIndex + 1)];
+							}
+							return notifications;
+						}),
+				},
 			}}
 		>
 			{children}

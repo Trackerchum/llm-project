@@ -44,5 +44,5 @@ export abstract class BaseController implements DependencyInjectedClasses {
 			sub?: string;
 		};
 		return decodedUser.id ?? decodedUser.sub;
-	}
+	};
 }

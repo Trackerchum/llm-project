@@ -42,7 +42,7 @@ const LoginPage = () => {
 				addNotification({
 					id: Guid.NewGuid(),
 					text: `There was an issue logging in: ${response.error.toString()}`,
-					type: "Error"
+					type: "Error",
 				});
 			}
 		}

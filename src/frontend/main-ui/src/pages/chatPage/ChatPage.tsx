@@ -53,7 +53,6 @@ const ChatPage = () => {
 				abortController.abort();
 			};
 		}
-		const userToken = user.token;
 
 		const fetchChatHistory = async () => {
 			setIsFetchingChatHistory(true);
@@ -66,7 +65,7 @@ const ChatPage = () => {
 					addNotification({
 						id: Guid.NewGuid(),
 						text: `Error fetching chat history: ${response.error.toString()}`,
-						type: "Error"
+						type: "Error",
 					});
 					return;
 				}
@@ -100,7 +99,7 @@ const ChatPage = () => {
 				addNotification({
 					id: Guid.NewGuid(),
 					text: `Error fetching chat history: ${error}`,
-					type: "Error"
+					type: "Error",
 				});
 			} finally {
 				if (!abortController.signal.aborted) {
@@ -175,7 +174,7 @@ const ChatPage = () => {
 					addNotification({
 						id: Guid.NewGuid(),
 						text: `Error submitting prompt: ${response.error.toString()}`,
-						type: "Error"
+						type: "Error",
 					});
 					return;
 				}
@@ -194,7 +193,7 @@ const ChatPage = () => {
 				addNotification({
 					id: Guid.NewGuid(),
 					text: `Error submitting prompt: ${error}`,
-					type: "Error"
+					type: "Error",
 				});
 				setIsSubmittingPrompt(false);
 			});

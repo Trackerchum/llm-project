@@ -42,14 +42,14 @@ const RegisterPage = () => {
 				addNotification({
 					id: Guid.NewGuid(),
 					text: `New user created.`,
-					type: "Success"
+					type: "Success",
 				});
 				navigate("/login");
 			} else {
 				addNotification({
 					id: Guid.NewGuid(),
 					text: `There was an issue creating new user: ${response.error.toString()}`,
-					type: "Error"
+					type: "Error",
 				});
 				setLoading(false);
 			}

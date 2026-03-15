@@ -1,8 +1,8 @@
 interface Notification {
-    id: string,
-    text: string,
-    type: "Success" | "Warning" | "Error",
-    timeout?: number
+	id: string;
+	text: string;
+	type: "Success" | "Warning" | "Error";
+	timeout?: number;
 }
 
-export { type Notification }
+export { type Notification };

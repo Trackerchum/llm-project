@@ -7,7 +7,11 @@ import { ChatRequest } from "@Shared/models/mcp";
 import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
-import { getUserChatHistories, getUserChatHistoryById, saveUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
+import {
+	getUserChatHistories,
+	getUserChatHistoryById,
+	saveUserChatHistory,
+} from "@Shared/clients/mongoClient/chatHistory";
 import { verifyToken } from "@Shared/middleware/verifyToken";
 import { validateChatPostBody } from "./validateChatPostBody";
 
@@ -145,7 +149,12 @@ export class ChatController extends BaseController {
 					content: response.response.message.content,
 				});
 				const chatHistory = chatRequest.getChatRequest();
-				await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, authenticatedUserId, chatHistory);
+				await saveUserChatHistory(
+					this.mongoClient,
+					this.chatHistoryCollectionName,
+					authenticatedUserId,
+					chatHistory,
+				);
 				return res.json({
 					ok: true,
 					mcpSessionId,
@@ -226,7 +235,12 @@ export class ChatController extends BaseController {
 
 			const chatHistory = chatRequest.getChatRequest();
 
-			await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, authenticatedUserId, chatHistory);
+			await saveUserChatHistory(
+				this.mongoClient,
+				this.chatHistoryCollectionName,
+				authenticatedUserId,
+				chatHistory,
+			);
 
 			return res.json({
 				ok: true,

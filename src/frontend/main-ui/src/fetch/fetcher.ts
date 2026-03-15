@@ -11,16 +11,18 @@ const fetcher = async <T>(
 	serverOptions?: ServerOptions,
 ): Promise<FetcherResponse<T>> => {
 	const userCookie = await window.cookieStore.get(userCookieKey);
-	const user = userCookie?.value ? JSON.parse(userCookie.value) : null
-	const tokenHeader: HeadersInit = user?.token ? {
-		"x-access-token": user.token,
-	} : {};
+	const user = userCookie?.value ? JSON.parse(userCookie.value) : null;
+	const tokenHeader: HeadersInit = user?.token
+		? {
+				"x-access-token": user.token,
+			}
+		: {};
 
 	const incomingHeaders: { [key: string]: any } = serverOptions?.req ? { ...serverOptions.req.headers } : {};
 	const headers = new Headers({
 		...(options.headers || {}),
 		...incomingHeaders,
-		...tokenHeader
+		...tokenHeader,
 	});
 
 	if (!headers.has("Accept")) {
@@ -67,4 +69,3 @@ const fetcher = async <T>(
 };
 
 export { fetcher, type FetcherResponse };
-
