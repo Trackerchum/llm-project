@@ -36,11 +36,6 @@ const LoginPage = () => {
 			if (!response.isError) {
 				setUser(response.data).then(() => {
 					setLoading(false);
-					addNotification({
-						id: Guid.NewGuid(),
-						text: "Logged in.",
-						type: "Success"
-					});
 					navigate("/");
 				});
 			} else {
