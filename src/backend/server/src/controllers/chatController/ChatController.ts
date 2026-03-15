@@ -43,7 +43,7 @@ export class ChatController extends BaseController {
 			}
 		});
 
-		app.post(this.baseUrl, async (req, res) => {
+		app.post(this.baseUrl, verifyToken, async (req, res) => {
 			const validationResult = validateChatPostBody(req.body);
 			if (validationResult.ok === false) {
 				return res.status(400).json({
@@ -52,7 +52,14 @@ export class ChatController extends BaseController {
 				});
 			}
 
-			const { prompt, userId, chatId } = validationResult.value;
+			const { prompt, chatId } = validationResult.value;
+			const authenticatedUserId = this.getAuthenticatedUserId(req, res);
+			if (!authenticatedUserId || !authenticatedUserId.trim()) {
+				return res.status(403).json({
+					ok: false,
+					error: "Authenticated user id missing from token.",
+				});
+			}
 			let mcpSessionId = req.header(MCP_SESSION_ID) ?? null;
 
 			if (!mcpSessionId) {
@@ -99,7 +106,7 @@ export class ChatController extends BaseController {
 			const activeChatHistory = await getUserChatHistoryById(
 				this.mongoClient,
 				this.chatHistoryCollectionName,
-				userId,
+				authenticatedUserId,
 				chatId,
 			);
 
@@ -138,7 +145,7 @@ export class ChatController extends BaseController {
 					content: response.response.message.content,
 				});
 				const chatHistory = chatRequest.getChatRequest();
-				await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, userId, chatHistory);
+				await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, authenticatedUserId, chatHistory);
 				return res.json({
 					ok: true,
 					mcpSessionId,
@@ -219,7 +226,7 @@ export class ChatController extends BaseController {
 
 			const chatHistory = chatRequest.getChatRequest();
 
-			await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, userId, chatHistory);
+			await saveUserChatHistory(this.mongoClient, this.chatHistoryCollectionName, authenticatedUserId, chatHistory);
 
 			return res.json({
 				ok: true,

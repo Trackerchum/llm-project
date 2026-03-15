@@ -148,7 +148,7 @@ const ChatPage = () => {
 			window.alert("Prompt text mustn't be blank");
 			return;
 		}
-		if (!user?.id) {
+		if (!user?.id || !user?.token) {
 			window.alert("You must be signed in");
 			return;
 		}
@@ -171,7 +171,11 @@ const ChatPage = () => {
 				response: string;
 				chatId: string;
 				name: string;
-			}>("", { prompt: promptText, userId: user.id, chatId: stateActiveChatId })
+			}>("", { prompt: promptText, chatId: stateActiveChatId }, {
+				headers: {
+					"x-access-token": user.token,
+				},
+			})
 			.then((response) => {
 				setIsSubmittingPrompt(false);
 				if (response.isError) {
