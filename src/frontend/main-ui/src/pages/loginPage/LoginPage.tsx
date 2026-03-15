@@ -6,8 +6,7 @@ import HorizontalSpacer from "../../components/horizontalSpacer";
 import Form from "../../components/form/Form";
 import TextInput from "../../components/form/textInput";
 import "./LoginPage.scss";
-import { useAuth } from "../../globalProvider";
-import { useNotifications } from "../../globalProvider/GlobalProvider";
+import { useAuth, useNotifications } from "../../globalProvider";
 import { Guid } from "../../helpers/Guid";
 
 const LoginPage = () => {

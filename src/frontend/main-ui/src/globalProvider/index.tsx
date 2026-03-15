@@ -1,3 +1,3 @@
-import { GlobalProvider, useAuth } from "./GlobalProvider";
+import { GlobalProvider, useAuth, useNotifications } from "./GlobalProvider";
 
-export { GlobalProvider, useAuth };
+export { GlobalProvider, useAuth, useNotifications };
