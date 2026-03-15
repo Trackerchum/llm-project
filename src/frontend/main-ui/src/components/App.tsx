@@ -4,6 +4,7 @@ import Footer from "./footer";
 import "./App.scss";
 import { RouterProvider } from "react-router-dom";
 import { router } from "../router";
+import NotificationCentre from "./notificationCentre";
 
 const App = () => {
 	return (
@@ -12,6 +13,7 @@ const App = () => {
 			<main className="container">
 				<RouterProvider router={router} />
 			</main>
+			<NotificationCentre />
 			<Footer />
 		</div>
 	);
