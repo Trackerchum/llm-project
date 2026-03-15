@@ -6,9 +6,12 @@ import TextInput from "../../components/form/textInput";
 import "./RegisterPage.scss";
 import { useNavigate } from "react-router-dom";
 import { Client } from "../../fetch";
+import { Guid } from "../../helpers/Guid";
+import { useNotifications } from "../../globalProvider";
 
 const RegisterPage = () => {
 	const navigate = useNavigate();
+	const { addNotification } = useNotifications();
 
 	const [user, setUser] = useState<User>(UserMethods.createWithDefaultProps(true));
 	const [firstNameError, setFirstNameError] = useState<string>("");
@@ -36,9 +39,18 @@ const RegisterPage = () => {
 
 			if (!response.isError) {
 				setLoading(false);
+				addNotification({
+					id: Guid.NewGuid(),
+					text: `New user created.`,
+					type: "Success"
+				});
 				navigate("/login");
 			} else {
-				// TODO handle errors - invalid login, user already exists etc...
+				addNotification({
+					id: Guid.NewGuid(),
+					text: `There was an issue creating new user: ${response.error.toString()}`,
+					type: "Error"
+				});
 				setLoading(false);
 			}
 		}
