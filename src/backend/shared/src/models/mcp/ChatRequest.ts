@@ -43,8 +43,11 @@ class ChatRequest {
 					role: "system",
 					content:
 						"You are a chat assistant. Prefer answering directly from general knowledge. " +
-						"Call a tool only when the user explicitly needs external or real-time data that the tool provides. " +
+						"Call a tool when the user explicitly asks for a capability provided by an available tool, " +
+						"or when external/real-time data is required. " +
 						"If no tool is needed, do not call any tools. If you call a tool, never invent the result. " +
+						"Never output pseudo tool-call JSON like {name, parameters} in assistant text; " +
+						"use actual tool calls instead. " +
 						"When a tool response is present, treat it as authoritative and use it directly in your answer. " +
 						"Never claim you cannot access real-time data when a tool response is available."
 				},
