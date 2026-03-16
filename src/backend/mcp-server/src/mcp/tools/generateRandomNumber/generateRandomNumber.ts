@@ -7,9 +7,11 @@ import { Tool } from "@Shared/types/mcp";
 const DEFAULT_MIN = 0;
 const DEFAULT_MAX = 100;
 
-const getSafeBounds = (min?: number, max?: number): { min: number; max: number } => {
-	const safeMin = Number.isFinite(min) ? Math.floor(min) : DEFAULT_MIN;
-	const safeMax = Number.isFinite(max) ? Math.floor(max) : DEFAULT_MAX;
+const getSafeBounds = (min?: number | string, max?: number | string): { min: number; max: number } => {
+	const normalizedMin = typeof min === "string" ? Number(min.trim()) : min;
+	const normalizedMax = typeof max === "string" ? Number(max.trim()) : max;
+	const safeMin = Number.isFinite(normalizedMin) ? Math.floor(normalizedMin) : DEFAULT_MIN;
+	const safeMax = Number.isFinite(normalizedMax) ? Math.floor(normalizedMax) : DEFAULT_MAX;
 
 	if (safeMin <= safeMax) {
 		return { min: safeMin, max: safeMax };
