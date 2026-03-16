@@ -1,10 +1,10 @@
 import { description } from "./description";
 import { inputSchema } from "./inputSchema";
-import { Tool } from "../../../types/mcp";
+import { Tool } from "@Shared/types/mcp";
 
-const getDateTime: Tool = {
-	name: "getDateTime",
-	method: "getDateTime",
+const getDate: Tool = {
+	name: "getDate",
+	method: "getDate",
 	config: {
 		description,
 		inputSchema,
@@ -30,4 +30,4 @@ const getDateTime: Tool = {
 	},
 };
 
-export { getDateTime };
+export { getDate };

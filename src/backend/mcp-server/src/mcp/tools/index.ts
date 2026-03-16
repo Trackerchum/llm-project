@@ -1,6 +1,7 @@
 import { Tool } from "@Shared/types/mcp/Tool";
-import { getDateTime } from "./getDateTime";
+import { getDate } from "./getDate";
+import { getTime } from "./getTime";
 
-const tools: Tool[] = [getDateTime];
+const tools: Tool[] = [getDate, getTime];
 
 export { tools };
