@@ -171,8 +171,15 @@ export class ChatController extends BaseController {
 
 			// loop while tools are requested
 			while (isToolRequested) {
+				const responseMessage = (response as OllamaChatSuccess).response.message;
+				chatRequest.addMessage({
+					role: "assistant",
+					content: responseMessage.content ?? "",
+					tool_calls: responseMessage.tool_calls,
+				});
+
 				const toolCalls = await Promise.all(
-					(response as OllamaChatSuccess).response.message.tool_calls.map(async (tool) => {
+					responseMessage.tool_calls.map(async (tool) => {
 						const toolResponse = await this.mcpClient.callTool(mcpSessionId, {
 							name: tool.function.name,
 							arguments: tool.function.arguments,

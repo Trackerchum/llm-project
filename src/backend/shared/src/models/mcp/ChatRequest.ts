@@ -13,10 +13,28 @@ class ChatRequest {
 		if (existingChatHistory) {
 			this.id = existingChatHistory.id;
 			this.name = existingChatHistory.name;
-			this.messages = existingChatHistory.messages.map((message) => ({
-				role: message.role,
-				content: message.content,
-			}));
+			this.messages = existingChatHistory.messages.map((message) => {
+				if (message.role === "tool") {
+					return {
+						role: "tool",
+						content: message.content,
+						tool_name: message.tool_name,
+					};
+				}
+
+				if (message.role === "assistant") {
+					return {
+						role: "assistant",
+						content: message.content,
+						tool_calls: message.tool_calls,
+					};
+				}
+
+				return {
+					role: message.role,
+					content: message.content,
+				};
+			});
 		} else {
 			this.id = randomUUID();
 			this.name = "";

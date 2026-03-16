@@ -1,14 +1,20 @@
-import { Role } from "./Role";
+import { ToolCall } from "./ToolCall";
+
 
 type Message =
 	| {
-			role: Role;
-			content: string;
-	  }
+		role: "system" | "user";
+		content: string;
+	}
 	| {
-			role: "tool";
-			content: string;
-			tool_name: string;
-	  };
+		role: "assistant";
+		content: string;
+		tool_calls?: ToolCall[];
+	}
+	| {
+		role: "tool";
+		content: string;
+		tool_name: string;
+	};
 
 export { type Message };
