@@ -75,7 +75,7 @@ const ChatPage = () => {
 						id: chatHistory.id,
 						name: chatHistory.name,
 						messages: chatHistory.messages
-							.filter((message) => message.role === "assistant" || message.role === "user")
+							.filter((message) => (message.role === "assistant" && message.content) || message.role === "user")
 							.map((message) => ({
 								host: message.role as "user" | "assistant",
 								text: message.content,
