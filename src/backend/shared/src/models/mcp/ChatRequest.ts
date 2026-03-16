@@ -11,7 +11,7 @@ class ChatRequest {
 
 	constructor(tools: OllamaTool[], existingChatHistory?: ChatHistoryEntry) {
 		if (existingChatHistory) {
-			this.name = existingChatHistory.id;
+			this.id = existingChatHistory.id;
 			this.name = existingChatHistory.name;
 			this.messages = existingChatHistory.messages.map((message) => ({
 				role: message.role,
