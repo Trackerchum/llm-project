@@ -1,6 +1,6 @@
 import { randomInt } from "node:crypto";
 import { description } from "./description";
-import { RandomNumberArgs } from "./RandomNumberArgs";
+import { GenerateRandomNumberArgs } from "./GenerateRandomNumberArgs";
 import { inputSchema } from "./inputSchema";
 import { Tool } from "@Shared/types/mcp";
 
@@ -18,14 +18,14 @@ const getSafeBounds = (min?: number, max?: number): { min: number; max: number }
 	return { min: safeMax, max: safeMin };
 };
 
-const randomNumber: Tool = {
-	name: "randomNumber",
-	method: "randomNumber",
+const generateRandomNumber: Tool = {
+	name: "generateRandomNumber",
+	method: "generateRandomNumber",
 	config: {
 		description,
 		inputSchema,
 	},
-	cb: async (args: RandomNumberArgs) => {
+	cb: async (args: GenerateRandomNumberArgs) => {
 		const { min, max } = getSafeBounds(args.min, args.max);
 		const number = randomInt(min, max + 1);
 
@@ -40,4 +40,4 @@ const randomNumber: Tool = {
 	},
 };
 
-export { randomNumber };
+export { generateRandomNumber };
