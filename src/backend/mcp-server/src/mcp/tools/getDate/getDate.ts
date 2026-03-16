@@ -2,6 +2,34 @@ import { description } from "./description";
 import { inputSchema } from "./inputSchema";
 import { Tool } from "@Shared/types/mcp";
 
+const DEFAULT_TIMEZONE = "UTC";
+const DEFAULT_LOCALE = "en-US";
+
+const getSafeLocale = (locale: unknown): string => {
+	if (typeof locale !== "string") {
+		return DEFAULT_LOCALE;
+	}
+
+	try {
+		return Intl.getCanonicalLocales(locale)[0] ?? DEFAULT_LOCALE;
+	} catch {
+		return DEFAULT_LOCALE;
+	}
+};
+
+const getSafeTimeZone = (timezone: unknown): string => {
+	if (typeof timezone !== "string") {
+		return DEFAULT_TIMEZONE;
+	}
+
+	try {
+		new Intl.DateTimeFormat("en-US", { timeZone: timezone });
+		return timezone;
+	} catch {
+		return DEFAULT_TIMEZONE;
+	}
+};
+
 const getDate: Tool = {
 	name: "getDate",
 	method: "getDate",
@@ -10,20 +38,19 @@ const getDate: Tool = {
 		inputSchema,
 	},
 	cb: async (args: Record<string, unknown>) => {
-		// TODO schema for args
-		const locale = typeof args.locale === "string" ? args.locale : undefined;
+		const locale = getSafeLocale(args.locale);
+		const timezone = getSafeTimeZone(args.timezone);
 
-		const formattedDateTime = new Intl.DateTimeFormat(locale, {
+		const formattedDate = new Intl.DateTimeFormat(locale, {
 			dateStyle: "full",
-			timeStyle: "full",
-			timeZone: "UTC",
+			timeZone: timezone,
 		}).format(new Date());
 
 		return {
 			content: [
 				{
 					type: "text",
-					text: formattedDateTime,
+					text: formattedDate,
 				},
 			],
 		};
