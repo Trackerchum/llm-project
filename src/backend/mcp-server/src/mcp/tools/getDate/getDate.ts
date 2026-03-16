@@ -1,12 +1,13 @@
 import { description } from "./description";
+import { GetDateArgs } from "./GetDateArgs";
 import { inputSchema } from "./inputSchema";
 import { Tool } from "@Shared/types/mcp";
 
 const DEFAULT_TIMEZONE = "UTC";
 const DEFAULT_LOCALE = "en-US";
 
-const getSafeLocale = (locale: unknown): string => {
-	if (typeof locale !== "string") {
+const getSafeLocale = (locale?: string): string => {
+	if (!locale) {
 		return DEFAULT_LOCALE;
 	}
 
@@ -17,8 +18,8 @@ const getSafeLocale = (locale: unknown): string => {
 	}
 };
 
-const getSafeTimeZone = (timezone: unknown): string => {
-	if (typeof timezone !== "string") {
+const getSafeTimeZone = (timezone?: string): string => {
+	if (!timezone) {
 		return DEFAULT_TIMEZONE;
 	}
 
@@ -37,7 +38,7 @@ const getDate: Tool = {
 		description,
 		inputSchema,
 	},
-	cb: async (args: Record<string, unknown>) => {
+	cb: async (args: GetDateArgs) => {
 		const locale = getSafeLocale(args.locale);
 		const timezone = getSafeTimeZone(args.timezone);
 
