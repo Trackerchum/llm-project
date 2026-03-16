@@ -7,12 +7,14 @@ import { Tool } from "@Shared/types/mcp";
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 100;
 
-const getSafeCount = (count?: number): number => {
-	if (!Number.isFinite(count)) {
+const getSafeCount = (count?: number | string): number => {
+	const normalizedInput = typeof count === "string" ? Number(count.trim()) : count;
+
+	if (!Number.isFinite(normalizedInput)) {
 		return DEFAULT_COUNT;
 	}
 
-	const normalizedCount = Math.floor(count);
+	const normalizedCount = Math.floor(normalizedInput);
 
 	if (normalizedCount < 1) {
 		return DEFAULT_COUNT;
