@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { User } from "../models/user";
 import { userCookieKey } from "../helpers/constants";
 import { Notification } from "../types/notification";
@@ -45,32 +45,39 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
 		setUserState(null);
 	};
 
+	const addNotification = useCallback((notification: Notification) => {
+		setNotifications((prev) => [...prev, notification]);
+	}, []);
+
+	const removeNotification = useCallback((notificationId: string) => {
+		setNotifications((prev) => {
+			const notificationIndex = prev.findIndex((notification) => notificationId === notification.id);
+			if (notificationIndex !== -1) {
+				return [...prev.slice(0, notificationIndex), ...prev.slice(notificationIndex + 1)];
+			}
+			return prev;
+		});
+	}, []);
+
+	const value = useMemo(
+		() => ({
+			authState: {
+				user,
+				setUser,
+				getUser: () => user,
+				logoutUser,
+			},
+			notificationsState: {
+				notifications,
+				addNotification,
+				removeNotification,
+			},
+		}),
+		[user, notifications, addNotification, removeNotification],
+	);
+
 	return (
-		<globalState.Provider
-			value={{
-				authState: {
-					user,
-					setUser,
-					getUser: () => user,
-					logoutUser,
-				},
-				notificationsState: {
-					notifications,
-					addNotification: (notification: Notification) =>
-						setNotifications((prev) => [...prev, notification]),
-					removeNotification: (notificationId: string) =>
-						setNotifications((prev) => {
-							const notificationIndex = prev.findIndex(
-								(notification) => notificationId === notification.id,
-							);
-							if (notificationIndex !== -1) {
-								return [...prev.slice(0, notificationIndex), ...prev.slice(notificationIndex + 1)];
-							}
-							return notifications;
-						}),
-				},
-			}}
-		>
+		<globalState.Provider value={value}>
 			{children}
 		</globalState.Provider>
 	);
