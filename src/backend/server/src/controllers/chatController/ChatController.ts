@@ -114,7 +114,7 @@ export class ChatController extends BaseController {
 				chatId,
 			);
 
-			const chatRequest = new ChatRequest(mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]));
+			const chatRequest = new ChatRequest(mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]), activeChatHistory);
 
 			let chatNamePromise: Promise<any>;
 
