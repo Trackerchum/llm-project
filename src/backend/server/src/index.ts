@@ -1,7 +1,7 @@
 import express from "express";
 import * as dotenv from "dotenv";
 import { getDIClasses, setupControllers, setupGracefulShutdown } from "@Shared/controllers";
-import { ChatController, GenerateController, HomeController } from "./controllers";
+import { ChatController, ChatHistoryController, GenerateController, HomeController } from "./controllers";
 
 dotenv.config();
 
@@ -25,7 +25,12 @@ Promise.all([diClasses.redisClient.connect(), diClasses.mongoClient.connect()])
 	.then(() => {
 		setupControllers(
 			app,
-			[new HomeController("/"), new ChatController("/chat"), new GenerateController("/generate")],
+			[
+				new HomeController("/"),
+				new ChatController("/chat"),
+				new ChatHistoryController("/chatHistory"),
+				new GenerateController("/generate")
+			],
 			diClasses,
 		);
 

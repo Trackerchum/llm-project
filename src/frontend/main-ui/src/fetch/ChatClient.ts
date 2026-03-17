@@ -23,26 +23,30 @@ export type SubmitPromptResponse = {
 
 export type DeleteChatHistoryResponse = {
 	ok: true;
-	userId: string;
 	chatId: string;
 };
 
 export class ChatClient {
-	private client: Client;
+	private chatClient: Client;
+	private chatHistoryClient: Client;
 
 	constructor() {
-		this.client = new Client("/api/chat");
+		this.chatClient = new Client("/api/chat");
+		this.chatHistoryClient = new Client("/api/chatHistory");
 	}
 
 	getChatHistories = async (options: RequestInit = {}) => {
-		return this.client.get<ChatHistoriesResponse>("/histories", options);
+		return this.chatHistoryClient.get<ChatHistoriesResponse>("/histories", options);
 	};
 
 	submitPrompt = async (payload: { prompt: string; chatId: string }, options: RequestInit = {}) => {
-		return this.client.post<SubmitPromptResponse>("", payload, options);
+		return this.chatClient.post<SubmitPromptResponse>("", payload, options);
 	};
 
 	deleteChatHistory = async (chatId: string, options: RequestInit = {}) => {
-		return this.client.delete<DeleteChatHistoryResponse>(`/${encodeURIComponent(chatId)}`, options);
+		return this.chatHistoryClient.delete<DeleteChatHistoryResponse>(
+			`/${encodeURIComponent(chatId)}`,
+			options,
+		);
 	};
 }
