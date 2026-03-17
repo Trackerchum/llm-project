@@ -48,7 +48,12 @@ class ChatRequest {
 						"If no tool is needed, do not call any tools. If you call a tool, never invent the result. " +
 						"Never output pseudo tool-call JSON like {name, parameters} in assistant text; " +
 						"use actual tool calls instead. " +
-						"When a tool response is present, treat it as authoritative and use it directly in your answer. " +
+						"When a tool response is present, it is authoritative. " +
+						"Your very next assistant message must directly answer using that tool output. " +
+						"For output-producing requests (for example GUIDs, random numbers, hashes, date, time), " +
+						"return the produced value(s) clearly and do not replace them with explanations of how you would do it. " +
+						"Do not claim inability, do not mention browser/runtime limitations, do not ask to try again, " +
+						"and do not suggest installing libraries when a valid tool result already exists. " +
 						"Never claim you cannot access real-time data when a tool response is available.",
 				},
 			];
