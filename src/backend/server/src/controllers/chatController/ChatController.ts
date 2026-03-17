@@ -3,7 +3,6 @@ import { BaseController } from "@Shared/controllers/BaseController";
 import { MCP_SESSION_ID } from "@Shared/constants";
 import { MCPClient } from "@Shared/clients/mcpClient";
 import { jsonRpcErrorCodeToHttpStatus } from "@Shared/helpers/mcp";
-import { ChatRequest } from "@Shared/models/mcp";
 import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
@@ -13,6 +12,7 @@ import {
 } from "@Shared/clients/mongoClient/chatHistory";
 import { verifyToken } from "@Shared/middleware/verifyToken";
 import { validateChatPostBody } from "./validateChatPostBody";
+import { ChatRequest } from "../../models/chat";
 
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;

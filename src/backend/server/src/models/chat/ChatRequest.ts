@@ -1,7 +1,7 @@
 import { randomUUID, UUID } from "node:crypto";
-import { Message } from "../../types/mcp/message";
-import { OllamaTool } from "../../types/ollama";
-import { ChatHistoryEntry } from "../../types/db/mongo/chatHistory";
+import { Message } from "@Shared/types/mcp/message";
+import { OllamaTool } from "@Shared/types/ollama";
+import { ChatHistoryEntry } from "@Shared/types/db/mongo/chatHistory";
 
 class ChatRequest {
 	private id: UUID;
