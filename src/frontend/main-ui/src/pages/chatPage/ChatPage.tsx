@@ -38,7 +38,7 @@ const ChatPage = () => {
 	const { user } = useAuth();
 	const { addNotification } = useNotifications();
 
-	const [isFetchingChatHistory, setIsFetchingChatHistory] = useState(false);
+	const [isFetchingChatHistories, setIsFetchingChatHistories] = useState(false);
 	const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false);
 	const [promptText, setPromptText] = useState("");
 	const [chatHistories, setChatHistories] = useState<Array<ChatHistory>>([]);
@@ -55,14 +55,14 @@ const ChatPage = () => {
 		const abortController = new AbortController();
 
 		if (!user?.token) {
-			setIsFetchingChatHistory(false);
+			setIsFetchingChatHistories(false);
 			return () => {
 				abortController.abort();
 			};
 		}
 
-		const fetchChatHistory = async () => {
-			setIsFetchingChatHistory(true);
+		const fetchChatHistories = async () => {
+			setIsFetchingChatHistories(true);
 			try {
 				const response = await chatClient.get<ChatHistoriesResponse>("/histories", {
 					signal: abortController.signal,
@@ -71,7 +71,7 @@ const ChatPage = () => {
 				if (response.isError) {
 					addNotification({
 						id: Guid.NewGuid(),
-						text: `Error fetching chat history: ${response.error.toString()}`,
+						text: `Error fetching chat histories: ${response.error.toString()}`,
 						type: "Error",
 					});
 					return;
@@ -105,17 +105,17 @@ const ChatPage = () => {
 				}
 				addNotification({
 					id: Guid.NewGuid(),
-					text: `Error fetching chat history: ${error}`,
+					text: `Error fetching chat histories: ${error}`,
 					type: "Error",
 				});
 			} finally {
 				if (!abortController.signal.aborted) {
-					setIsFetchingChatHistory(false);
+					setIsFetchingChatHistories(false);
 				}
 			}
 		};
 
-		void fetchChatHistory();
+		void fetchChatHistories();
 
 		return () => {
 			abortController.abort();
@@ -278,7 +278,7 @@ const ChatPage = () => {
 	return (
 		<Sidebar
 			children={
-				isFetchingChatHistory ? (
+				isFetchingChatHistories ? (
 					<LoadingText text="Fetching chat history" />
 				) : (
 					<ul className="chatList">
@@ -330,7 +330,7 @@ const ChatPage = () => {
 			}
 			page={
 				<div className="chatPage page">
-					{isFetchingChatHistory ? (
+					{isFetchingChatHistories ? (
 						<LoadingText text="Fetching chat history" />
 					) : (
 						<>
