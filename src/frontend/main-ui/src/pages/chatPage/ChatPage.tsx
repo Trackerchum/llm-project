@@ -28,6 +28,12 @@ type ChatHistoriesResponse = {
 	}>;
 };
 
+type DeleteChatHistoryResponse = {
+	ok: true;
+	userId: string;
+	chatId: string;
+};
+
 const ChatPage = () => {
 	const { user } = useAuth();
 	const { addNotification } = useNotifications();
@@ -37,6 +43,7 @@ const ChatPage = () => {
 	const [promptText, setPromptText] = useState("");
 	const [chatHistories, setChatHistories] = useState<Array<ChatHistory>>([]);
 	const [stateActiveChatId, setStateActiveChatId] = useState("");
+	const [deletingChatIds, setDeletingChatIds] = useState<string[]>([]);
 	const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
 	const setActiveChatId = (chatId: string) => {
@@ -199,6 +206,63 @@ const ChatPage = () => {
 			});
 	};
 
+	const deleteChat = (chatId: string) => {
+		if (!chatId.trim()) {
+			return;
+		}
+
+		const confirmDelete = window.confirm("Are you sure you want to delete this chat");
+		if (!confirmDelete) {
+			return;
+		}
+
+		if (deletingChatIds.includes(chatId)) {
+			return;
+		}
+
+		setDeletingChatIds((prev) => [...prev, chatId]);
+
+		chatClient
+			.delete<DeleteChatHistoryResponse>(`/${encodeURIComponent(chatId)}`)
+			.then((response) => {
+				if (response.isError) {
+					addNotification({
+						id: Guid.NewGuid(),
+						text: `Error deleting chat history: ${response.error.toString()}`,
+						type: "Error",
+					});
+					return;
+				}
+
+				const updatedChatHistories = chatHistories.filter((chatHistory) => chatHistory.id !== chatId);
+				if (updatedChatHistories.length === 0) {
+					const newChat: ChatHistory = {
+						id: "",
+						name: newChatText,
+						messages: [],
+					};
+					setChatHistories([newChat]);
+					setActiveChatId(newChat.id);
+					return;
+				}
+
+				setChatHistories(updatedChatHistories);
+				if (stateActiveChatId === chatId) {
+					setActiveChatId(updatedChatHistories[updatedChatHistories.length - 1].id);
+				}
+			})
+			.catch((error) => {
+				addNotification({
+					id: Guid.NewGuid(),
+					text: `Error deleting chat history: ${error}`,
+					type: "Error",
+				});
+			})
+			.finally(() => {
+				setDeletingChatIds((prev) => prev.filter((id) => id !== chatId));
+			});
+	};
+
 	const activeChat = chatHistories.find((chatHistory) => chatHistory.id === stateActiveChatId);
 	const activeMessageCount = activeChat?.messages.length ?? 0;
 	const hasMessages = activeMessageCount > 0;
@@ -219,20 +283,36 @@ const ChatPage = () => {
 				) : (
 					<ul className="chatList">
 						{chatHistories.map((chatHistory) => (
-							<li key={chatHistory.id}>
+							<li key={chatHistory.id} className="chatListItem">
 								<button
 									type="button"
-									className={chatHistory.id === stateActiveChatId ? "active" : ""}
+									className={`chatSelectButton ${chatHistory.id === stateActiveChatId ? "active" : ""}`}
 									onClick={() => setActiveChatId(chatHistory.id)}
 								>
 									{chatHistory.name ?? chatHistory.id ?? newChatText}
 								</button>
+								{chatHistory.id && (
+									<button
+										type="button"
+										className="chatDeleteButton"
+										title="Delete chat"
+										aria-label={`Delete chat ${chatHistory.name ?? chatHistory.id}`}
+										disabled={deletingChatIds.includes(chatHistory.id)}
+										onClick={(e) => {
+											e.stopPropagation();
+											deleteChat(chatHistory.id);
+										}}
+									>
+										x
+									</button>
+								)}
 							</li>
 						))}
 						{!chatHistories.some((history) => history.id === "") && (
-							<li>
+							<li className="chatListItem">
 								<button
 									type="button"
+									className="chatSelectButton"
 									onClick={() => {
 										const chatHistory: ChatHistory = {
 											id: "",
