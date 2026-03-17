@@ -1,11 +1,7 @@
 import { MongoClient } from "../../../clients/mongoClient";
 import { ChatHistoryEntry, UserChatHistoryDocument } from "../../../types/db/mongo/chatHistory";
 
-export const saveUserChatHistory = async (
-	mongoClient: MongoClient,
-	userId: string,
-	chatHistory: ChatHistoryEntry,
-) => {
+export const saveUserChatHistory = async (mongoClient: MongoClient, userId: string, chatHistory: ChatHistoryEntry) => {
 	const updateResult = await mongoClient.updateOne<UserChatHistoryDocument>(
 		mongoClient.getChatHistoryCollectionName(),
 		{ _id: userId, "histories.id": chatHistory.id },

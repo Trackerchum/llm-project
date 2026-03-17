@@ -137,13 +137,12 @@ export class ChatController extends BaseController {
 				});
 			}
 
-			const activeChatHistory = await getUserChatHistoryById(
-				this.mongoClient,
-				authenticatedUserId,
-				chatId,
-			);
+			const activeChatHistory = await getUserChatHistoryById(this.mongoClient, authenticatedUserId, chatId);
 
-			const chatRequest = new ChatRequest(mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]), activeChatHistory);
+			const chatRequest = new ChatRequest(
+				mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]),
+				activeChatHistory,
+			);
 
 			let chatNamePromise: Promise<any>;
 
@@ -178,11 +177,7 @@ export class ChatController extends BaseController {
 					content: response.response.message.content,
 				});
 				const chatHistory = chatRequest.getChatRequest();
-				await saveUserChatHistory(
-					this.mongoClient,
-					authenticatedUserId,
-					chatHistory,
-				);
+				await saveUserChatHistory(this.mongoClient, authenticatedUserId, chatHistory);
 				return res.json({
 					ok: true,
 					mcpSessionId,
@@ -270,11 +265,7 @@ export class ChatController extends BaseController {
 
 			const chatHistory = chatRequest.getChatRequest();
 
-			await saveUserChatHistory(
-				this.mongoClient,
-				authenticatedUserId,
-				chatHistory,
-			);
+			await saveUserChatHistory(this.mongoClient, authenticatedUserId, chatHistory);
 
 			return res.json({
 				ok: true,

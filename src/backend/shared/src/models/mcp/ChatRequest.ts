@@ -49,7 +49,7 @@ class ChatRequest {
 						"Never output pseudo tool-call JSON like {name, parameters} in assistant text; " +
 						"use actual tool calls instead. " +
 						"When a tool response is present, treat it as authoritative and use it directly in your answer. " +
-						"Never claim you cannot access real-time data when a tool response is available."
+						"Never claim you cannot access real-time data when a tool response is available.",
 				},
 			];
 		}

@@ -6,12 +6,10 @@ export const getUserChatHistoryById = async (
 	userId: string,
 	chatId: string,
 ): Promise<ChatHistoryEntry | undefined> => {
-	const document = await mongoClient.findOne<UserChatHistoryDocument>(
-		mongoClient.getChatHistoryCollectionName(),
-		{
-			_id: userId,
-			"histories.id": chatId,
-		});
+	const document = await mongoClient.findOne<UserChatHistoryDocument>(mongoClient.getChatHistoryCollectionName(), {
+		_id: userId,
+		"histories.id": chatId,
+	});
 
 	return document?.histories.find((history) => history.id === chatId);
 };

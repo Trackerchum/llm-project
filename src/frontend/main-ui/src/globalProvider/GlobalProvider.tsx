@@ -76,11 +76,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
 		[user, notifications, addNotification, removeNotification],
 	);
 
-	return (
-		<globalState.Provider value={value}>
-			{children}
-		</globalState.Provider>
-	);
+	return <globalState.Provider value={value}>{children}</globalState.Provider>;
 }
 
 export function useAuth(): AuthState {

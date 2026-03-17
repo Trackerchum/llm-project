@@ -14,5 +14,7 @@ export const inputSchema = z.object({
 				}),
 		])
 		.optional()
-		.describe("Optional number of UUIDs/GUIDs to generate. Accepts numbers or numeric strings. Defaults to 1, max 100."),
+		.describe(
+			"Optional number of UUIDs/GUIDs to generate. Accepts numbers or numeric strings. Defaults to 1, max 100.",
+		),
 });
