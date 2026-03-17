@@ -14,6 +14,7 @@ export class MongoClient {
 	private database: Db | null;
 	private connectionString: string;
 	private defaultDbName?: string;
+	private chatHistoryCollectionName = "chatHistories";
 	#isConnected: boolean;
 
 	constructor(url: string, defaultDbName?: string) {
@@ -23,6 +24,8 @@ export class MongoClient {
 		this.defaultDbName = defaultDbName;
 		this.#isConnected = false;
 	}
+
+	getChatHistoryCollectionName = () => this.chatHistoryCollectionName;
 
 	isConnected = (): boolean => this.#isConnected;
 

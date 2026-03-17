@@ -3,12 +3,11 @@ import { ChatHistoryEntry, UserChatHistoryDocument } from "../../../types/db/mon
 
 export const saveUserChatHistory = async (
 	mongoClient: MongoClient,
-	chatHistoryCollectionName: string,
 	userId: string,
 	chatHistory: ChatHistoryEntry,
 ) => {
 	const updateResult = await mongoClient.updateOne<UserChatHistoryDocument>(
-		chatHistoryCollectionName,
+		mongoClient.getChatHistoryCollectionName(),
 		{ _id: userId, "histories.id": chatHistory.id },
 		{ $set: { "histories.$": chatHistory } as any },
 	);
@@ -18,7 +17,7 @@ export const saveUserChatHistory = async (
 	}
 
 	await mongoClient.updateOne<UserChatHistoryDocument>(
-		chatHistoryCollectionName,
+		mongoClient.getChatHistoryCollectionName(),
 		{ _id: userId },
 		{ $push: { histories: chatHistory } },
 		{ upsert: true },

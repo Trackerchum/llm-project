@@ -17,7 +17,6 @@ import { validateChatPostBody } from "./validateChatPostBody";
 
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
-	private readonly chatHistoryCollectionName = "chatHistories";
 
 	constructor(baseUrl: string) {
 		super(baseUrl);
@@ -36,7 +35,7 @@ export class ChatController extends BaseController {
 
 			try {
 				const chatHistories = await logger("getUserChatHistories", () =>
-					getUserChatHistories(this.mongoClient, this.chatHistoryCollectionName, authenticatedUserId),
+					getUserChatHistories(this.mongoClient, authenticatedUserId),
 				);
 				return res.json({ ok: true, userId: authenticatedUserId, chatHistories });
 			} catch (error) {
@@ -109,7 +108,6 @@ export class ChatController extends BaseController {
 
 			const activeChatHistory = await getUserChatHistoryById(
 				this.mongoClient,
-				this.chatHistoryCollectionName,
 				authenticatedUserId,
 				chatId,
 			);
@@ -151,7 +149,6 @@ export class ChatController extends BaseController {
 				const chatHistory = chatRequest.getChatRequest();
 				await saveUserChatHistory(
 					this.mongoClient,
-					this.chatHistoryCollectionName,
 					authenticatedUserId,
 					chatHistory,
 				);
@@ -244,7 +241,6 @@ export class ChatController extends BaseController {
 
 			await saveUserChatHistory(
 				this.mongoClient,
-				this.chatHistoryCollectionName,
 				authenticatedUserId,
 				chatHistory,
 			);

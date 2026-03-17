@@ -3,14 +3,15 @@ import { ChatHistoryEntry, UserChatHistoryDocument } from "../../../types/db/mon
 
 export const getUserChatHistoryById = async (
 	mongoClient: MongoClient,
-	chatHistoryCollectionName: string,
 	userId: string,
 	chatId: string,
 ): Promise<ChatHistoryEntry | undefined> => {
-	const document = await mongoClient.findOne<UserChatHistoryDocument>(chatHistoryCollectionName, {
-		_id: userId,
-		"histories.id": chatId,
-	});
+	const document = await mongoClient.findOne<UserChatHistoryDocument>(
+		mongoClient.getChatHistoryCollectionName(),
+		{
+			_id: userId,
+			"histories.id": chatId,
+		});
 
 	return document?.histories.find((history) => history.id === chatId);
 };

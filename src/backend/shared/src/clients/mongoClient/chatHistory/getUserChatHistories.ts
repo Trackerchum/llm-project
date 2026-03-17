@@ -3,10 +3,9 @@ import { ChatHistoryEntry, UserChatHistoryDocument } from "../../../types/db/mon
 
 export const getUserChatHistories = async (
 	mongoClient: MongoClient,
-	chatHistoryCollectionName: string,
 	userId: string,
 ): Promise<ChatHistoryEntry[]> => {
-	const document = await mongoClient.findOne<UserChatHistoryDocument>(chatHistoryCollectionName, {
+	const document = await mongoClient.findOne<UserChatHistoryDocument>(mongoClient.getChatHistoryCollectionName(), {
 		_id: userId,
 	});
 	return document?.histories ?? [];
