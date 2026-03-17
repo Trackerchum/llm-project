@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Client } from "../../fetch";
+import { ChatClient } from "../../fetch";
 import "./ChatPage.scss";
 import TextInput from "../../components/form/textInput";
 import { useAuth, useNotifications } from "../../globalProvider";
@@ -9,30 +9,8 @@ import Sidebar from "../../components/sidebar";
 import { generateHash } from "../../helpers/generateHash";
 import { Guid } from "../../helpers/Guid";
 
-const chatClient = new Client("/api/chat");
+const chatClient = new ChatClient();
 const newChatText = "New Chat";
-
-// TODO share type with backend ChatController
-type ChatHistoriesResponse = {
-	ok: true;
-	userId: string;
-	chatHistories: Array<{
-		id: string;
-		name: string;
-		messages: Array<{
-			role: "system" | "user" | "assistant" | "tool";
-			content: string;
-			tool_name?: string;
-		}>;
-		tools: unknown[];
-	}>;
-};
-
-type DeleteChatHistoryResponse = {
-	ok: true;
-	userId: string;
-	chatId: string;
-};
 
 const ChatPage = () => {
 	const { user } = useAuth();
@@ -64,7 +42,7 @@ const ChatPage = () => {
 		const fetchChatHistories = async () => {
 			setIsFetchingChatHistories(true);
 			try {
-				const response = await chatClient.get<ChatHistoriesResponse>("/histories", {
+				const response = await chatClient.getChatHistories({
 					signal: abortController.signal,
 				});
 
@@ -170,11 +148,7 @@ const ChatPage = () => {
 		setPromptText("");
 
 		chatClient
-			.post<{
-				response: string;
-				chatId: string;
-				name: string;
-			}>("", { prompt: promptText, chatId: stateActiveChatId })
+			.submitPrompt({ prompt: promptText, chatId: stateActiveChatId })
 			.then((response) => {
 				setIsSubmittingPrompt(false);
 				if (response.isError) {
@@ -223,7 +197,7 @@ const ChatPage = () => {
 		setDeletingChatIds((prev) => [...prev, chatId]);
 
 		chatClient
-			.delete<DeleteChatHistoryResponse>(`/${encodeURIComponent(chatId)}`)
+			.deleteChatHistory(chatId)
 			.then((response) => {
 				if (response.isError) {
 					addNotification({
