@@ -41,10 +41,7 @@ Promise.all([diClasses.redisClient.connect(), diClasses.mongoClient.connect()])
 		setupControllers(app, [mcpController], diClasses);
 
 		const httpServer = app.listen(port, () => {
-			console.log(`MCP Server Starter (HTTP) listening on http://localhost:${String(port)}/mcp`);
-			console.log(`SSE endpoint: GET http://localhost:${String(port)}/mcp`);
-			console.log(`JSON-RPC endpoint: POST http://localhost:${String(port)}/mcp`);
-			console.log(`CORS origin: ${corsOrigin}`);
+			console.log(`listening on port ${port}`);
 		});
 		setupGracefulShutdown(httpServer, diClasses, {
 			message: "Shutting down HTTP server...",
