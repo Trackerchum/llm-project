@@ -23,17 +23,11 @@ const createFlexibleIntegerStringSchema = (fieldName: "Min" | "Max") =>
 
 export const inputSchema = z.object({
 	min: z
-		.union([
-			z.number().int(),
-			createFlexibleIntegerStringSchema("Min"),
-		])
+		.union([z.number().int(), createFlexibleIntegerStringSchema("Min")])
 		.optional()
 		.describe("Optional minimum value (inclusive). Accepts numbers or numeric strings. Defaults to 0."),
 	max: z
-		.union([
-			z.number().int(),
-			createFlexibleIntegerStringSchema("Max"),
-		])
+		.union([z.number().int(), createFlexibleIntegerStringSchema("Max")])
 		.optional()
 		.describe("Optional maximum value (inclusive). Accepts numbers or numeric strings. Defaults to 100."),
 });

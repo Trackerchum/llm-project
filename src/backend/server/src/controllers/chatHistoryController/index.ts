@@ -1,3 +1,3 @@
 import { ChatHistoryController } from "./ChatHistoryController";
 
-export { ChatHistoryController }
+export { ChatHistoryController };

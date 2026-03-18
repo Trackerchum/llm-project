@@ -22,10 +22,7 @@ const stringCountSchema = z
 
 export const inputSchema = z.object({
 	count: z
-		.union([
-			z.number().int().min(1).max(100),
-			stringCountSchema,
-		])
+		.union([z.number().int().min(1).max(100), stringCountSchema])
 		.optional()
 		.describe("Optional number of GUIDs to generate. Accepts numbers or numeric strings. Defaults to 1, max 100."),
 });

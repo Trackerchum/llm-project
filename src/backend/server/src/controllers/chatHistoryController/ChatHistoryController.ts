@@ -2,10 +2,7 @@ import { Express } from "express";
 import { BaseController } from "@Shared/controllers/BaseController";
 import { MCPClient } from "@Shared/clients/mcpClient";
 import { logger } from "@Shared/logging";
-import {
-	getUserChatHistories,
-	deleteUserChatHistory,
-} from "@Shared/clients/mongoClient/chatHistory";
+import { getUserChatHistories, deleteUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
 import { verifyToken } from "@Shared/middleware/verifyToken";
 
 export class ChatHistoryController extends BaseController {

@@ -29,7 +29,7 @@ Promise.all([diClasses.redisClient.connect(), diClasses.mongoClient.connect()])
 				new HomeController("/"),
 				new ChatController("/chat"),
 				new ChatHistoryController("/chatHistory"),
-				new GenerateController("/generate")
+				new GenerateController("/generate"),
 			],
 			diClasses,
 		);

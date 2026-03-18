@@ -82,7 +82,10 @@ export class OllamaClient {
 		}
 	};
 
-	chat = async (chat: { messages: Message[]; tools?: OllamaTool[] }, model: string): Promise<OllamaChatSuccess | OllamaError> => {
+	chat = async (
+		chat: { messages: Message[]; tools?: OllamaTool[] },
+		model: string,
+	): Promise<OllamaChatSuccess | OllamaError> => {
 		try {
 			const response = await fetch(new URL("/api/chat", this.endpoint).toString(), {
 				method: "POST",

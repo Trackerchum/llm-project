@@ -51,10 +51,7 @@ export class ChatClient {
 	};
 
 	deleteChatHistory = async (chatId: string, options: RequestInit = {}) => {
-		return this.chatHistoryClient.delete<DeleteChatHistoryResponse>(
-			`/${encodeURIComponent(chatId)}`,
-			options,
-		);
+		return this.chatHistoryClient.delete<DeleteChatHistoryResponse>(`/${encodeURIComponent(chatId)}`, options);
 	};
 
 	getAvailableModels = async (options: RequestInit = {}) => {

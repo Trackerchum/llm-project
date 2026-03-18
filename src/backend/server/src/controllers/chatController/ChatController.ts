@@ -7,10 +7,7 @@ import { jsonRpcErrorCodeToHttpStatus } from "@Shared/helpers/mcp";
 import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
 import { MCPListTool, OllamaChatSuccess, OllamaTool } from "@Shared/types/ollama";
-import {
-	getUserChatHistoryById,
-	saveUserChatHistory,
-} from "@Shared/clients/mongoClient/chatHistory";
+import { getUserChatHistoryById, saveUserChatHistory } from "@Shared/clients/mongoClient/chatHistory";
 import { verifyToken } from "@Shared/middleware/verifyToken";
 import { validateChatPostBody } from "./validateChatPostBody";
 import { ChatRequest } from "../../models/chat";
@@ -58,7 +55,10 @@ export class ChatController extends BaseController {
 			};
 		}
 
-		const parsedContent = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+		const parsedContent = content
+			.trim()
+			.replace(/^```(?:json)?\s*/i, "")
+			.replace(/\s*```$/, "");
 		let payload: unknown;
 
 		try {
@@ -76,47 +76,46 @@ export class ChatController extends BaseController {
 		const unknownToolNames = new Set<string>();
 		let isPseudoToolCallPayload = false;
 
-		const parsedCalls = pseudoToolCalls
-			.map((entry) => {
-				if (!entry || typeof entry !== "object") {
-					return null;
-				}
+		const parsedCalls = pseudoToolCalls.map((entry) => {
+			if (!entry || typeof entry !== "object") {
+				return null;
+			}
 
-				const candidate = entry as {
-					name?: unknown;
-					functionName?: unknown;
-					tool?: unknown;
-					parameters?: unknown;
-					arguments?: unknown;
-					args?: unknown;
-				};
-				const toolNameCandidate = [candidate.name, candidate.functionName, candidate.tool].find(
-					(value) => typeof value === "string" && value.trim().length > 0,
-				);
-				if (!toolNameCandidate || typeof toolNameCandidate !== "string") {
-					return null;
-				}
+			const candidate = entry as {
+				name?: unknown;
+				functionName?: unknown;
+				tool?: unknown;
+				parameters?: unknown;
+				arguments?: unknown;
+				args?: unknown;
+			};
+			const toolNameCandidate = [candidate.name, candidate.functionName, candidate.tool].find(
+				(value) => typeof value === "string" && value.trim().length > 0,
+			);
+			if (!toolNameCandidate || typeof toolNameCandidate !== "string") {
+				return null;
+			}
 
-				isPseudoToolCallPayload = true;
-				const toolName = toolNameCandidate.trim();
-				if (!toolNames.has(toolName)) {
-					unknownToolNames.add(toolName);
-					return null;
-				}
+			isPseudoToolCallPayload = true;
+			const toolName = toolNameCandidate.trim();
+			if (!toolNames.has(toolName)) {
+				unknownToolNames.add(toolName);
+				return null;
+			}
 
-				const argumentsValue = [candidate.arguments, candidate.parameters, candidate.args].find(
-					(value) => value !== undefined,
-				);
+			const argumentsValue = [candidate.arguments, candidate.parameters, candidate.args].find(
+				(value) => value !== undefined,
+			);
 
-				return {
-					id: randomUUID(),
-					function: {
-						index: 0,
-						name: toolName,
-						arguments: this.normaliseToolCallArguments(argumentsValue),
-					},
-				} satisfies ParsedOllamaToolCall;
-			});
+			return {
+				id: randomUUID(),
+				function: {
+					index: 0,
+					name: toolName,
+					arguments: this.normaliseToolCallArguments(argumentsValue),
+				},
+			} satisfies ParsedOllamaToolCall;
+		});
 
 		return {
 			toolCalls: parsedCalls.filter((value) => value !== null) as ParsedOllamaToolCall[],
@@ -224,7 +223,9 @@ export class ChatController extends BaseController {
 
 			chatRequest.addMessage({ role: "user", content: prompt });
 
-			let response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest(), model));
+			let response = await logger("Ollama chat", () =>
+				this.ollamaClient.chat(chatRequest.getChatRequest(), model),
+			);
 
 			if (response.ok === false) {
 				return res.status(response.statusCode).json({
@@ -355,7 +356,9 @@ export class ChatController extends BaseController {
 					}
 				});
 
-				response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest(), model));
+				response = await logger("Ollama chat", () =>
+					this.ollamaClient.chat(chatRequest.getChatRequest(), model),
+				);
 
 				if (response.ok === false) {
 					return res.status(response.statusCode).json({
