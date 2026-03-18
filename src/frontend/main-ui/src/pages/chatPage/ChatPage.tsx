@@ -19,6 +19,8 @@ const ChatPage = () => {
 	const [isFetchingChatHistories, setIsFetchingChatHistories] = useState(false);
 	const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false);
 	const [promptText, setPromptText] = useState("");
+	const [availableModels, setAvailableModels] = useState<string[]>([]);
+	const [selectedModel, setSelectedModel] = useState("");
 	const [chatHistories, setChatHistories] = useState<Array<ChatHistory>>([]);
 	const [stateActiveChatId, setStateActiveChatId] = useState("");
 	const [deletingChatIds, setDeletingChatIds] = useState<string[]>([]);
@@ -28,6 +30,48 @@ const ChatPage = () => {
 		window.localStorage.setItem("activeChatId", chatId);
 		setStateActiveChatId(chatId);
 	};
+
+	useEffect(() => {
+		const abortController = new AbortController();
+
+		const fetchModels = async () => {
+			try {
+				const response = await chatClient.getAvailableModels({
+					signal: abortController.signal,
+				});
+
+				if (response.isError) {
+					addNotification({
+						id: Guid.NewGuid(),
+						text: `Error fetching available models: ${response.error.toString()}`,
+						type: "Error",
+					});
+					return;
+				}
+
+				setAvailableModels(response.data.models);
+				if (response.data.models.length > 0) {
+					setSelectedModel(response.data.models[0]);
+				}
+			} catch (error) {
+				if (abortController.signal.aborted) {
+					return;
+				}
+
+				addNotification({
+					id: Guid.NewGuid(),
+					text: `Error fetching available models: ${error}`,
+					type: "Error",
+				});
+			}
+		};
+
+		void fetchModels();
+
+		return () => {
+			abortController.abort();
+		};
+	}, [addNotification]);
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -151,7 +195,7 @@ const ChatPage = () => {
 		setPromptText("");
 
 		chatClient
-			.submitPrompt({ prompt: promptText, chatId: stateActiveChatId })
+			.submitPrompt({ prompt: promptText, chatId: stateActiveChatId, model: selectedModel || undefined })
 			.then((response) => {
 				setIsSubmittingPrompt(false);
 				if (response.isError) {
@@ -335,6 +379,28 @@ const ChatPage = () => {
 										labelText="Prompt: "
 										name="promptText"
 										value={promptText}
+										appendElement={
+											<select
+												name="selectedModel"
+												className="promptModelSelect"
+												value={selectedModel}
+												disabled={availableModels.length === 0}
+												onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+													setSelectedModel(e.target.value);
+												}}
+												aria-label="Select model"
+											>
+												{availableModels.length > 0 ? (
+													availableModels.map((model) => (
+														<option key={model} value={model}>
+															{model}
+														</option>
+													))
+												) : (
+													<option value="">No models found</option>
+												)}
+											</select>
+										}
 										onChange={(newValue: string) => {
 											setPromptText(newValue);
 										}}

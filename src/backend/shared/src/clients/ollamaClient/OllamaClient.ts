@@ -12,13 +12,13 @@ export class OllamaClient {
 		this.stream = false;
 	}
 
-	generate = async (prompt: string) => {
+	generate = async (prompt: string, model?: string) => {
 		try {
 			const response = await fetch(new URL("/api/generate", this.endpoint).toString(), {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					model: this.model,
+					model: model ?? this.model,
 					prompt,
 					stream: this.stream,
 				}),
@@ -84,13 +84,13 @@ export class OllamaClient {
 		}
 	};
 
-	chat = async (chat: { messages: Message[]; tools?: OllamaTool[] }): Promise<OllamaChatSuccess | OllamaError> => {
+	chat = async (chat: { messages: Message[]; tools?: OllamaTool[] }, model?: string): Promise<OllamaChatSuccess | OllamaError> => {
 		try {
 			const response = await fetch(new URL("/api/chat", this.endpoint).toString(), {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					model: this.model,
+					model: model ?? this.model,
 					stream: this.stream,
 					...chat,
 				}),

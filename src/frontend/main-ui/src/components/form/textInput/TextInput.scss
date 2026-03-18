@@ -19,6 +19,15 @@
 			padding-right: 0.25rem;
 		}
 
+		> select {
+			flex: 0 0 auto;
+			border-style: solid;
+			border-color: #000;
+			border-width: 1px;
+			padding-left: 0.25rem;
+			padding-right: 0.25rem;
+		}
+
 		> p,
 		> div:last-child {
 			flex-basis: 100%;

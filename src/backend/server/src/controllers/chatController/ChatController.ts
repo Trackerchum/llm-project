@@ -135,7 +135,7 @@ export class ChatController extends BaseController {
 				});
 			}
 
-			const { prompt, chatId } = validationResult.value;
+			const { prompt, chatId, model } = validationResult.value;
 			const authenticatedUserId = this.getAuthenticatedUserId(req, res);
 			if (!authenticatedUserId || !authenticatedUserId.trim()) {
 				return res.status(403).json({
@@ -199,13 +199,14 @@ export class ChatController extends BaseController {
 						`Summarise the content of the question or statement below into a title. The title must be no longer than five words, only return those five words.
 					
 					"${prompt}"`,
+						model,
 					),
 				);
 			}
 
 			chatRequest.addMessage({ role: "user", content: prompt });
 
-			let response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
+			let response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest(), model));
 
 			if (response.ok === false) {
 				return res.status(response.statusCode).json({
@@ -250,7 +251,7 @@ export class ChatController extends BaseController {
 				});
 
 				response = await logger("Ollama chat recovery unavailable tool", () =>
-					this.ollamaClient.chat(chatRequest.getChatRequest()),
+					this.ollamaClient.chat(chatRequest.getChatRequest(), model),
 				);
 
 				if (response.ok === false) {
@@ -336,7 +337,7 @@ export class ChatController extends BaseController {
 					}
 				});
 
-				response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest()));
+				response = await logger("Ollama chat", () => this.ollamaClient.chat(chatRequest.getChatRequest(), model));
 
 				if (response.ok === false) {
 					return res.status(response.statusCode).json({
@@ -381,7 +382,7 @@ export class ChatController extends BaseController {
 					});
 
 					response = await logger("Ollama chat recovery unavailable tool", () =>
-						this.ollamaClient.chat(chatRequest.getChatRequest()),
+						this.ollamaClient.chat(chatRequest.getChatRequest(), model),
 					);
 
 					if (response.ok === false) {

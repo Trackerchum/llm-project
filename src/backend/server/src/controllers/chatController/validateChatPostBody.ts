@@ -7,9 +7,10 @@ const validateChatPostBody = (body: unknown): ChatPostBodyValidationResult => {
 		return { ok: false, error: "Invalid request body." };
 	}
 
-	const { prompt, chatId } = body as {
+	const { prompt, chatId, model } = body as {
 		prompt?: unknown;
 		chatId?: unknown;
+		model?: unknown;
 	};
 
 	if (typeof prompt !== "string" || prompt.trim().length === 0) {
@@ -24,11 +25,19 @@ const validateChatPostBody = (body: unknown): ChatPostBodyValidationResult => {
 		return { ok: false, error: "Error, chatId must be a string." };
 	}
 
+	if (model !== undefined && typeof model !== "string") {
+		return { ok: false, error: "Error, model must be a string when provided." };
+	}
+
+	const normalisedModel =
+		typeof model === "string" && model.trim().length > 0 ? model.trim() : undefined;
+
 	return {
 		ok: true,
 		value: {
 			prompt: prompt.trim(),
 			chatId: chatId.trim(),
+			model: normalisedModel,
 		},
 	};
 };

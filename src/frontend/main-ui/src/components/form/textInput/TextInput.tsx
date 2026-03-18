@@ -13,6 +13,7 @@ interface Props {
 	readonly type?: string;
 	readonly disabled?: boolean;
 	readonly onKeyDown?: React.KeyboardEventHandler<HTMLInputElement> | undefined;
+	readonly appendElement?: React.ReactNode;
 }
 
 const TextInput = ({
@@ -26,6 +27,7 @@ const TextInput = ({
 	type,
 	disabled,
 	onKeyDown,
+	appendElement,
 }: Props) => {
 	const labelId = useRef(name);
 	return (
@@ -45,6 +47,7 @@ const TextInput = ({
 					disabled={disabled}
 					onKeyDown={onKeyDown}
 				/>
+				{appendElement}
 				{errorText ? <p>{errorText}</p> : <HorizontalSpacer />}
 			</div>
 		</div>
