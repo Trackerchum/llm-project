@@ -8,7 +8,7 @@ export class OllamaClient {
 
 	constructor() {
 		this.endpoint = "http://llm-ollama:11434";
-		this.model = "llama3.1:8b";
+		this.model = "llama3.2:1b";
 		this.stream = false;
 	}
 
