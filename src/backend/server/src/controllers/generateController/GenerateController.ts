@@ -19,7 +19,24 @@ export class GenerateController extends BaseController {
 		});
 
 		app.post(this.baseUrl, async (req, res) => {
-			const response = await logger("Ollama generate", () => this.ollamaClient.generate(req.body.prompt));
+			const prompt = typeof req.body?.prompt === "string" ? req.body.prompt.trim() : "";
+			const model = typeof req.body?.model === "string" ? req.body.model.trim() : "";
+
+			if (!prompt) {
+				return res.status(400).json({
+					ok: false,
+					error: "Error, prompt must be a non-empty string.",
+				});
+			}
+
+			if (!model) {
+				return res.status(400).json({
+					ok: false,
+					error: "Error, model must be a non-empty string.",
+				});
+			}
+
+			const response = await logger("Ollama generate", () => this.ollamaClient.generate(prompt, model));
 
 			if (response.error) {
 				return res.status(502).json(response);

@@ -180,6 +180,10 @@ const ChatPage = () => {
 			window.alert("You must be signed in");
 			return;
 		}
+		if (!selectedModel) {
+			window.alert("You must select a model");
+			return;
+		}
 
 		setChatHistories((prev) =>
 			updateChatHistoryImmutable({
@@ -195,7 +199,7 @@ const ChatPage = () => {
 		setPromptText("");
 
 		chatClient
-			.submitPrompt({ prompt: promptText, chatId: stateActiveChatId, model: selectedModel || undefined })
+			.submitPrompt({ prompt: promptText, chatId: stateActiveChatId, model: selectedModel })
 			.then((response) => {
 				setIsSubmittingPrompt(false);
 				if (response.isError) {

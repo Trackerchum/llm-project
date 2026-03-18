@@ -25,19 +25,16 @@ const validateChatPostBody = (body: unknown): ChatPostBodyValidationResult => {
 		return { ok: false, error: "Error, chatId must be a string." };
 	}
 
-	if (model !== undefined && typeof model !== "string") {
-		return { ok: false, error: "Error, model must be a string when provided." };
+	if (typeof model !== "string" || model.trim().length === 0) {
+		return { ok: false, error: "Error, model must be a non-empty string." };
 	}
-
-	const normalisedModel =
-		typeof model === "string" && model.trim().length > 0 ? model.trim() : undefined;
 
 	return {
 		ok: true,
 		value: {
 			prompt: prompt.trim(),
 			chatId: chatId.trim(),
-			model: normalisedModel,
+			model: model.trim(),
 		},
 	};
 };

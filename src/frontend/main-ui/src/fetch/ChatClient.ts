@@ -46,7 +46,7 @@ export class ChatClient {
 		return this.chatHistoryClient.get<ChatHistoriesResponse>("/histories", options);
 	};
 
-	submitPrompt = async (payload: { prompt: string; chatId: string; model?: string }, options: RequestInit = {}) => {
+	submitPrompt = async (payload: { prompt: string; chatId: string; model: string }, options: RequestInit = {}) => {
 		return this.chatClient.post<SubmitPromptResponse>("", payload, options);
 	};
 
