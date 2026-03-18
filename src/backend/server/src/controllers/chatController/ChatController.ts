@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Express } from "express";
 import { BaseController } from "@Shared/controllers/BaseController";
 import { MCP_SESSION_ID } from "@Shared/constants";
@@ -5,7 +6,7 @@ import { MCPClient } from "@Shared/clients/mcpClient";
 import { jsonRpcErrorCodeToHttpStatus } from "@Shared/helpers/mcp";
 import { logger } from "@Shared/logging";
 import { mcpToOllamaTools } from "@Shared/mappers/ollama";
-import { MCPListTool, OllamaChatSuccess } from "@Shared/types/ollama";
+import { MCPListTool, OllamaChatSuccess, OllamaTool } from "@Shared/types/ollama";
 import {
 	getUserChatHistoryById,
 	saveUserChatHistory,
@@ -14,6 +15,8 @@ import { verifyToken } from "@Shared/middleware/verifyToken";
 import { validateChatPostBody } from "./validateChatPostBody";
 import { ChatRequest } from "../../models/chat";
 
+type ParsedOllamaToolCall = NonNullable<OllamaChatSuccess["response"]["message"]["tool_calls"]>[number];
+
 export class ChatController extends BaseController {
 	mcpClient: MCPClient;
 
@@ -21,6 +24,106 @@ export class ChatController extends BaseController {
 		super(baseUrl);
 		this.mcpClient = new MCPClient(new URL("/mcp", process.env.MCP_BASE_URL).toString());
 	}
+
+	private normaliseToolCallArguments = (argumentsValue: unknown): Record<string, unknown> => {
+		if (argumentsValue && typeof argumentsValue === "object" && !Array.isArray(argumentsValue)) {
+			return argumentsValue as Record<string, unknown>;
+		}
+
+		if (Array.isArray(argumentsValue)) {
+			const firstObject = argumentsValue.find(
+				(value) => value && typeof value === "object" && !Array.isArray(value),
+			);
+			if (firstObject) {
+				return firstObject as Record<string, unknown>;
+			}
+		}
+
+		return {};
+	};
+
+	private parsePseudoToolCallFromContent = (
+		content: string | undefined,
+		tools: OllamaTool[],
+	): {
+		toolCalls: ParsedOllamaToolCall[];
+		unknownToolNames: string[];
+		isPseudoToolCallPayload: boolean;
+	} => {
+		if (!content || !content.trim()) {
+			return {
+				toolCalls: [],
+				unknownToolNames: [],
+				isPseudoToolCallPayload: false,
+			};
+		}
+
+		const parsedContent = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+		let payload: unknown;
+
+		try {
+			payload = JSON.parse(parsedContent);
+		} catch {
+			return {
+				toolCalls: [],
+				unknownToolNames: [],
+				isPseudoToolCallPayload: false,
+			};
+		}
+
+		const pseudoToolCalls = Array.isArray(payload) ? payload : [payload];
+		const toolNames = new Set(tools.map((tool) => tool.function.name));
+		const unknownToolNames = new Set<string>();
+		let isPseudoToolCallPayload = false;
+
+		const parsedCalls = pseudoToolCalls
+			.map((entry) => {
+				if (!entry || typeof entry !== "object") {
+					return null;
+				}
+
+				const candidate = entry as {
+					name?: unknown;
+					functionName?: unknown;
+					tool?: unknown;
+					parameters?: unknown;
+					arguments?: unknown;
+					args?: unknown;
+				};
+				const toolNameCandidate = [candidate.name, candidate.functionName, candidate.tool].find(
+					(value) => typeof value === "string" && value.trim().length > 0,
+				);
+				if (!toolNameCandidate || typeof toolNameCandidate !== "string") {
+					return null;
+				}
+
+				isPseudoToolCallPayload = true;
+				const toolName = toolNameCandidate.trim();
+				if (!toolNames.has(toolName)) {
+					unknownToolNames.add(toolName);
+					return null;
+				}
+
+				const argumentsValue = [candidate.arguments, candidate.parameters, candidate.args].find(
+					(value) => value !== undefined,
+				);
+
+				return {
+					id: randomUUID(),
+					function: {
+						index: 0,
+						name: toolName,
+						arguments: this.normaliseToolCallArguments(argumentsValue),
+					},
+				} satisfies ParsedOllamaToolCall;
+			});
+
+		return {
+			toolCalls: parsedCalls.filter((value) => value !== null) as ParsedOllamaToolCall[],
+			unknownToolNames: Array.from(unknownToolNames),
+			isPseudoToolCallPayload,
+		};
+	};
 
 	setupRoutes = (app: Express) => {
 		app.post(this.baseUrl, verifyToken, async (req, res) => {
@@ -85,10 +188,8 @@ export class ChatController extends BaseController {
 
 			const activeChatHistory = await getUserChatHistoryById(this.mongoClient, authenticatedUserId, chatId);
 
-			const chatRequest = new ChatRequest(
-				mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]),
-				activeChatHistory,
-			);
+			const ollamaTools = mcpToOllamaTools((tools.result.tools ?? []) as MCPListTool[]);
+			const chatRequest = new ChatRequest(ollamaTools, activeChatHistory);
 
 			let chatNamePromise: Promise<any>;
 
@@ -112,6 +213,66 @@ export class ChatController extends BaseController {
 					mcpSessionId,
 					error: response.error,
 				});
+			}
+
+			const fallbackToolParse = this.parsePseudoToolCallFromContent(
+				response.response.message.content,
+				ollamaTools,
+			);
+			if (!response.response.message.tool_calls?.length && fallbackToolParse.toolCalls.length) {
+				await logger("fallbackPseudoToolCallUsed", async () => Promise.resolve(null), {
+					fallback_tool_call_count: fallbackToolParse.toolCalls.length,
+					fallback_tool_names: fallbackToolParse.toolCalls.map((toolCall) => toolCall.function.name),
+				});
+				response.response.message.tool_calls = fallbackToolParse.toolCalls;
+				// Content contains pseudo tool-call JSON; replace with empty content to prevent echoing it.
+				response.response.message.content = "";
+			} else if (
+				!response.response.message.tool_calls?.length &&
+				fallbackToolParse.isPseudoToolCallPayload &&
+				fallbackToolParse.unknownToolNames.length
+			) {
+				await logger("hallucinatedPseudoToolCall", async () => Promise.resolve(null), {
+					unknown_tool_count: fallbackToolParse.unknownToolNames.length,
+					unknown_tool_names: fallbackToolParse.unknownToolNames,
+				});
+
+				chatRequest.addMessage({
+					role: "assistant",
+					content: response.response.message.content ?? "",
+				});
+				chatRequest.addMessage({
+					role: "user",
+					content:
+						`Only call available tools. Unavailable requested tool(s): ${fallbackToolParse.unknownToolNames.join(", ")}. ` +
+						`Available tools: ${ollamaTools.map((tool) => tool.function.name).join(", ")}. ` +
+						"Do not output tool-call JSON as plain text. Use only valid tool calls, or if you already have enough tool output, answer directly.",
+				});
+
+				response = await logger("Ollama chat recovery unavailable tool", () =>
+					this.ollamaClient.chat(chatRequest.getChatRequest()),
+				);
+
+				if (response.ok === false) {
+					return res.status(response.statusCode).json({
+						ok: false,
+						mcpSessionId,
+						error: response.error,
+					});
+				}
+
+				const recoveredToolParse = this.parsePseudoToolCallFromContent(
+					response.response.message.content,
+					ollamaTools,
+				);
+				if (!response.response.message.tool_calls?.length && recoveredToolParse.toolCalls.length) {
+					await logger("fallbackPseudoToolCallUsed", async () => Promise.resolve(null), {
+						fallback_tool_call_count: recoveredToolParse.toolCalls.length,
+						fallback_tool_names: recoveredToolParse.toolCalls.map((toolCall) => toolCall.function.name),
+					});
+					response.response.message.tool_calls = recoveredToolParse.toolCalls;
+					response.response.message.content = "";
+				}
 			}
 
 			// no tools requested, return message content
@@ -183,6 +344,66 @@ export class ChatController extends BaseController {
 						mcpSessionId,
 						error: response.error,
 					});
+				}
+
+				const fallbackToolParse = this.parsePseudoToolCallFromContent(
+					response.response.message.content,
+					ollamaTools,
+				);
+				if (!response.response.message.tool_calls?.length && fallbackToolParse.toolCalls.length) {
+					await logger("fallbackPseudoToolCallUsed", async () => Promise.resolve(null), {
+						fallback_tool_call_count: fallbackToolParse.toolCalls.length,
+						fallback_tool_names: fallbackToolParse.toolCalls.map((toolCall) => toolCall.function.name),
+					});
+					response.response.message.tool_calls = fallbackToolParse.toolCalls;
+					// Content contains pseudo tool-call JSON; replace with empty content to prevent echoing it.
+					response.response.message.content = "";
+				} else if (
+					!response.response.message.tool_calls?.length &&
+					fallbackToolParse.isPseudoToolCallPayload &&
+					fallbackToolParse.unknownToolNames.length
+				) {
+					await logger("hallucinatedPseudoToolCall", async () => Promise.resolve(null), {
+						unknown_tool_count: fallbackToolParse.unknownToolNames.length,
+						unknown_tool_names: fallbackToolParse.unknownToolNames,
+					});
+
+					chatRequest.addMessage({
+						role: "assistant",
+						content: response.response.message.content ?? "",
+					});
+					chatRequest.addMessage({
+						role: "user",
+						content:
+							`Only call available tools. Unavailable requested tool(s): ${fallbackToolParse.unknownToolNames.join(", ")}. ` +
+							`Available tools: ${ollamaTools.map((tool) => tool.function.name).join(", ")}. ` +
+							"Do not output tool-call JSON as plain text. Use only valid tool calls, or if you already have enough tool output, answer directly.",
+					});
+
+					response = await logger("Ollama chat recovery unavailable tool", () =>
+						this.ollamaClient.chat(chatRequest.getChatRequest()),
+					);
+
+					if (response.ok === false) {
+						return res.status(response.statusCode).json({
+							ok: false,
+							mcpSessionId,
+							error: response.error,
+						});
+					}
+
+					const recoveredToolParse = this.parsePseudoToolCallFromContent(
+						response.response.message.content,
+						ollamaTools,
+					);
+					if (!response.response.message.tool_calls?.length && recoveredToolParse.toolCalls.length) {
+						await logger("fallbackPseudoToolCallUsed", async () => Promise.resolve(null), {
+							fallback_tool_call_count: recoveredToolParse.toolCalls.length,
+							fallback_tool_names: recoveredToolParse.toolCalls.map((toolCall) => toolCall.function.name),
+						});
+						response.response.message.tool_calls = recoveredToolParse.toolCalls;
+						response.response.message.content = "";
+					}
 				}
 
 				if (!response.response.message.tool_calls?.length) {
