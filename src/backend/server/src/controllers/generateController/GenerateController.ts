@@ -8,6 +8,16 @@ export class GenerateController extends BaseController {
 	}
 
 	setupRoutes = (app: Express) => {
+		app.get(`${this.baseUrl}/models`, async (_req, res) => {
+			const response = await logger("Ollama list models", () => this.ollamaClient.listModels());
+
+			if (response.error) {
+				return res.status(response.status ?? 502).json(response);
+			}
+
+			return res.json({ ok: true, models: response.models });
+		});
+
 		app.post(this.baseUrl, async (req, res) => {
 			const response = await logger("Ollama generate", () => this.ollamaClient.generate(req.body.prompt));
 

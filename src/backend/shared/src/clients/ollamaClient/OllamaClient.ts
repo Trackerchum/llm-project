@@ -46,6 +46,44 @@ export class OllamaClient {
 		}
 	};
 
+	listModels = async () => {
+		try {
+			const response = await fetch(new URL("/api/tags", this.endpoint).toString());
+
+			if (!response.ok) {
+				const text = await response.text();
+				return {
+					error: "ollama_error",
+					status: response.status,
+					body: text,
+				};
+			}
+
+			const payload = (await response.json()) as {
+				models?: Array<{ name?: string }>;
+			};
+			const models = Array.isArray(payload.models)
+				? payload.models
+						.map((model) => model?.name)
+						.filter((name): name is string => typeof name === "string" && name.trim().length > 0)
+				: [];
+
+			return {
+				ok: true,
+				models,
+			};
+		} catch (err: any) {
+			return {
+				ok: false,
+				error: String(err?.message ?? err),
+				cause: {
+					message: String(err?.cause?.message ?? ""),
+					code: err?.cause?.code,
+				},
+			};
+		}
+	};
+
 	chat = async (chat: { messages: Message[]; tools?: OllamaTool[] }): Promise<OllamaChatSuccess | OllamaError> => {
 		try {
 			const response = await fetch(new URL("/api/chat", this.endpoint).toString(), {
