@@ -1,6 +1,6 @@
 # llm-project
 
-This is a monorepo containing multiple frontend, backend, infrastructure projects and an Ollama LLM running model llama3.2:1b that are developed and run together in a single Docker Compose environment. Node ≥22 and npm ≥10 are required on the host only for local tooling and IDE support; all runtime code executes inside Linux Docker containers. The package manager is npm and uses workspaces, to install a package within a workspace use `npm install -w ./src/<path-to-project> <package-name>` in the root of the repository. The key components and projects are as follows: 
+This is a monorepo containing multiple frontend, backend, infrastructure projects and an Ollama LLM runtime that are developed and run together in a single Docker Compose environment. Node ≥22 and npm ≥10 are required on the host only for local tooling and IDE support; all runtime code executes inside Linux Docker containers. The package manager is npm and uses workspaces, to install a package within a workspace use `npm install -w ./src/<path-to-project> <package-name>` in the root of the repository. The key components and projects are as follows: 
 
 - A TypeScript/React frontend.
 - A TypeScript/Express server.
@@ -10,7 +10,7 @@ This is a monorepo containing multiple frontend, backend, infrastructure project
 - A Redis database.
 - A MongoDB database.
 - An NGINX reverse proxy.
-- An Ollama LLM instance running model llama3.2:1b.
+- An Ollama LLM instance with models pulled during startup.
 - For development, a RedisInsight instance.
 
 The main directory structure is as follows:
@@ -98,5 +98,13 @@ MongoDB defaults (development only):
 - App user: `llm_project_app`
 - App user password: `dev_app_password_change_me`
 - Backend `MONGO_URL` value (inside Docker network): `mongodb://llm_project_app:dev_app_password_change_me@db-mongo:27017/llm_project?authSource=llm_project`
+
+Ollama models are configured in `docker-compose.development.yml` under the `llm-ollama-init` service. The `OLLAMA_MODELS` environment variable controls which models are pulled on startup.
+
+To add a model, append it to the space-delimited list in `OLLAMA_MODELS`, for example:
+
+`OLLAMA_MODELS: "model-a model-b model-c"`
+
+After changing `OLLAMA_MODELS`, rerun `npm run dev` in root so `llm-ollama-init` runs again and pulls newly added models.
 
 If things get weird with NPM dependencies, run `docker compose -f docker-compose.development.yml down -v` to nuke it and start fresh. NOTE: This also nukes Redis, MongoDB, RedisInsight and Ollama data.
