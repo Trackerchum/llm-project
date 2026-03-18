@@ -143,6 +143,26 @@ export class ChatController extends BaseController {
 					error: "Authenticated user id missing from token.",
 				});
 			}
+
+			if (model) {
+				const availableModelsResponse = await logger("Ollama list models", () => this.ollamaClient.listModels());
+				if (availableModelsResponse.error) {
+					return res.status(availableModelsResponse.status ?? 502).json({
+						ok: false,
+						error: availableModelsResponse.error,
+					});
+				}
+
+				if (!availableModelsResponse.models.includes(model)) {
+					return res.status(400).json({
+						ok: false,
+						error: "Error, selected model is not available.",
+						model,
+						availableModels: availableModelsResponse.models,
+					});
+				}
+			}
+
 			let mcpSessionId = req.header(MCP_SESSION_ID) ?? null;
 
 			if (!mcpSessionId) {
