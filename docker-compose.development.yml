@@ -202,7 +202,7 @@ services:
     restart: "no"
     environment:
       OLLAMA_HOST: "http://llm-ollama:11434"
-      OLLAMA_MODEL: "llama3.2:1b"
+      OLLAMA_MODELS: "llama3.2:1b llama3.1:8b"
     volumes:
       - ollama_data:/root/.ollama
     networks:
@@ -215,7 +215,9 @@ services:
         set -eux
         echo "INIT: OLLAMA_HOST=$$OLLAMA_HOST"
         ollama list || true
-        ollama pull "$$OLLAMA_MODEL"
+        for model in $$OLLAMA_MODELS; do
+          ollama pull "$$model"
+        done
         ollama list
 
 networks:
