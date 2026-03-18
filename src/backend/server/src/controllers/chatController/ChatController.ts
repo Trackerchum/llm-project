@@ -264,7 +264,7 @@ export class ChatController extends BaseController {
 				chatRequest.addMessage({
 					role: "user",
 					content:
-						`Only call available tools. Unavailable requested tool(s): ${fallbackToolParse.unknownToolNames.join(", ")}. ` +
+						`Only call available tools that are relevant. Unavailable requested tool(s): ${fallbackToolParse.unknownToolNames.join(", ")}. ` +
 						`Available tools: ${ollamaTools.map((tool) => tool.function.name).join(", ")}. ` +
 						"Do not output tool-call JSON as plain text. Use only valid tool calls, or if you already have enough tool output, answer directly.",
 				});
