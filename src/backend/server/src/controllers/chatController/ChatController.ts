@@ -39,6 +39,147 @@ export class ChatController extends BaseController {
 		return {};
 	};
 
+	private extractBalancedObject = (value: string, startIndex: number): string | null => {
+		if (value[startIndex] !== "{") {
+			return null;
+		}
+
+		let depth = 0;
+		let inString = false;
+		let isEscaped = false;
+
+		for (let index = startIndex; index < value.length; index++) {
+			const char = value[index];
+
+			if (inString) {
+				if (isEscaped) {
+					isEscaped = false;
+					continue;
+				}
+
+				if (char === "\\") {
+					isEscaped = true;
+					continue;
+				}
+
+				if (char === '"') {
+					inString = false;
+				}
+
+				continue;
+			}
+
+			if (char === '"') {
+				inString = true;
+				continue;
+			}
+
+			if (char === "{") {
+				depth++;
+				continue;
+			}
+
+			if (char === "}") {
+				depth--;
+				if (depth === 0) {
+					return value.slice(startIndex, index + 1);
+				}
+			}
+		}
+
+		return null;
+	};
+
+	private parseLooseArgumentsFromContent = (content: string): Record<string, unknown> => {
+		const keyPattern = /"(arguments|parameters|args)"\s*:\s*/i;
+		const keyMatch = keyPattern.exec(content);
+		if (!keyMatch) {
+			return {};
+		}
+
+		let cursor = keyMatch.index + keyMatch[0].length;
+		while (cursor < content.length && /\s/.test(content[cursor])) {
+			cursor++;
+		}
+
+		if (content[cursor] === "[") {
+			cursor++;
+			while (cursor < content.length && /\s/.test(content[cursor])) {
+				cursor++;
+			}
+		}
+
+		const objectSlice = this.extractBalancedObject(content, cursor);
+		if (!objectSlice) {
+			return {};
+		}
+
+		try {
+			const parsed = JSON.parse(objectSlice);
+			if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+				return parsed as Record<string, unknown>;
+			}
+		} catch {
+			return {};
+		}
+
+		return {};
+	};
+
+	private parseLoosePseudoToolCallFromContent = (
+		content: string,
+		tools: OllamaTool[],
+	): {
+		toolCalls: ParsedOllamaToolCall[];
+		unknownToolNames: string[];
+		isPseudoToolCallPayload: boolean;
+	} => {
+		const toolNamePattern = /"(name|functionName|tool)"\s*:\s*"([^"]+)"/i;
+		const match = toolNamePattern.exec(content);
+		if (!match) {
+			return {
+				toolCalls: [],
+				unknownToolNames: [],
+				isPseudoToolCallPayload: false,
+			};
+		}
+
+		const toolName = (match[2] ?? "").trim();
+		if (!toolName) {
+			return {
+				toolCalls: [],
+				unknownToolNames: [],
+				isPseudoToolCallPayload: true,
+			};
+		}
+
+		const knownToolNames = new Set(tools.map((tool) => tool.function.name));
+		if (!knownToolNames.has(toolName)) {
+			return {
+				toolCalls: [],
+				unknownToolNames: [toolName],
+				isPseudoToolCallPayload: true,
+			};
+		}
+
+		const parsedArguments = this.parseLooseArgumentsFromContent(content);
+
+		return {
+			toolCalls: [
+				{
+					id: randomUUID(),
+					function: {
+						index: 0,
+						name: toolName,
+						arguments: parsedArguments,
+					},
+				},
+			],
+			unknownToolNames: [],
+			isPseudoToolCallPayload: true,
+		};
+	};
+
 	private parsePseudoToolCallFromContent = (
 		content: string | undefined,
 		tools: OllamaTool[],
@@ -64,11 +205,7 @@ export class ChatController extends BaseController {
 		try {
 			payload = JSON.parse(parsedContent);
 		} catch {
-			return {
-				toolCalls: [],
-				unknownToolNames: [],
-				isPseudoToolCallPayload: false,
-			};
+			return this.parseLoosePseudoToolCallFromContent(parsedContent, tools);
 		}
 
 		const pseudoToolCalls = Array.isArray(payload) ? payload : [payload];
