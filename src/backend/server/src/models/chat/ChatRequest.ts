@@ -45,6 +45,9 @@ class ChatRequest {
 						"You are a chat assistant. Prefer answering directly from general knowledge. " +
 						"Call a tool when the user explicitly asks for a capability provided by an available tool, " +
 						"or when external/real-time data is required. " +
+						"Tool routing rules: use searchWeb for questions that require up-to-date facts, rankings, reviews, comparisons, statistics, " +
+						"or verification from external sources (for example queries containing best, top, rated, latest, current, today, this year, ranking, score, review). " +
+						"If a question asks for best/top/rated/latest/current information and searchWeb is available, prefer calling searchWeb before answering. " +
 						"If no tool is needed, do not call any tools. If you call a tool, never invent the result. " +
 						"Never output pseudo tool-call JSON like {name, parameters} in assistant text; " +
 						"use actual tool calls instead. " +
