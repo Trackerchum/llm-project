@@ -60,21 +60,41 @@ const normalizeResultUrl = (urlValue: string): string => {
 	}
 };
 
+const getHrefFromAnchorTag = (anchorTag: string): string | null => {
+	const hrefMatch = /href\s*=\s*(['"])(.*?)\1/i.exec(anchorTag);
+	return hrefMatch?.[2] ?? null;
+};
+
+const isResultLinkAnchor = (anchorTag: string): boolean =>
+	/class\s*=\s*(['"])[^'"]*\bresult-link\b[^'"]*\1/i.test(anchorTag);
+
 const extractResultsFromLiteHtml = (html: string): SearchResult[] => {
-	const linkMatches = [...html.matchAll(/<a[^>]*class="result-link"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)];
-	const snippetMatches = [...html.matchAll(/<td[^>]*class="result-snippet"[^>]*>([\s\S]*?)<\/td>/gi)];
+	const anchorMatches = [...html.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/gi)];
+	const resultAnchors = anchorMatches
+		.map((match) => match[0] ?? "")
+		.filter((anchorTag) => isResultLinkAnchor(anchorTag));
+	const snippetMatches = [
+		...html.matchAll(/<td\b[^>]*class\s*=\s*(['"])[^'"]*\bresult-snippet\b[^'"]*\1[^>]*>([\s\S]*?)<\/td>/gi),
+	];
 
-	return linkMatches.map((match, index) => {
-		const rawUrl = match[1] ?? "";
-		const rawTitle = match[2] ?? "Result";
-		const rawSnippet = snippetMatches[index]?.[1] ?? "";
+	return resultAnchors
+		.map((anchorTag, index) => {
+			const href = getHrefFromAnchorTag(anchorTag);
+			if (!href) {
+				return null;
+			}
 
-		return {
-			title: sanitizeText(rawTitle) || "Result",
-			url: normalizeResultUrl(rawUrl),
-			snippet: truncate(sanitizeText(rawSnippet)),
-		};
-	});
+			const titleMatch = /<a\b[^>]*>([\s\S]*?)<\/a>/i.exec(anchorTag);
+			const rawTitle = titleMatch?.[1] ?? "Result";
+			const rawSnippet = snippetMatches[index]?.[2] ?? "";
+
+			return {
+				title: sanitizeText(rawTitle) || "Result",
+				url: normalizeResultUrl(href),
+				snippet: truncate(sanitizeText(rawSnippet)),
+			};
+		})
+		.filter((result): result is SearchResult => Boolean(result));
 };
 
 const buildResponseText = (query: string, results: SearchResult[]): string => {
